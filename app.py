@@ -5,7 +5,7 @@ st.title("Generador de Matriz de Riesgos")
 st.write("### ¿Para qué tipo de validación desea hacer su análisis de riesgo?")
 opcion = st.radio(
     "Seleccione una opción:",
-    ("Validación de proceso o campaña", "Validación de limpieza")
+    ("Validación de proceso o envase", "Validación de limpieza")
 )
 
 st.write(f"Ha seleccionado: **{opcion}**")

@@ -14,7 +14,7 @@ st.markdown(
 
 # Mostrar imagen
 imagen = Image.open("altea.jpg")  # Cambia el nombre si tu imagen se llama diferente
-st.image(imagen, use_container_width=True)
+st.image(imagen, width=250)
 
 
 

@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Subir el archivo
-archivo = st.file_uploader("Sube el archivo de la base de datos", [".xlsx"])
+archivo = st.file_uploader("Sube el archivo de la base de datos 204", [".xlsx"])
 
 if archivo:
 

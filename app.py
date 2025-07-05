@@ -11,7 +11,7 @@ st.markdown(
 )
 
 # Cargar imagen
-imagen = Image.open("logo.png")  # Reemplaza con el nombre correcto si es diferente
+imagen = Image.open("altea.jpg")  # Reemplaza con el nombre correcto si es diferente
 
 # Crear columnas para centrar la imagen
 col1, col2, col3 = st.columns([1, 2, 1])  # col2 es más ancha (centro)

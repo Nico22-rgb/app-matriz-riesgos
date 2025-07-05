@@ -1,17 +1,24 @@
 import streamlit as st
+from PIL import Image
 
-# Subir el archivo
-archivo = st.file_uploader("Sube el archivo de la base de datos 204", [".xlsx"])
+# Configurar la página
+st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-if archivo:
+# Título centrado
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #2c3e50;'>Análisis de Riesgos - Área de Validaciones</h1>
+    """,
+    unsafe_allow_html=True
+)
 
-    tipo_validacion = st.selectbox("¿Qué tipo de validación desea?", [
-                                   "Validacion 1", "Validacion 2", "Validacion 3"], index=None)
+# Mostrar imagen
+imagen = Image.open("logo.png")  # Cambia el nombre si tu imagen se llama diferente
+st.image(imagen, use_column_width=True)
 
-    if tipo_validacion == "Validacion 1":
-        tipo_linea = st.selectbox("¿Qué linea desea consultar?", [
-                                  "Linea 1", "Linea 2", "Linea 3"], index=None)
 
-        if tipo_linea == "Linea 1":
-            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen", [
-                                                  "Green", "Yellow", "Red", "Blue"])
+
+
+
+
+

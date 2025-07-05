@@ -13,7 +13,7 @@ st.markdown(
 )
 
 # Mostrar imagen
-imagen = Image.open("logo.png")  # Cambia el nombre si tu imagen se llama diferente
+imagen = Image.open("altea.jpg")  # Cambia el nombre si tu imagen se llama diferente
 st.image(imagen, use_column_width=True)
 
 

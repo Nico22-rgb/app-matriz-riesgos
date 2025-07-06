@@ -27,42 +27,30 @@ st.markdown(
 archivo = st.file_uploader("", [".xlsx"])
 
 if archivo:
-
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
-    if tipo_validacion == "Validación de procesos":
+    if tipo_validacion:
         tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
             "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
-    elif tipo_validacion == "Validación de campaña":
-        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
-            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
+        # Mostrar selección de etapas solo para procesos y campaña
+        if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
 
-    elif tipo_validacion == "Validación de limpieza":
-        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
-            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
+            etapa_green = st.toggle("Green")
+            etapa_yellow = st.toggle("Yellow")
+            etapa_red = st.toggle("Red")
+            etapa_blue = st.toggle("Blue")
 
-    # Bloque común a cualquier tipo de validación
-if 'tipo_linea' in locals() and tipo_linea == "Línea de medicamentos sólidos":
-    st.markdown("### Seleccione las etapas que aplican al proceso:")
-
-    etapa_green = st.toggle("Green")
-    etapa_yellow = st.toggle("Yellow")
-    etapa_red = st.toggle("Red")
-    etapa_blue = st.toggle("Blue")
-
-    etapas_seleccionadas = []
-    if etapa_green:
-        etapas_seleccionadas.append("Green")
-    if etapa_yellow:
-        etapas_seleccionadas.append("Yellow")
-    if etapa_red:
-        etapas_seleccionadas.append("Red")
-    if etapa_blue:
-        etapas_seleccionadas.append("Blue")
-
-
-
+            etapas_seleccionadas = []
+            if etapa_green:
+                etapas_seleccionadas.append("Green")
+            if etapa_yellow:
+                etapas_seleccionadas.append("Yellow")
+            if etapa_red:
+                etapas_seleccionadas.append("Red")
+            if etapa_blue:
+                etapas_seleccionadas.append("Blue")
 
 

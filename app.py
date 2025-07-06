@@ -95,6 +95,24 @@ if archivo:
                 if st.toggle(etapa):
                     etapas_seleccionadas.append(etapa)
 
+ elif tipo_validacion == "Validación de limpieza":
+        sheet_to_use = "MR 1 limpieza"
+        st.markdown("Seleccione las etapas que aplican al proceso de limpieza:")
+        etapas_limpieza = [
+            "Verificación de prerrequisitos de validación",
+            "Limpieza preliminar y desmonte del equipo (piezas móviles)",
+            "Limpieza de piezas móviles y parte interna de los equipos",
+            "Seguimiento al proceso de limpieza",
+            "Uso, desmonte y prelavado de las mangas",
+            "Verificación y limpieza de las mangas"
+        ]
+        for etapa in etapas_limpieza:
+            if st.toggle(etapa):
+                etapas_seleccionadas.append(etapa)
+
+
+
+        
         if etapas_seleccionadas and sheet_to_use:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
@@ -141,6 +159,17 @@ if archivo:
                             "Empaque manual frascos": (9, 10),
                             "Empaque manual sobre": (10, 11),
                             "Empaque tubos": (11, 12)
+                        }
+
+
+                        "MR 1 limpieza": {
+                            "Verificación de prerrequisitos de validación": (1, 2),
+                            "Limpieza preliminar y desmonte del equipo (piezas móviles)": (2, 3),
+                            "Limpieza de piezas móviles y parte interna de los equipos": (3, 4),
+                           "Seguimiento al proceso de limpieza": (4, 5),
+                            "Uso, desmonte y prelavado de las mangas": (5, 6),
+                             "Verificación y limpieza de las mangas": (6, 7),
+                           
                         }
                     }
 

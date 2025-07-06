@@ -15,10 +15,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
 try:
-    response = requests.get(image_url)
-    imagen = Image.open(io.BytesIO(response.content))
+    imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)

@@ -190,14 +190,8 @@ if archivo:
 
                 tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                columnas_editables = [False] * len(tabla.columns)
-                for i in [9, 11, 13]:
-                    if i < len(columnas_editables):
-                        columnas_editables[i] = True
-                config = {f"{col}": {"editable": editable} for col, editable in zip(tabla.columns, columnas_editables)}
-
                 st.write("Por favor completa tu matriz de riesgo:")
-                tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic", column_config=config)
+                tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
                 buffer = io.BytesIO()
                 tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()

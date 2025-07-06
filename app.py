@@ -36,17 +36,16 @@ if archivo:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
 
-       if tipo_linea == "Línea de medicamentos sólidos":
-    st.markdown("### Seleccione las etapas que aplican al proceso:")
+        if tipo_linea == "Línea de medicamentos sólidos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
 
-    etapa_dispensacion = st.toggle("Dispensación")
-    etapa_compresion = st.toggle("Compresión")
+            etapa_dispensacion = st.toggle("Dispensación")
+            etapa_compresion = st.toggle("Compresión")
 
-    etapas_seleccionadas = []
-    if etapa_dispensacion:
-        etapas_seleccionadas.append("Dispensación")
-    if etapa_compresion:
-        etapas_seleccionadas.append("Compresión")
-
+            etapas_seleccionadas = []
+            if etapa_dispensacion:
+                etapas_seleccionadas.append("Dispensación")
+            if etapa_compresion:
+                etapas_seleccionadas.append("Compresión")
 
         

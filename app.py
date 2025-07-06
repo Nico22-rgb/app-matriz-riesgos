@@ -89,7 +89,7 @@ if archivo:
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloques.append(df.iloc[inicio:fin])
+                      
 
                     # Concatenar tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)

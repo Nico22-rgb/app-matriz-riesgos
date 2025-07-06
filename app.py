@@ -89,7 +89,7 @@ if archivo:
 
                     # Descargar como Excel
                     buffer = io.BytesIO()
-                    tabla_editada.to_excel(buffer, index=False, header=False)
+                    tabla_editada.to_excel(buffer, index=False, header=True)
                     buffer.seek(0)
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",

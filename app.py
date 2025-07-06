@@ -87,7 +87,7 @@ if archivo:
                 "Envase sobres",
                 "Envase tubos",
                 "Empaque manual frascos",
-                "Empaque manual sobre",
+                "Empaque manual sobres",
                 "Empaque tubos"
             ]
 
@@ -157,7 +157,7 @@ if archivo:
                             "Envase sobres",
                             "Envase tubos",
                             "Empaque manual frascos",
-                            "Empaque manual sobre",
+                            "Empaque manual sobres",
                             "Empaque tubos"
                         ])
                     },

@@ -37,7 +37,7 @@ if archivo:
                                   "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
 
         if tipo_linea == "Linea de medicamentos sólidos":
-            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen", [
+            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen al proceso", [
                                                   "Green", "Yellow", "Red", "Blue"])
 
 

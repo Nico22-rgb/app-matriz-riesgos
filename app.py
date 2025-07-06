@@ -14,28 +14,31 @@ st.markdown(
 imagen = Image.open("altea.jpg") 
 
 # Crear columnas para centrar la imagen
-col1, col2, col3 = st.columns([1, 2, 1])  # col2 es más ancha (centro)
+col1, col2, col3 = st.columns([1, 2, 1])  
 with col2:
     st.image(imagen, width=300)  
     
-# Mostrar el texto en grande
+# Texto
 st.markdown(
-    "<h4> Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
+    "<h4>📎 Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
     unsafe_allow_html=True
 )
-# Subir el archivo
-archivo = st.file_uploader("", [".xlsx"])
 
+# Subida de archivo
+archivo = st.file_uploader("", type=[".xlsx"])
+
+# Paso 1: si se sube el archivo
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
+    # Paso 2: si selecciona tipo de validación
     if tipo_validacion:
         tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
-            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
 
-        # Mostrar selección de etapas solo para procesos y campaña
-        if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
+        # Paso 3: mostrar etapas SOLO si aplica
+        if tipo_validacion in ["Validación de procesos", "Validación de campaña"] and tipo_linea:
             st.markdown("### Seleccione las etapas que aplican al proceso:")
 
             etapa_green = st.toggle("Green")

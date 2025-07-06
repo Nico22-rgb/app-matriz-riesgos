@@ -82,7 +82,7 @@ if archivo:
                     # Diccionario que mapea etapas a rangos de filas
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),  # filas 2 a 6
-                        "Compresión": (7, 11),
+                        "Compresión": (6, 11),
                         "Fusión": (11, 16),
                         "Emulsión": (16, 21),
                         "Mezcla": (21, 26),

@@ -27,7 +27,6 @@ st.markdown(
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
-# Paso 1: si se sube el archivo
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -63,26 +62,23 @@ if archivo:
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
-        # Botón de generación de matriz
         if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Leer archivo Excel
-                    df = pd.read_excel(archivo)
+                    # Leer archivo Excel sin encabezado automático
+                    df = pd.read_excel(archivo, header=None)
 
-                    # Diccionario de rangos por etapa (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2 a 6
-                        "Compresión": (6, 11),    # filas 7 a 11
+                        "Dispensación": (1, 6),
+                        "Compresión": (6, 11),
                         "Fusión": (11, 16),
                         "Emulsión": (16, 21),
                         "Mezcla": (21, 26),
                         "Dispensado": (26, 31)
                     }
 
-                    # Extraer encabezado (primera fila del Excel)
                     encabezado = df.iloc[[0]]
                     bloques = []
 
@@ -91,14 +87,11 @@ if archivo:
                             inicio, fin = rangos_por_etapa[etapa]
                             bloques.append(df.iloc[inicio:fin])
 
-                    # Concatenar tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                    # Editor de tabla
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # Descargar Excel
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
@@ -108,7 +101,6 @@ if archivo:
                         file_name="matriz_riesgo.xlsx"
                     )
 
-                    # Crear PDF
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter

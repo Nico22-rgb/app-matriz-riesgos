@@ -44,11 +44,24 @@ if archivo:
             "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
     # Bloque común a cualquier tipo de validación
-    if tipo_linea == "Línea de medicamentos sólidos":
-        etapas_seleccionadas = st.multiselect(
-            "Seleccione las etapas que aplican al proceso de manufactura/envase/empaque de su producto",
-            ["Green", "Yellow", "Red", "Blue"]
-        )
+if tipo_linea == "Línea de medicamentos sólidos":
+    st.markdown("### Seleccione las etapas que aplican al proceso:")
+
+    etapa_green = st.toggle("Green")
+    etapa_yellow = st.toggle("Yellow")
+    etapa_red = st.toggle("Red")
+    etapa_blue = st.toggle("Blue")
+
+    # Guardar las etapas seleccionadas en una lista
+    etapas_seleccionadas = []
+    if etapa_green:
+        etapas_seleccionadas.append("Green")
+    if etapa_yellow:
+        etapas_seleccionadas.append("Yellow")
+    if etapa_red:
+        etapas_seleccionadas.append("Red")
+    if etapa_blue:
+        etapas_seleccionadas.append("Blue")
 
 
 

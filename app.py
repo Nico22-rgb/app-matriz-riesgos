@@ -29,7 +29,7 @@ archivo = st.file_uploader("", [".xlsx"])
 if archivo:
 
     tipo_validacion = st.selectbox("Selccione el tipo de validación a realizar", [
-                                   "Validacion 1", "Validacion 2", "Validacion 3"], index=None)
+                                   "Validación de procesos", "Validacion de campaña", "Validacion de limpieza"], index=None)
 
     if tipo_validacion == "Validacion 1":
         tipo_linea = st.selectbox("¿Qué linea desea consultar?", [

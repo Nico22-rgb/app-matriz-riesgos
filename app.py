@@ -117,9 +117,9 @@ if archivo:
                     # Preparación del buffer para guardar el archivo Excel
                     buffer = io.BytesIO()
 
-                    # Rellenar valores nulos en la primera columna con el valor anterior no nulo
-                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel.
-                    tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
+                    # Rellenar valores nulos en TODAS las columnas con el valor anterior no nulo
+                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel para todas las columnas.
+                    tabla_editada = tabla_editada.ffill()
 
                     # Guardar el DataFrame editado en el buffer como un archivo Excel
                     # Se especifica index=False y header=False para evitar escribir índices y encabezados automáticos.
@@ -130,22 +130,24 @@ if archivo:
                     wb = load_workbook(buffer)
                     ws = wb.active
 
-                    # Lógica para combinar celdas en la primera columna (columna 1 de Excel)
-                    col_to_merge = 1
-                    current_value = ws.cell(row=1, column=col_to_merge).value
-                    start_row = 1
+                    # Lógica para combinar celdas en TODAS las columnas
+                    # Itera sobre cada columna en la hoja de cálculo
+                    for col in range(1, ws.max_column + 1):
+                        current_value = ws.cell(row=1, column=col).value
+                        start_row = 1
 
-                    for row in range(2, ws.max_row + 2):
-                        value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
-                        if value != current_value:
-                            # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
-                            if row - start_row > 1:
-                                ws.merge_cells(start_row=start_row, start_column=col_to_merge,
-                                               end_row=row - 1, end_column=col_to_merge)
-                                # Centrar el contenido de la celda combinada
-                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
-                            current_value = value
-                            start_row = row
+                        # Itera sobre cada fila para identificar bloques de valores idénticos
+                        for row in range(2, ws.max_row + 2):
+                            value = ws.cell(row=row, column=col).value if row <= ws.max_row else None
+                            if value != current_value:
+                                # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
+                                if row - start_row > 1:
+                                    ws.merge_cells(start_row=start_row, start_column=col,
+                                                   end_row=row - 1, end_column=col)
+                                    # Centrar el contenido de la celda combinada
+                                    ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
+                                current_value = value
+                                start_row = row
 
                     # Guardar el libro de trabajo modificado (con celdas combinadas) en un nuevo buffer
                     output = io.BytesIO()
@@ -158,41 +160,6 @@ if archivo:
                         data=output,
                         file_name="matriz_riesgo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
-
-                    # Creación y descarga del archivo PDF
-                    pdf_buffer = io.BytesIO()
-                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
-                    width, height = letter
-                    x_start = 50
-                    y_start = height - 50
-
-                    c.setFont("Helvetica-Bold", 12)
-                    c.drawString(x_start, y_start, "Matriz de Riesgo")
-                    y_position = y_start - 20
-
-                    c.setFont("Helvetica-Bold", 10)
-                    for col_num, value in enumerate(tabla_editada.columns):
-                        c.drawString(x_start + col_num * 80, y_position, str(value))
-                    y_position -= 15
-
-                    c.setFont("Helvetica", 9)
-                    for row in tabla_editada.itertuples(index=False):
-                        for col_num, value in enumerate(row):
-                            c.drawString(x_start + col_num * 80, y_position, str(value))
-                        y_position -= 15
-                        if y_position < 50:
-                            c.showPage()
-                            y_position = height - 50
-
-                    c.save()
-                    pdf_buffer.seek(0)
-
-                    st.download_button(
-                        label="📄 Descargar matriz de riesgo en PDF",
-                        data=pdf_buffer,
-                        file_name="matriz_riesgo.pdf",
-                        mime="application/pdf"
                     )
 
                 except Exception as e:

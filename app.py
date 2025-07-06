@@ -19,7 +19,7 @@ with col2:
     st.image(imagen, width=300)  # Puedes ajustar el ancho según necesites
 
 # Subir el archivo
-archivo = st.file_uploader("Por favor sube el archivo de la base de datos de las matrices de riesgo"", [".xlsx"])
+archivo = st.file_uploader("Por favor sube el archivo de la base de datos de las matrices de riesgo", [".xlsx"])
 
 if archivo:
 

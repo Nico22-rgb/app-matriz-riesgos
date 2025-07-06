@@ -29,14 +29,14 @@ if archivo:
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
     ], index=None)
 
+    etapas_seleccionadas = []
+    sheet_to_use = None
+
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos",
             "Línea de medicamentos líquidos y semisólidos"
         ], index=None)
-
-        etapas_seleccionadas = []
-        sheet_to_use = None
 
         if tipo_linea == "Línea de medicamentos sólidos":
             sheet_to_use = "MR 1 sólidos"
@@ -95,7 +95,7 @@ if archivo:
                 if st.toggle(etapa):
                     etapas_seleccionadas.append(etapa)
 
- elif tipo_validacion == "Validación de limpieza":
+    elif tipo_validacion == "Validación de limpieza":
         sheet_to_use = "MR 1 limpieza"
         st.markdown("Seleccione las etapas que aplican al proceso de limpieza:")
         etapas_limpieza = [
@@ -110,120 +110,119 @@ if archivo:
             if st.toggle(etapa):
                 etapas_seleccionadas.append(etapa)
 
+    if etapas_seleccionadas and sheet_to_use:
+        if st.button("Generar matriz de riesgo"):
+            st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
+            try:
+                df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-        
-        if etapas_seleccionadas and sheet_to_use:
-            if st.button("Generar matriz de riesgo"):
-                st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
-
-                try:
-                    df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
-
-                    rangos_por_hoja = {
-                        "MR 1 sólidos": {
-                            "Verificación de prerrequisitos de validación": (1, 2),
-                            "Pesaje/Dispensación de materias primas": (2, 3),
-                            "Pulverización": (3, 4),
-                            "Pelletización": (4, 5),
-                            "Granulacion": (5, 6),
-                            "Secado": (6, 7),
-                            "Compactación": (7, 8),
-                            "Mezcla (Lubricación)": (8, 9),
-                            "Encapsulado": (9, 10),
-                            "Compresión": (10, 11),
-                            "Recubrimiento": (11, 12),
-                            "Grageado": (12, 13),
-                            "Revisión": (13, 14),
-                            "Envase blíster": (14, 15),
-                            "Envase foil": (15, 16),
-                            "Envase frasco": (16, 17),
-                            "Envase sobre": (17, 18),
-                            "Envase tubo": (18, 19),
-                            "Empaque blíster": (19, 20),
-                            "Empaque manual foil": (20, 21),
-                            "Empaque frasco": (21, 22),
-                            "Empaque tubo": (22, 23),
-                            "Recogida de blísters": (23, 24),
-                            "Codificado manual": (24, 25)
-                        },
-                        "MR 1 líquidos y semisólidos": {
-                            "Verificación de prerrequisitos de validación": (1, 2),
-                            "Pesaje/Dispensación de materias primas": (2, 3),
-                            "Disolución/Dispersión": (3, 4),
-                            "Homogenización": (4, 5),
-                            "Filtración": (5, 6),
-                            "Envase frascos": (6, 7),
-                            "Envase sobres": (7, 8),
-                            "Envase tubos": (8, 9),
-                            "Empaque manual frascos": (9, 10),
-                            "Empaque manual sobre": (10, 11),
-                            "Empaque tubos": (11, 12)
-                        }
-
-
-                        "MR 1 limpieza": {
-                            "Verificación de prerrequisitos de validación": (1, 2),
-                            "Limpieza preliminar y desmonte del equipo (piezas móviles)": (2, 3),
-                            "Limpieza de piezas móviles y parte interna de los equipos": (3, 4),
-                           "Seguimiento al proceso de limpieza": (4, 5),
-                            "Uso, desmonte y prelavado de las mangas": (5, 6),
-                             "Verificación y limpieza de las mangas": (6, 7),
-                           
-                        }
+                rangos_por_hoja = {
+                    "MR 1 sólidos": {
+                        etapa: (i + 1, i + 2) for i, etapa in enumerate([
+                            "Verificación de prerrequisitos de validación",
+                            "Pesaje/Dispensación de materias primas",
+                            "Pulverización",
+                            "Pelletización",
+                            "Granulacion",
+                            "Secado",
+                            "Compactación",
+                            "Mezcla (Lubricación)",
+                            "Encapsulado",
+                            "Compresión",
+                            "Recubrimiento",
+                            "Grageado",
+                            "Revisión",
+                            "Envase blíster",
+                            "Envase foil",
+                            "Envase frasco",
+                            "Envase sobre",
+                            "Envase tubo",
+                            "Empaque blíster",
+                            "Empaque manual foil",
+                            "Empaque frasco",
+                            "Empaque tubo",
+                            "Recogida de blísters",
+                            "Codificado manual"
+                        ])
+                    },
+                    "MR 1 líquidos y semisólidos": {
+                        etapa: (i + 1, i + 2) for i, etapa in enumerate([
+                            "Verificación de prerrequisitos de validación",
+                            "Pesaje/Dispensación de materias primas",
+                            "Disolución/Dispersión",
+                            "Homogenización",
+                            "Filtración",
+                            "Envase frascos",
+                            "Envase sobres",
+                            "Envase tubos",
+                            "Empaque manual frascos",
+                            "Empaque manual sobre",
+                            "Empaque tubos"
+                        ])
+                    },
+                    "MR 1 limpieza": {
+                        etapa: (i + 1, i + 2) for i, etapa in enumerate([
+                            "Verificación de prerrequisitos de validación",
+                            "Limpieza preliminar y desmonte del equipo (piezas móviles)",
+                            "Limpieza de piezas móviles y parte interna de los equipos",
+                            "Seguimiento al proceso de limpieza",
+                            "Uso, desmonte y prelavado de las mangas",
+                            "Verificación y limpieza de las mangas"
+                        ])
                     }
+                }
 
-                    rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
-                    if not rangos_para_hoja_actual:
-                        st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
-                        st.stop()
+                rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
+                if not rangos_para_hoja_actual:
+                    st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
+                    st.stop()
 
-                    encabezado = df.iloc[[0]]
-                    bloques = []
+                encabezado = df.iloc[[0]]
+                bloques = []
 
-                    for etapa in etapas_seleccionadas:
-                        if etapa in rangos_para_hoja_actual:
-                            inicio, fin = rangos_para_hoja_actual[etapa]
-                            bloques.append(df.iloc[inicio:fin])
-                        else:
-                            st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
+                for etapa in etapas_seleccionadas:
+                    if etapa in rangos_para_hoja_actual:
+                        inicio, fin = rangos_para_hoja_actual[etapa]
+                        bloques.append(df.iloc[inicio:fin])
+                    else:
+                        st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
 
-                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
-                    st.write("Por favor completa tu matriz de riesgo:")
-                    tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
+                tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+                st.write("Por favor completa tu matriz de riesgo:")
+                tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    buffer = io.BytesIO()
-                    tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
-                    tabla_editada.to_excel(buffer, index=False, header=False)
-                    buffer.seek(0)
+                buffer = io.BytesIO()
+                tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
+                tabla_editada.to_excel(buffer, index=False, header=False)
+                buffer.seek(0)
 
-                    wb = load_workbook(buffer)
-                    ws = wb.active
+                wb = load_workbook(buffer)
+                ws = wb.active
 
-                    col_to_merge = 1
-                    current_value = ws.cell(row=1, column=col_to_merge).value
-                    start_row = 1
+                col_to_merge = 1
+                current_value = ws.cell(row=1, column=col_to_merge).value
+                start_row = 1
 
-                    for row in range(2, ws.max_row + 2):
-                        value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
-                        if value != current_value:
-                            if row - start_row > 1:
-                                ws.merge_cells(start_row=start_row, start_column=col_to_merge, end_row=row - 1, end_column=col_to_merge)
-                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
-                            current_value = value
-                            start_row = row
+                for row in range(2, ws.max_row + 2):
+                    value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
+                    if value != current_value:
+                        if row - start_row > 1:
+                            ws.merge_cells(start_row=start_row, start_column=col_to_merge, end_row=row - 1, end_column=col_to_merge)
+                            ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
+                        current_value = value
+                        start_row = row
 
-                    output = io.BytesIO()
-                    wb.save(output)
-                    output.seek(0)
+                output = io.BytesIO()
+                wb.save(output)
+                output.seek(0)
 
-                    st.download_button(
-                        label="📥 Descargar matriz de riesgo en Excel",
-                        data=output,
-                        file_name="matriz_riesgo.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                st.download_button(
+                    label="📥 Descargar matriz de riesgo en Excel",
+                    data=output,
+                    file_name="matriz_riesgo.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
-                except Exception as e:
-                    st.error(f"Ocurrió un error al procesar el archivo: {str(e)}")
-
+            except Exception as e:
+                st.error(f"Ocurrió un error al procesar el archivo: {e}")

@@ -8,35 +8,41 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 import requests
 
+# Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
+# Título principal de la aplicación
 st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
-
 try:
     imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)
 except Exception as e:
-    st.warning(f"Could not load the logo image. Error: {e}")
-    st.info("Ensure you have an internet connection to load the placeholder image.")
+    st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
+    st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
 
 
+# Sección para subir el archivo de la base de datos de las matrices de riesgo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
+# Lógica principal de la aplicación si se ha subido un archivo
 if archivo:
+    # Selección del tipo de validación a realizar
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
     ], index=None)
 
+    # Lógica condicional basada en el tipo de validación
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
+        # Selección de la línea de fabricación del producto
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos",
             "Línea de medicamentos líquidos y semisólidos",
@@ -45,6 +51,7 @@ if archivo:
 
         etapas_seleccionadas = []
 
+        # Selección de etapas específicas según la línea de fabricación
         if tipo_linea == "Línea de medicamentos sólidos":
             st.markdown("Seleccione las etapas que aplican al proceso:")
             if st.toggle("Dispensación"):
@@ -68,13 +75,18 @@ if archivo:
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
+        # Botón para generar la matriz de riesgo si hay etapas seleccionadas
         if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
+                    # Lectura del archivo Excel sin considerar encabezados automáticamente
+                    # Esto permite un control preciso de las filas por índice.
                     df = pd.read_excel(archivo, header=None)
 
+                    # Definición de los rangos de filas para cada etapa en el Excel original
+                    # Los índices son base 0 para Pandas, donde la fila 1 de Excel es el índice 0.
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),
                         "Compresión": (6, 11),
@@ -84,30 +96,41 @@ if archivo:
                         "Dispensado": (26, 31)
                     }
 
+                    # Extracción del encabezado (primera fila del Excel)
                     encabezado = df.iloc[[0]]
                     bloques = []
 
+                    # Extracción de los bloques de datos correspondientes a las etapas seleccionadas
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
                             bloque_actual = df.iloc[inicio:fin]
                             bloques.append(bloque_actual)
 
+                    # Concatenación del encabezado y los bloques de etapas para formar la tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
+                    # Editor de datos de Streamlit para que el usuario complete la matriz
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
+                    # Preparación del buffer para guardar el archivo Excel
                     buffer = io.BytesIO()
 
+                    # Rellenar valores nulos en la primera columna con el valor anterior no nulo
+                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel.
                     tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
 
+                    # Guardar el DataFrame editado en el buffer como un archivo Excel
+                    # Se especifica index=False y header=False para evitar escribir índices y encabezados automáticos.
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
 
+                    # Cargar el libro de trabajo de Excel desde el buffer con openpyxl
                     wb = load_workbook(buffer)
                     ws = wb.active
 
+                    # Lógica para combinar celdas en la primera columna (columna 1 de Excel)
                     col_to_merge = 1
                     current_value = ws.cell(row=1, column=col_to_merge).value
                     start_row = 1
@@ -115,22 +138,61 @@ if archivo:
                     for row in range(2, ws.max_row + 2):
                         value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
                         if value != current_value:
+                            # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
                             if row - start_row > 1:
                                 ws.merge_cells(start_row=start_row, start_column=col_to_merge,
                                                end_row=row - 1, end_column=col_to_merge)
+                                # Centrar el contenido de la celda combinada
                                 ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
                             current_value = value
                             start_row = row
 
+                    # Guardar el libro de trabajo modificado (con celdas combinadas) en un nuevo buffer
                     output = io.BytesIO()
                     wb.save(output)
                     output.seek(0)
 
+                    # Botón para descargar el archivo Excel con las celdas combinadas
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",
                         data=output,
                         file_name="matriz_riesgo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+
+                    # Creación y descarga del archivo PDF
+                    pdf_buffer = io.BytesIO()
+                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+                    width, height = letter
+                    x_start = 50
+                    y_start = height - 50
+
+                    c.setFont("Helvetica-Bold", 12)
+                    c.drawString(x_start, y_start, "Matriz de Riesgo")
+                    y_position = y_start - 20
+
+                    c.setFont("Helvetica-Bold", 10)
+                    for col_num, value in enumerate(tabla_editada.columns):
+                        c.drawString(x_start + col_num * 80, y_position, str(value))
+                    y_position -= 15
+
+                    c.setFont("Helvetica", 9)
+                    for row in tabla_editada.itertuples(index=False):
+                        for col_num, value in enumerate(row):
+                            c.drawString(x_start + col_num * 80, y_position, str(value))
+                        y_position -= 15
+                        if y_position < 50:
+                            c.showPage()
+                            y_position = height - 50
+
+                    c.save()
+                    pdf_buffer.seek(0)
+
+                    st.download_button(
+                        label="📄 Descargar matriz de riesgo en PDF",
+                        data=pdf_buffer,
+                        file_name="matriz_riesgo.pdf",
+                        mime="application/pdf"
                     )
 
                 except Exception as e:

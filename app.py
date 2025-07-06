@@ -73,10 +73,8 @@ if archivo:
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Leer archivo sin encabezado
                     df = pd.read_excel(archivo, header=None)
 
-                    # Diccionario de rangos por etapa (índices de pandas, empezando desde la fila 0)
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),
                         "Compresión": (6, 11),
@@ -99,7 +97,7 @@ if archivo:
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # ➕ Generar Excel con celdas combinadas automáticamente
+                    # Guardar Excel con celdas combinadas
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
@@ -108,21 +106,18 @@ if archivo:
                     ws = wb.active
 
                     for col in range(1, ws.max_column + 1):
-                        current_value = None
-                        start_row = None
-                        for row in range(1, ws.max_row + 1):
-                            value = ws.cell(row=row, column=col).value
+                        current_value = ws.cell(row=1, column=col).value
+                        start_row = 1
+
+                        for row in range(2, ws.max_row + 2):  # Hasta una fila más del final
+                            value = ws.cell(row=row, column=col).value if row <= ws.max_row else None
                             if value != current_value:
-                                if start_row is not None and row - start_row > 1:
+                                if row - start_row > 1:
                                     ws.merge_cells(start_row=start_row, start_column=col,
                                                    end_row=row - 1, end_column=col)
                                     ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
                                 current_value = value
                                 start_row = row
-                        if start_row is not None and ws.max_row - start_row >= 1:
-                            ws.merge_cells(start_row=start_row, start_column=col,
-                                           end_row=ws.max_row, end_column=col)
-                            ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
 
                     output = io.BytesIO()
                     wb.save(output)
@@ -135,7 +130,7 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
+                  
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
-
 

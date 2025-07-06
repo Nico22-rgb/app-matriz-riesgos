@@ -104,6 +104,47 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+# Crear PDF en memoria
+pdf_buffer = io.BytesIO()
+c = canvas.Canvas(pdf_buffer, pagesize=letter)
+width, height = letter
+
+x = 50
+y = height - 50
+
+# Título
+c.setFont("Helvetica-Bold", 12)
+c.drawString(x, y, "Matriz de Riesgo")
+y -= 20
+
+# Encabezado
+c.setFont("Helvetica-Bold", 10)
+for col_num, value in enumerate(tabla_editada.columns):
+    c.drawString(x + col_num * 80, y, str(value))
+y -= 15
+
+# Filas
+c.setFont("Helvetica", 9)
+for row in tabla_editada.itertuples(index=False):
+    for col_num, value in enumerate(row):
+        c.drawString(x + col_num * 80, y, str(value))
+    y -= 15
+    if y < 50:
+        c.showPage()
+        y = height - 50
+
+c.save()
+pdf_buffer.seek(0)
+
+st.download_button(
+    label="📄 Descargar matriz de riesgo en PDF",
+    data=pdf_buffer,
+    file_name="matriz_riesgo.pdf",
+    mime="application/pdf"
+)                
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
 

@@ -43,8 +43,8 @@ if archivo:
             etapa_compresion = st.toggle("Compresión")
 
             etapas_seleccionadas = []
-            if etapa_dispensacion:
+            if etapa_Dispensación:
                 etapas_seleccionadas.append("Dispensación")
-            if etapa_compresion:
+            if etapa_Compresión:
                 etapas_seleccionadas.append("Compresión")
         

@@ -76,10 +76,24 @@ if archivo:
         elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
             sheet_to_use = "MR 1 líquidos y semisólidos"
             st.markdown("Seleccione las etapas que aplican al proceso:")
-            if st.toggle("Fusión"):
-                etapas_seleccionadas.append("Fusión")
-            if st.toggle("Emulsión"):
-                etapas_seleccionadas.append("Emulsión")
+
+            etapas_liquidas = [
+                "Verificación de prerrequisitos de validación",
+                "Pesaje/Dispensación de materias primas",
+                "Disolución/Dispersión",
+                "Homogenización",
+                "Filtración",
+                "Envase frascos",
+                "Envase sobres",
+                "Envase tubos",
+                "Empaque manual frascos",
+                "Empaque manual sobre",
+                "Empaque tubos"
+            ]
+
+            for etapa in etapas_liquidas:
+                if st.toggle(etapa):
+                    etapas_seleccionadas.append(etapa)
 
         if etapas_seleccionadas and sheet_to_use:
             if st.button("Generar matriz de riesgo"):
@@ -116,8 +130,17 @@ if archivo:
                             "Codificado manual": (24, 25)
                         },
                         "MR 1 líquidos y semisólidos": {
-                            "Fusión": (1, 2),
-                            "Emulsión": (2, 3)
+                            "Verificación de prerrequisitos de validación": (1, 2),
+                            "Pesaje/Dispensación de materias primas": (2, 3),
+                            "Disolución/Dispersión": (3, 4),
+                            "Homogenización": (4, 5),
+                            "Filtración": (5, 6),
+                            "Envase frascos": (6, 7),
+                            "Envase sobres": (7, 8),
+                            "Envase tubos": (8, 9),
+                            "Empaque manual frascos": (9, 10),
+                            "Empaque manual sobre": (10, 11),
+                            "Empaque tubos": (11, 12)
                         }
                     }
 
@@ -166,7 +189,7 @@ if archivo:
                     output.seek(0)
 
                     st.download_button(
-                        label="📥 Descargar matriz de riesgo en Excel",
+                        label="\ud83d\udcc5 Descargar matriz de riesgo en Excel",
                         data=output,
                         file_name="matriz_riesgo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -174,4 +197,3 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
-

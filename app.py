@@ -117,9 +117,9 @@ if archivo:
                     # Preparación del buffer para guardar el archivo Excel
                     buffer = io.BytesIO()
 
-                    # Rellenar valores nulos en TODAS las columnas con el valor anterior no nulo
-                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel para todas las columnas.
-                    tabla_editada = tabla_editada.ffill()
+                    # Rellenar valores nulos en la PRIMERA columna con el valor anterior no nulo
+                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel para esa columna.
+                    tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
 
                     # Guardar el DataFrame editado en el buffer como un archivo Excel
                     # Se especifica index=False y header=False para evitar escribir índices y encabezados automáticos.
@@ -130,24 +130,23 @@ if archivo:
                     wb = load_workbook(buffer)
                     ws = wb.active
 
-                    # Lógica para combinar celdas en TODAS las columnas
-                    # Itera sobre cada columna en la hoja de cálculo
-                    for col in range(1, ws.max_column + 1):
-                        current_value = ws.cell(row=1, column=col).value
-                        start_row = 1
+                    # Lógica para combinar celdas SOLO en la PRIMERA columna
+                    col_to_merge = 1  # Primera columna en Excel (1-indexed)
+                    current_value = ws.cell(row=1, column=col_to_merge).value
+                    start_row = 1
 
-                        # Itera sobre cada fila para identificar bloques de valores idénticos
-                        for row in range(2, ws.max_row + 2):
-                            value = ws.cell(row=row, column=col).value if row <= ws.max_row else None
-                            if value != current_value:
-                                # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
-                                if row - start_row > 1:
-                                    ws.merge_cells(start_row=start_row, start_column=col,
-                                                   end_row=row - 1, end_column=col)
-                                    # Centrar el contenido de la celda combinada
-                                    ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
-                                current_value = value
-                                start_row = row
+                    # Itera sobre cada fila para identificar bloques de valores idénticos en la columna especificada
+                    for row in range(2, ws.max_row + 2):
+                        value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
+                        if value != current_value:
+                            # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
+                            if row - start_row > 1:
+                                ws.merge_cells(start_row=start_row, start_column=col_to_merge,
+                                               end_row=row - 1, end_column=col_to_merge)
+                                # Centrar el contenido de la celda combinada
+                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
+                            current_value = value
+                            start_row = row
 
                     # Guardar el libro de trabajo modificado (con celdas combinadas) en un nuevo buffer
                     output = io.BytesIO()
@@ -161,6 +160,7 @@ if archivo:
                         file_name="matriz_riesgo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
+
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")

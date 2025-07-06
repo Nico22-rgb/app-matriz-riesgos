@@ -87,7 +87,7 @@ if archivo:
                 "Envase sobres",
                 "Envase tubos",
                 "Empaque manual frascos",
-                "Empaque manual sobres",
+                "Empaque manual sobre",
                 "Empaque tubos"
             ]
 
@@ -157,7 +157,7 @@ if archivo:
                             "Envase sobres",
                             "Envase tubos",
                             "Empaque manual frascos",
-                            "Empaque manual sobres",
+                            "Empaque manual sobre",
                             "Empaque tubos"
                         ])
                     },
@@ -189,8 +189,15 @@ if archivo:
                         st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
 
                 tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+
+                columnas_editables = [False] * len(tabla.columns)
+                for i in [9, 11, 13]:
+                    if i < len(columnas_editables):
+                        columnas_editables[i] = True
+                config = {f"{col}": {"editable": editable} for col, editable in zip(tabla.columns, columnas_editables)}
+
                 st.write("Por favor completa tu matriz de riesgo:")
-                tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
+                tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic", column_config=config)
 
                 buffer = io.BytesIO()
                 tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
@@ -226,3 +233,4 @@ if archivo:
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
+

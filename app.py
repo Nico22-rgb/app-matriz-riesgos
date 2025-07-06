@@ -89,7 +89,7 @@ if archivo:
                     contenido = df.iloc[2:5, 0:6]
                     tabla = pd.concat([encabezado, contenido], ignore_index=True)
 
-                    st.write("Edita los datos extraídos del Excel:")
+                    st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
                     # Descargar como Excel

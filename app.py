@@ -68,8 +68,7 @@ if archivo:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
-                st.write(f"Etapas seleccionadas para procesamiento: {etapas_seleccionadas}")
-
+             
                 try:
                     df = pd.read_excel(archivo, header=None)
             
@@ -90,9 +89,7 @@ if archivo:
                             inicio, fin = rangos_por_etapa[etapa]
                             bloque_actual = df.iloc[inicio:fin]
                             bloques.append(bloque_actual)
-                            st.write(f"Bloque extraído para '{etapa}':")
-                            st.dataframe(bloque_actual)
-
+                          
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
 

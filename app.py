@@ -71,36 +71,42 @@ if archivo:
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Leer archivo sin encabezado
-                    df = pd.read_excel(archivo, header=None)
+                    df = pd.read_excel(archivo)
 
-                    # Diccionario de rangos por etapa (índices de pandas, empezando desde la fila 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2 a 6 del Excel
-                        "Compresión": (6, 11),    # filas 7 a 11 del Excel
-                        "Fusión": (11, 16),       # filas 12 a 16
-                        "Emulsión": (16, 21),     # filas 17 a 21
-                        "Mezcla": (21, 26),       # filas 22 a 26
-                        "Dispensado": (26, 31)    # filas 27 a 31
+                        "Dispensación": (1, 5),
+                        "Compresión": (6, 10),
+                        "Fusión": (11, 15),
+                        "Emulsión": (17, 22),
+                        "Mezcla": (22, 27),
+                        "Dispensado": (27, 32)
                     }
 
-                    encabezado = df.iloc[[0]]  # fila 1 del Excel como encabezado
+                    encabezado = df.iloc[[0]]
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloques.append(df.iloc[inicio:fin])
+                            bloque_actual = df.iloc[inicio:fin]
+                            bloques.append(bloque_actual)
 
-                    # Unir encabezado con los bloques seleccionados
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                    st.write("Por favor completa tu matriz de riesgo:")
-                    tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
+                    st.write("Por favor completa tu matriz de riesgo (la primera fila está resaltada como encabezado):")
 
-                    # Descargar Excel
+                    # 👉 Estilo: resaltar la primera fila
+                    def resaltar_encabezado(fila):
+                        return ['background-color: lightblue' if fila.name == 0 else '' for _ in fila]
+
+                    tabla_estilizada = tabla.style.apply(resaltar_encabezado, axis=1)
+
+                    # Mostrar tabla con estilo
+                    st.dataframe(tabla_estilizada, use_container_width=True)
+
+                    # Exportaciones siguen usando `tabla` (sin estilo)
                     buffer = io.BytesIO()
-                    tabla_editada.to_excel(buffer, index=False, header=False)
+                    tabla.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",
@@ -109,7 +115,6 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
-                    # Crear PDF
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter
@@ -121,12 +126,12 @@ if archivo:
                     y_position = y_start - 20
 
                     c.setFont("Helvetica-Bold", 10)
-                    for col_num, value in enumerate(tabla_editada.columns):
+                    for col_num, value in enumerate(tabla.columns):
                         c.drawString(x_start + col_num * 80, y_position, str(value))
                     y_position -= 15
 
                     c.setFont("Helvetica", 9)
-                    for row in tabla_editada.itertuples(index=False):
+                    for row in tabla.itertuples(index=False):
                         for col_num, value in enumerate(row):
                             c.drawString(x_start + col_num * 80, y_position, str(value))
                         y_position -= 15
@@ -146,4 +151,5 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
 

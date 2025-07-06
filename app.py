@@ -18,6 +18,8 @@ col1, col2, col3 = st.columns([1, 2, 1])  # col2 es más ancha (centro)
 with col2:
     st.image(imagen, width=300)  # Puedes ajustar el ancho según necesites
 
+# Subir el archivo
+archivo = st.file_uploader("Por favor sube el archivo de la base de datos de matrices de riesgo"", [".xlsx"])
 
 
 

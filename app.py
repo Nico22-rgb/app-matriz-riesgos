@@ -39,18 +39,4 @@ if archivo:
         if tipo_linea == "Línea de medicamentos sólidos":
             st.markdown("### Seleccione las etapas que aplican al proceso:")
 
-            etapa_green = st.toggle("Green")
-            etapa_yellow = st.toggle("Yellow")
-            etapa_red = st.toggle("Red")
-            etapa_blue = st.toggle("Blue")
-
-            etapas_seleccionadas = []
-            if etapa_green:
-                etapas_seleccionadas.append("Green")
-            if etapa_yellow:
-                etapas_seleccionadas.append("Yellow")
-            if etapa_red:
-                etapas_seleccionadas.append("Red")
-            if etapa_blue:
-                etapas_seleccionadas.append("Blue")
-
+        

@@ -72,10 +72,7 @@ if archivo:
 
                 try:
                     df = pd.read_excel(archivo, header=None)
-
-                    st.write("DataFrame completo después de leer Excel (para depuración):")
-                    st.dataframe(df)
-
+            
                     rangos_por_etapa = {
                         "Dispensación": (1, 7),
                         "Compresión": (7, 12),
@@ -98,8 +95,6 @@ if archivo:
 
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                    st.write("Tabla final concatenada (verifica si los rangos son correctos):")
-                    st.dataframe(tabla)
 
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")

@@ -27,7 +27,7 @@ st.markdown(
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
-# Si se sube archivo
+# Paso 1: si se sube el archivo
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -63,43 +63,42 @@ if archivo:
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
-        # Mostrar botón solo si hay etapas seleccionadas
+        # Botón de generación de matriz
         if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Leer Excel
+                    # Leer archivo Excel
                     df = pd.read_excel(archivo)
 
-                    # Diccionario con rangos seguros por etapa (índices base 0)
+                    # Diccionario de rangos por etapa (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2 a 6 (índices 1 al 5)
-                        "Compresión": (6, 11),    # filas 7 a 11 (índices 6 al 10)
+                        "Dispensación": (1, 6),   # filas 2–6
+                        "Compresión": (6, 11),    # filas 7–11
                         "Fusión": (11, 16),
                         "Emulsión": (16, 21),
                         "Mezcla": (21, 26),
                         "Dispensado": (26, 31)
                     }
 
-                    # Encabezado en la fila 0
+                    # Extraer encabezado
                     encabezado = df.iloc[[0]]
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloque = df.iloc[inicio:fin].copy()
-                            bloques.append(bloque)
+                            bloques.append(df.iloc[inicio:fin])
 
-                    # Unir encabezado con los bloques seleccionados
+                    # Concatenar tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                    # Mostrar tabla editable
+                    # Editor de tabla
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # Exportar a Excel
+                    # Descargar Excel
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=True)
                     buffer.seek(0)
@@ -109,7 +108,7 @@ if archivo:
                         file_name="matriz_riesgo.xlsx"
                     )
 
-                    # Exportar a PDF
+                    # Crear PDF
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter
@@ -146,3 +145,4 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+

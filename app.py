@@ -11,13 +11,18 @@ st.markdown(
 )
 
 # Cargar imagen
-imagen = Image.open("altea.jpg")  # Reemplaza con el nombre correcto si es diferente
+imagen = Image.open("altea.jpg") 
 
 # Crear columnas para centrar la imagen
 col1, col2, col3 = st.columns([1, 2, 1])  # col2 es más ancha (centro)
 with col2:
-    st.image(imagen, width=300)  # Puedes ajustar el ancho según necesites
-
+    st.image(imagen, width=300)  
+    
+# Mostrar el texto en grande
+st.markdown(
+    "<h4 style='text-align: center;'>📎 Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
+    unsafe_allow_html=True
+)
 # Subir el archivo
 archivo = st.file_uploader("Por favor sube el archivo de la base de datos de las matrices de riesgo", [".xlsx"])
 

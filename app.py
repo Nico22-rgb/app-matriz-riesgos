@@ -15,19 +15,20 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load image from a URL (replacing local file loading)
-# A placeholder image is used to ensure the application is runnable without a local file.
-image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
+
+# Cargar imagen
 try:
-    response = requests.get(image_url)
-    imagen = Image.open(io.BytesIO(response.content))
+    imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
+
+
+
+
     with col2:
         st.image(imagen, width=300)
 except Exception as e:
     st.warning(f"Could not load the logo image. Error: {e}")
     st.info("Ensure you have an internet connection to load the placeholder image.")
-
 
 # File upload section
 st.markdown(
@@ -118,6 +119,11 @@ if archivo:
 
                     # Save Excel with merged cells in the first column
                     buffer = io.BytesIO()
+
+                    # IMPORTANT FIX: Fill NaN/None values in the first column with the previous valid value
+                    # This ensures that openpyxl sees repeated values for merging.
+                    tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
+
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
 
@@ -127,7 +133,7 @@ if archivo:
                     st.subheader("Información de Depuración para Fusión de Celdas:")
                     st.write(f"Filas totales en la hoja de cálculo: {ws.max_row}")
                     st.write(f"Columnas totales en la hoja de cálculo: {ws.max_column}")
-                    st.write("Valores en la primera columna de la tabla editada (lo que openpyxl ve):")
+                    st.write("Valores en la primera columna de la tabla editada (lo que openpyxl ve DESPUÉS de ffill):")
                     for r_idx in range(1, ws.max_row + 1):
                         st.write(f"Fila {r_idx}: '{ws.cell(row=r_idx, column=1).value}'")
 

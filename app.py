@@ -72,56 +72,91 @@ if archivo:
                 try:
                     df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-                    rangos_por_etapa = {
-                        "Dispensación": (1, 6),
-                        "Compresión": (6, 11),
-                        "Fusión": (11, 16),
-                        "Emulsión": (16, 21),
-                        "Mezcla": (21, 26),
-                        "Dispensado": (26, 31)
+                     rangos_por_hoja = {
+                        "MR 1 sólidos": {
+                            "Dispensación": (1, 6),
+                            "Compresión": (6, 11),
+                            "Fusión": (11, 16),
+                            # Agrega más etapas si las hay para esta hoja
+                        },
+                        "MR 1 líquidos y semisólidos": {
+                            "Fusión": (1, 6),   # EJEMPLO: Ajusta estos rangos para tu hoja de líquidos y semisólidos
+                            "Emulsión": (6, 11), # EJEMPLO: Ajusta estos rangos
+                            # Agrega más etapas si las hay para esta hoja
+                        },
+                        "NombreDeTuHojaCosmeticos": { # Reemplaza "NombreDeTuHojaCosmeticos" con el nombre real
+                            "Mezcla": (1, 6),    # EJEMPLO: Ajusta estos rangos para tu hoja de cosméticos
+                            "Dispensado": (6, 11), # EJEMPLO: Ajusta estos rangos
+                            # Agrega más etapas si las hay para esta hoja
+                        }
                     }
 
+                    # Seleccionar el diccionario de rangos correcto para la hoja actual
+                    rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
+                    if not rangos_para_hoja_actual:
+                        st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'. Por favor, verifica la configuración.")
+                        st.stop() # Detiene la ejecución si no hay rangos definidos
+
+                    # Extracción del encabezado (primera fila del Excel)
                     encabezado = df.iloc[[0]]
                     bloques = []
 
+                    # Extracción de los bloques de datos correspondientes a las etapas seleccionadas
                     for etapa in etapas_seleccionadas:
-                        if etapa in rangos_por_etapa:
-                            inicio, fin = rangos_por_etapa[etapa]
+                        if etapa in rangos_para_hoja_actual:
+                            inicio, fin = rangos_para_hoja_actual[etapa]
                             bloque_actual = df.iloc[inicio:fin]
                             bloques.append(bloque_actual)
+                        else:
+                            st.warning(f"La etapa '{etapa}' no tiene rangos definidos para la hoja '{sheet_to_use}'.")
 
+                    # Concatenación del encabezado y los bloques de etapas para formar la tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
+                    # Editor de datos de Streamlit para que el usuario complete la matriz
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # Guardar a Excel con celdas combinadas en la primera columna
+                    # Preparación del buffer para guardar el archivo Excel
                     buffer = io.BytesIO()
+
+                    # Rellenar valores nulos en la PRIMERA columna con el valor anterior no nulo
+                    # Esto es crucial para que la combinación de celdas funcione correctamente en Excel para esa columna.
                     tabla_editada.iloc[:, 0] = tabla_editada.iloc[:, 0].ffill()
+
+                    # Guardar el DataFrame editado en el buffer como un archivo Excel
+                    # Se especifica index=False y header=False para evitar escribir índices y encabezados automáticos.
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
 
+                    # Cargar el libro de trabajo de Excel desde el buffer con openpyxl
                     wb = load_workbook(buffer)
                     ws = wb.active
 
-                    col_to_merge = 1
+                    # Lógica para combinar celdas SOLO en la PRIMERA columna
+                    col_to_merge = 1  # Primera columna en Excel (1-indexed)
                     current_value = ws.cell(row=1, column=col_to_merge).value
                     start_row = 1
 
+                    # Itera sobre cada fila para identificar bloques de valores idénticos en la columna especificada
                     for row in range(2, ws.max_row + 2):
                         value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
                         if value != current_value:
+                            # Si el valor cambia y hay más de una fila en el bloque, combinar celdas
                             if row - start_row > 1:
                                 ws.merge_cells(start_row=start_row, start_column=col_to_merge,
                                                end_row=row - 1, end_column=col_to_merge)
+                                # Centrar el contenido de la celda combinada
                                 ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
                             current_value = value
                             start_row = row
 
+                    # Guardar el libro de trabajo modificado (con celdas combinadas) en un nuevo buffer
                     output = io.BytesIO()
                     wb.save(output)
                     output.seek(0)
 
+                    # Botón para descargar el archivo Excel con las celdas combinadas
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",
                         data=output,

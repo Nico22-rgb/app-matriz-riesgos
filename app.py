@@ -5,10 +5,16 @@ from PIL import Image
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 
+# Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
+# <<< INICIO CAMBIO >>>
+# Inicializar el estado de la tabla editada solo si aún no existe en session_state
 if 'edited_data_table' not in st.session_state:
     st.session_state.edited_data_table = pd.DataFrame()
+if 'guardar_cambios' not in st.session_state:
+    st.session_state.guardar_cambios = False
+# <<< FIN CAMBIO >>>
 
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
@@ -112,6 +118,7 @@ if archivo:
             try:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
+                # <<< RANGOS DEFINIDOS MANUALMENTE >>>
                 rangos_por_hoja = {
                     "MR 1 sólidos": {
                         "Verificación de prerrequisitos de validación": (1, 2),
@@ -161,6 +168,7 @@ if archivo:
                         "Verificación y limpieza de las mangas": (6, 7)
                     }
                 }
+                # <<< FIN RANGOS MANUALES >>>
 
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:
@@ -178,45 +186,57 @@ if archivo:
                         st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
 
                 tabla = pd.concat([encabezado] + bloques, ignore_index=True)
-
-                st.session_state.edited_data_table = st.data_editor(
-                    tabla,
-                    use_container_width=True,
-                    num_rows="dynamic",
-                    key="editor_riesgo"
-                )
-
-                buffer = io.BytesIO()
-                st.session_state.edited_data_table.iloc[:, 0] = st.session_state.edited_data_table.iloc[:, 0].ffill()
-                st.session_state.edited_data_table.to_excel(buffer, index=False, header=False)
-                buffer.seek(0)
-
-                wb = load_workbook(buffer)
-                ws = wb.active
-
-                col_to_merge = 1
-                current_value = ws.cell(row=1, column=col_to_merge).value
-                start_row = 1
-
-                for row in range(2, ws.max_row + 2):
-                    value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
-                    if value != current_value:
-                        if row - start_row > 1:
-                            ws.merge_cells(start_row=start_row, start_column=col_to_merge, end_row=row - 1, end_column=col_to_merge)
-                            ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
-                        current_value = value
-                        start_row = row
-
-                output = io.BytesIO()
-                wb.save(output)
-                output.seek(0)
-
-                st.download_button(
-                    label="📥 Descargar matriz de riesgo en Excel",
-                    data=output,
-                    file_name="matriz_riesgo.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+                st.session_state.edited_data_table = tabla.copy()
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+    if not st.session_state.edited_data_table.empty:
+        st.markdown("### Por favor completa tu matriz de riesgo:")
+        edited_table = st.data_editor(
+            st.session_state.edited_data_table,
+            use_container_width=True,
+            num_rows="dynamic",
+            key="editor_riesgo"
+        )
+
+        if st.button("Guardar cambios en la matriz"):
+            st.session_state.edited_data_table = edited_table.copy()
+            st.success("✅ Cambios guardados correctamente. Puedes descargar el archivo actualizado.")
+
+        if st.session_state.edited_data_table is not None:
+            buffer = io.BytesIO()
+            st.session_state.edited_data_table.iloc[:, 0] = st.session_state.edited_data_table.iloc[:, 0].ffill()
+            st.session_state.edited_data_table.to_excel(buffer, index=False, header=False)
+            buffer.seek(0)
+
+            wb = load_workbook(buffer)
+            ws = wb.active
+
+            col_to_merge = 1
+            current_value = ws.cell(row=1, column=col_to_merge).value
+            start_row = 1
+
+            for row in range(2, ws.max_row + 2):
+                value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
+                if value != current_value:
+                    if row - start_row > 1:
+                        ws.merge_cells(start_row=start_row, start_column=col_to_merge, end_row=row - 1, end_column=col_to_merge)
+                        ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
+                    current_value = value
+                    start_row = row
+
+            output = io.BytesIO()
+            wb.save(output)
+            output.seek(0)
+
+            st.download_button(
+                label="📥 Descargar matriz de riesgo en Excel",
+                data=output,
+                file_name="matriz_riesgo.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+else:
+    st.info("Por favor, sube un archivo Excel para comenzar.")
+

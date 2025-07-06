@@ -20,7 +20,7 @@ with col2:
     
 # Texto
 st.markdown(
-    "<h4>📎 Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
+    "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
 

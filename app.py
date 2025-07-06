@@ -32,28 +32,14 @@ if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
-    # Paso 2: si selecciona tipo de validación
-    if tipo_validacion:
-        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
-            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
+    if tipo_validacion == "Validacion de procesos":
+        tipo_linea = st.selectbox("¿A qué linea de fabricación pertenece su producto?", [
+                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
 
-        # Paso 3: mostrar etapas SOLO si aplica
-        if tipo_validacion in ["Validación de procesos", "Validación de campaña"] and tipo_linea:
-            st.markdown("### Seleccione las etapas que aplican al proceso:")
+        if tipo_linea == "Linea de medicamentos sólidos":
+            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen", [
+                                                  "Green", "Yellow", "Red", "Blue"])
 
-            etapa_green = st.toggle("Green")
-            etapa_yellow = st.toggle("Yellow")
-            etapa_red = st.toggle("Red")
-            etapa_blue = st.toggle("Blue")
 
-            etapas_seleccionadas = []
-            if etapa_green:
-                etapas_seleccionadas.append("Green")
-            if etapa_yellow:
-                etapas_seleccionadas.append("Yellow")
-            if etapa_red:
-                etapas_seleccionadas.append("Red")
-            if etapa_blue:
-                etapas_seleccionadas.append("Blue")
 
 

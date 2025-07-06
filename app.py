@@ -74,17 +74,22 @@ if archivo:
 
                     # Diccionario de rangos por etapa (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   
-                        "Compresión": (6, 11),   
+                        "Dispensación": (1, 6),   # filas 2 a 6
+                        "Compresión": (6, 11),    # filas 7 a 11
+                        "Fusión": (11, 16),
+                        "Emulsión": (16, 21),
+                        "Mezcla": (21, 26),
+                        "Dispensado": (26, 31)
                     }
-                    # Extraer encabezado
+
+                    # Extraer encabezado (primera fila del Excel)
                     encabezado = df.iloc[[0]]
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                      bloques.append(df.iloc[inicio:fin])
+                            bloques.append(df.iloc[inicio:fin])
 
                     # Concatenar tabla final
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
@@ -140,4 +145,5 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
 

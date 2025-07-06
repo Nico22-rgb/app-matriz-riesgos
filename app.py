@@ -77,4 +77,36 @@ if archivo:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
+ if etapas_seleccionadas:
+            if st.button("Generar matriz de riesgo"):
+                st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+
+                # Leer Excel
+                try:
+                    df = pd.read_excel(archivo, header=None)
+
+                    # Extraer fila 1 y filas 3-5, columnas A-F
+                    encabezado = df.iloc[[0], 0:6]
+                    contenido = df.iloc[2:5, 0:6]
+                    tabla = pd.concat([encabezado, contenido], ignore_index=True)
+
+                    st.markdown("### Edita los datos extraídos del Excel:")
+                    tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
+
+                    # Descargar como Excel
+                    buffer = io.BytesIO()
+                    tabla_editada.to_excel(buffer, index=False, header=False)
+                    buffer.seek(0)
+
+                    st.download_button(
+                        label="📥 Descargar matriz de riesgo en Excel",
+                        data=buffer,
+                        file_name="matriz_riesgo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+
 

@@ -4,23 +4,27 @@ import io
 from PIL import Image
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import requests
 
-# Configurar la página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Título centrado
 st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
 
-# Cargar imagen
-imagen = Image.open("altea.jpg")
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    st.image(imagen, width=300)
+image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
+try:
+    response = requests.get(image_url)
+    imagen = Image.open(io.BytesIO(response.content))
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, width=300)
+except Exception as e:
+    st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
+    st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
 
-# Subida de archivo
+
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
@@ -66,17 +70,21 @@ if archivo:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
+                st.write(f"Etapas seleccionadas para procesamiento: {etapas_seleccionadas}")
+
                 try:
-                    # Leer archivo Excel sin encabezado automático
                     df = pd.read_excel(archivo, header=None)
 
+                    st.write("DataFrame completo después de leer Excel (para depuración):")
+                    st.dataframe(df)
+
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),
-                        "Compresión": (6, 11),
-                        "Fusión": (11, 16),
-                        "Emulsión": (16, 21),
-                        "Mezcla": (21, 26),
-                        "Dispensado": (26, 31)
+                        "Dispensación": (1, 7),
+                        "Compresión": (7, 12),
+                        "Fusión": (12, 17),
+                        "Emulsión": (17, 22),
+                        "Mezcla": (22, 27),
+                        "Dispensado": (27, 32)
                     }
 
                     encabezado = df.iloc[[0]]
@@ -85,9 +93,15 @@ if archivo:
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloques.append(df.iloc[inicio:fin])
+                            bloque_actual = df.iloc[inicio:fin]
+                            bloques.append(bloque_actual)
+                            st.write(f"Bloque extraído para '{etapa}':")
+                            st.dataframe(bloque_actual)
 
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+
+                    st.write("Tabla final concatenada (verifica si los rangos son correctos):")
+                    st.dataframe(tabla)
 
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
@@ -98,32 +112,33 @@ if archivo:
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",
                         data=buffer,
-                        file_name="matriz_riesgo.xlsx"
+                        file_name="matriz_riesgo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter
-                    x = 50
-                    y = height - 50
+                    x_start = 50
+                    y_start = height - 50
 
                     c.setFont("Helvetica-Bold", 12)
-                    c.drawString(x, y, "Matriz de Riesgo")
-                    y -= 20
+                    c.drawString(x_start, y_start, "Matriz de Riesgo")
+                    y_position = y_start - 20
 
                     c.setFont("Helvetica-Bold", 10)
                     for col_num, value in enumerate(tabla_editada.columns):
-                        c.drawString(x + col_num * 80, y, str(value))
-                    y -= 15
+                        c.drawString(x_start + col_num * 80, y_position, str(value))
+                    y_position -= 15
 
                     c.setFont("Helvetica", 9)
                     for row in tabla_editada.itertuples(index=False):
                         for col_num, value in enumerate(row):
-                            c.drawString(x + col_num * 80, y, str(value))
-                        y -= 15
-                        if y < 50:
+                            c.drawString(x_start + col_num * 80, y_position, str(value))
+                        y_position -= 15
+                        if y_position < 50:
                             c.showPage()
-                            y = height - 50
+                            y_position = height - 50
 
                     c.save()
                     pdf_buffer.seek(0)
@@ -137,3 +152,4 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+

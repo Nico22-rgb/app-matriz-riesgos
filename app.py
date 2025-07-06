@@ -74,13 +74,9 @@ if archivo:
 
                     # Diccionario de rangos por etapa (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2–6
-                        "Compresión": (6, 11),    # filas 7–11
-                        "Fusión": (11, 16),
-                        "Emulsión": (16, 21),
-                        "Mezcla": (21, 26),
-                        "Dispensado": (26, 31)
-                    }
+                        "Dispensación": (1, 5),   
+                        "Compresión": (5, 10),    
+                                        }
 
                     # Extraer encabezado
                     encabezado = df.iloc[[0]]

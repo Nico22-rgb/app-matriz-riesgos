@@ -189,11 +189,12 @@ if archivo:
                     output.seek(0)
 
                     st.download_button(
-                        label="\ud83d\udcc5 Descargar matriz de riesgo en Excel",
+                        label="📥 Descargar matriz de riesgo en Excel",
                         data=output,
                         file_name="matriz_riesgo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
                 except Exception as e:
-                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
+                    st.error(f"Ocurrió un error al procesar el archivo: {str(e)}")
+

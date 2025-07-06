@@ -8,25 +8,26 @@ from reportlab.pdfgen import canvas
 # Configurar la página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Título
+# Título centrado
 st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
 
-# Imagen centrada
+# Cargar imagen
 imagen = Image.open("altea.jpg")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(imagen, width=300)
 
-# Carga de archivo
+# Subida de archivo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
+# Si se sube archivo
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -62,40 +63,43 @@ if archivo:
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
+        # Mostrar botón solo si hay etapas seleccionadas
         if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
+                    # Leer Excel
                     df = pd.read_excel(archivo)
 
-                    # Mapea etapas a rangos de filas (índices base 0)
+                    # Diccionario con rangos seguros por etapa (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2-6 de Excel
-                        "Compresión": (6, 11),    # filas 7-11
+                        "Dispensación": (1, 6),   # filas 2 a 6 (índices 1 al 5)
+                        "Compresión": (6, 11),    # filas 7 a 11 (índices 6 al 10)
                         "Fusión": (11, 16),
                         "Emulsión": (16, 21),
                         "Mezcla": (21, 26),
                         "Dispensado": (26, 31)
                     }
 
-                    # Encabezado (fila 1 del Excel)
+                    # Encabezado en la fila 0
                     encabezado = df.iloc[[0]]
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloques.append(df.iloc[inicio:fin])
+                            bloque = df.iloc[inicio:fin].copy()
+                            bloques.append(bloque)
 
-                    # Concatenar encabezado + bloques seleccionados
+                    # Unir encabezado con los bloques seleccionados
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
                     # Mostrar tabla editable
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # Descargar Excel
+                    # Exportar a Excel
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=True)
                     buffer.seek(0)
@@ -105,7 +109,7 @@ if archivo:
                         file_name="matriz_riesgo.xlsx"
                     )
 
-                    # Crear PDF
+                    # Exportar a PDF
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter
@@ -142,4 +146,3 @@ if archivo:
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
-

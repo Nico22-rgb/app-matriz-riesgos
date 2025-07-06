@@ -82,7 +82,7 @@ if archivo:
 
                 # Leer Excel
                 try:
-                    df = pd.read_excel(archivo, header=None)
+                    df = pd.read_excel(archivo)
 
                     # Extraer fila 1 y filas 3-5, columnas A-F
                     encabezado = df.iloc[[0], 0:6]

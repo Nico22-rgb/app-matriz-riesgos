@@ -24,7 +24,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 # Subir el archivo
-archivo = st.file_uploader("Por favor sube el archivo de la base de datos de las matrices de riesgo", [".xlsx"])
+archivo = st.file_uploader("", [".xlsx"])
 
 if archivo:
 

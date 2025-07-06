@@ -8,15 +8,17 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 import requests
 
-# Configuración inicial
+# Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
+# Título principal de la aplicación
 st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
 
-# Imagen
+# Carga y visualización de la imagen del logo
+
 try:
     imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -26,27 +28,35 @@ except Exception as e:
     st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
     st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
 
-# Subida de archivo
+
+# Sección para subir el archivo de la base de datos de las matrices de riesgo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
+# Lógica principal de la aplicación si se ha subido un archivo
 if archivo:
+    # Selección del tipo de validación a realizar
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
     ], index=None)
 
+    # Lógica condicional basada en el tipo de validación
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
+        # Selección de la línea de fabricación del producto
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos",
             "Línea de medicamentos líquidos y semisólidos",
+            "Línea de cosméticos"
         ], index=None)
 
         etapas_seleccionadas = []
-        sheet_to_use = None
+        sheet_to_use = None # Variable para almacenar el nombre de la hoja a usar
 
+        # Asignar el nombre de la hoja de Excel según el tipo de línea seleccionado
+        # Se utilizan los nombres de hoja proporcionados por el usuario.
         if tipo_linea == "Línea de medicamentos sólidos":
             sheet_to_use = "MR 1 sólidos"
             st.markdown("Seleccione las etapas que aplican al proceso:")
@@ -65,14 +75,30 @@ if archivo:
             if st.toggle("Emulsión"):
                 etapas_seleccionadas.append("Emulsión")
 
-        if etapas_seleccionadas:
+        elif tipo_linea == "Línea de cosméticos":
+            sheet_to_use = "NombreDeTuHojaCosmeticos" # Placeholder, user needs to provide this name
+            st.markdown("Seleccione las etapas que aplican al proceso:")
+            if st.toggle("Mezcla"):
+                etapas_seleccionadas.append("Mezcla")
+            if st.toggle("Dispensado"):
+                etapas_seleccionadas.append("Dispensado")
+
+        # Botón para generar la matriz de riesgo si hay etapas seleccionadas y una hoja definida
+        if etapas_seleccionadas and sheet_to_use:
             if st.button("Generar matriz de riesgo"):
-                st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+                if sheet_to_use == "NombreDeTuHojaCosmeticos":
+                    st.warning("Por favor, especifica el nombre de la hoja para 'Línea de cosméticos' en el código.")
+                else:
+                    st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
+                    # Lectura del archivo Excel desde la hoja determinada por tipo_linea, sin considerar encabezados automáticamente
                     df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-                     rangos_por_hoja = {
+                    # Definición de los rangos de filas para cada etapa, organizados por nombre de hoja.
+                    # Los índices son base 0 para Pandas, donde la fila 1 de Excel es el índice 0.
+                    # ¡IMPORTANTE!: Ajusta los rangos para cada hoja según la estructura de tu Excel.
+                    rangos_por_hoja = {
                         "MR 1 sólidos": {
                             "Dispensación": (1, 6),
                             "Compresión": (6, 11),
@@ -164,5 +190,8 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
+                 
+
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+

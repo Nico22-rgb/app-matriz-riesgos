@@ -48,6 +48,29 @@ if archivo:
             if etapa_compresion:
                 etapas_seleccionadas.append("Compresión")
 
+
+            elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
+
+            etapa_fusion = st.toggle("Fusión")
+            etapa_emulsion = st.toggle("Emulsión")
+
+            if etapa_fusion:
+                etapas_seleccionadas.append("Fusión")
+            if etapa_emulsion:
+                etapas_seleccionadas.append("Emulsión")
+
+        elif tipo_linea == "Línea de cosméticos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
+
+            etapa_mezcla = st.toggle("Mezcla")
+            etapa_dispensado = st.toggle("Dispensado")
+
+            if etapa_mezcla:
+                etapas_seleccionadas.append("Mezcla")
+            if etapa_dispensado:
+                etapas_seleccionadas.append("Dispensado")
+                
             # Mostrar botón solo si hay etapas seleccionadas
             if etapas_seleccionadas:
                 if st.button("Generar matriz de riesgo"):

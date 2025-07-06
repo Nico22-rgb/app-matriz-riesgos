@@ -48,5 +48,5 @@ if archivo:
             if etapa_compresion:
                 etapas_seleccionadas.append("Compresión")
 
-        if st.button("Generar matriz de riesgo"):
+        st.button("Generar matriz de riesgo"):
         st.success("¡Matriz de riesgo generada con éxito!")

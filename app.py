@@ -18,7 +18,6 @@ st.markdown(
 )
 
 # Carga y visualización de la imagen del logo
-
 try:
     imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -48,8 +47,7 @@ if archivo:
         # Selección de la línea de fabricación del producto
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos",
-            "Línea de medicamentos líquidos y semisólidos",
-            "Línea de cosméticos"
+            "Línea de medicamentos líquidos y semisólidos"
         ], index=None)
 
         etapas_seleccionadas = []
@@ -75,21 +73,10 @@ if archivo:
             if st.toggle("Emulsión"):
                 etapas_seleccionadas.append("Emulsión")
 
-        elif tipo_linea == "Línea de cosméticos":
-            sheet_to_use = "NombreDeTuHojaCosmeticos" # Placeholder, user needs to provide this name
-            st.markdown("Seleccione las etapas que aplican al proceso:")
-            if st.toggle("Mezcla"):
-                etapas_seleccionadas.append("Mezcla")
-            if st.toggle("Dispensado"):
-                etapas_seleccionadas.append("Dispensado")
-
         # Botón para generar la matriz de riesgo si hay etapas seleccionadas y una hoja definida
         if etapas_seleccionadas and sheet_to_use:
             if st.button("Generar matriz de riesgo"):
-                if sheet_to_use == "NombreDeTuHojaCosmeticos":
-                    st.warning("Por favor, especifica el nombre de la hoja para 'Línea de cosméticos' en el código.")
-                else:
-                    st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+                st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
                     # Lectura del archivo Excel desde la hoja determinada por tipo_linea, sin considerar encabezados automáticamente
@@ -108,11 +95,6 @@ if archivo:
                         "MR 1 líquidos y semisólidos": {
                             "Fusión": (1, 6),   # EJEMPLO: Ajusta estos rangos para tu hoja de líquidos y semisólidos
                             "Emulsión": (6, 11), # EJEMPLO: Ajusta estos rangos
-                            # Agrega más etapas si las hay para esta hoja
-                        },
-                        "NombreDeTuHojaCosmeticos": { # Reemplaza "NombreDeTuHojaCosmeticos" con el nombre real
-                            "Mezcla": (1, 6),    # EJEMPLO: Ajusta estos rangos para tu hoja de cosméticos
-                            "Dispensado": (6, 11), # EJEMPLO: Ajusta estos rangos
                             # Agrega más etapas si las hay para esta hoja
                         }
                     }
@@ -190,8 +172,7 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
-                 
-
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
 

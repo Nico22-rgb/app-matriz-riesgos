@@ -13,18 +13,16 @@ st.markdown(
 # Cargar imagen
 imagen = Image.open("altea.jpg")
 
-# Crear columnas para centrar la imagen
+# Centrar la imagen
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(imagen, width=300)
 
-# Texto
+# Subida de archivo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
-
-# Subida de archivo
 archivo = st.file_uploader("", type=[".xlsx"])
 
 # Paso 1: si se sube el archivo
@@ -34,7 +32,12 @@ if archivo:
 
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
-            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
+            "Línea de medicamentos sólidos",
+            "Línea de medicamentos líquidos y semisólidos",
+            "Línea de cosméticos"
+        ], index=None)
+
+        etapas_seleccionadas = []
 
         if tipo_linea == "Línea de medicamentos sólidos":
             st.markdown("### Seleccione las etapas que aplican al proceso:")
@@ -42,14 +45,12 @@ if archivo:
             etapa_dispensacion = st.toggle("Dispensación")
             etapa_compresion = st.toggle("Compresión")
 
-            etapas_seleccionadas = []
             if etapa_dispensacion:
                 etapas_seleccionadas.append("Dispensación")
             if etapa_compresion:
                 etapas_seleccionadas.append("Compresión")
 
-
-            elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
+        elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
             st.markdown("### Seleccione las etapas que aplican al proceso:")
 
             etapa_fusion = st.toggle("Fusión")
@@ -70,8 +71,9 @@ if archivo:
                 etapas_seleccionadas.append("Mezcla")
             if etapa_dispensado:
                 etapas_seleccionadas.append("Dispensado")
-                
-            # Mostrar botón solo si hay etapas seleccionadas
-            if etapas_seleccionadas:
-                if st.button("Generar matriz de riesgo"):
-                    st.success("¡Matriz de riesgo generada con éxito!")
+
+        # Mostrar botón solo si hay etapas seleccionadas
+        if etapas_seleccionadas:
+            if st.button("Generar matriz de riesgo"):
+                st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+

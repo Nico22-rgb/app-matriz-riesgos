@@ -70,7 +70,7 @@ if archivo:
 
              
                 try:
-                    df = pd.read_excel(archivo, header=None)
+                    df = pd.read_excel(archivo)
             
                     rangos_por_etapa = {
                         "Dispensación": (1, 7),

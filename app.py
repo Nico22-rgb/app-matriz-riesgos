@@ -76,12 +76,7 @@ if archivo:
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),   
                         "Compresión": (6, 11),   
-                        "Fusión": (11, 16),
-                        "Emulsión": (16, 21),
-                        "Mezcla": (21, 26),
-                        "Dispensado": (26, 31)
-                    }
-
+                       
                     # Extraer encabezado
                     encabezado = df.iloc[[0]]
                     bloques = []

@@ -40,4 +40,15 @@ if archivo:
             st.markdown("### Seleccione las etapas que aplican al proceso:")
 
 on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
+on = st.toggle ("Dispensación")
         

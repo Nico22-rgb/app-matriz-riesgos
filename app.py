@@ -11,13 +11,13 @@ st.markdown(
 )
 
 # Cargar imagen
-imagen = Image.open("altea.jpg") 
+imagen = Image.open("altea.jpg")
 
 # Crear columnas para centrar la imagen
-col1, col2, col3 = st.columns([1, 2, 1])  
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image(imagen, width=300)  
-    
+    st.image(imagen, width=300)
+
 # Texto
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
@@ -33,13 +33,24 @@ if archivo:
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
     if tipo_validacion == "Validación de procesos":
-        tipo_linea = st.selectbox("¿A qué linea de fabricación pertenece su producto?", [
-                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+        tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
 
-        if tipo_linea == "Linea de medicamentos sólidos":
-            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen al proceso", [
-                                                  "Green", "Yellow", "Red", "Blue"])
+        if tipo_linea == "Línea de medicamentos sólidos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
 
+            etapa_green = st.toggle("Green")
+            etapa_yellow = st.toggle("Yellow")
+            etapa_red = st.toggle("Red")
+            etapa_blue = st.toggle("Blue")
 
-
+            etapas_seleccionadas = []
+            if etapa_green:
+                etapas_seleccionadas.append("Green")
+            if etapa_yellow:
+                etapas_seleccionadas.append("Yellow")
+            if etapa_red:
+                etapas_seleccionadas.append("Red")
+            if etapa_blue:
+                etapas_seleccionadas.append("Blue")
 

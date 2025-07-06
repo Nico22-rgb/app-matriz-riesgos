@@ -75,9 +75,9 @@ if archivo:
                     df = pd.read_excel(archivo)
             
                     rangos_por_etapa = {
-                        "Dispensación": (1, 7),
-                        "Compresión": (7, 11),
-                        "Fusión": (12, 17),
+                        "Dispensación": (1, 5),
+                        "Compresión": (6, 10),
+                        "Fusión": (11, 15),
                         "Emulsión": (17, 22),
                         "Mezcla": (22, 27),
                         "Dispensado": (27, 32)

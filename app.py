@@ -79,17 +79,20 @@ if archivo:
                     # Leer Excel
                     df = pd.read_excel(archivo)
 
-                    # Diccionario que mapea etapas a rangos de filas (ajusta esto según tu archivo)
+                    # Diccionario que mapea etapas a rangos de filas
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),  # filas 2 a 6
                         "Compresión": (6, 11),
-                        "Fusión": (11, 16),                     
+                        "Fusión": (11, 16),
+                        "Emulsión": (16, 21),
+                        "Mezcla": (21, 26),
+                        "Dispensado": (26, 31)
                     }
 
-                    # Extraer encabezado (primera fila del archivo)
+                    # Extraer encabezado
                     encabezado = df.iloc[[0]]
 
-                    # Concatenar los bloques seleccionados por etapa
+                    # Extraer los bloques según las etapas seleccionadas
                     bloques = []
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
@@ -109,6 +112,42 @@ if archivo:
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",
                         data=buffer,
-                        file_name="matriz_riesgo.xlsx",
+                        file_name="matriz_riesgo.xlsx"
                     )
 
+                    # Generar PDF
+                    pdf_buffer = io.BytesIO()
+                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+                    width, height = letter
+                    x = 50
+                    y = height - 50
+
+                    c.setFont("Helvetica-Bold", 12)
+                    c.drawString(x, y, "Matriz de Riesgo")
+                    y -= 20
+
+                    c.setFont("Helvetica-Bold", 10)
+                    for col_num, value in enumerate(tabla_editada.columns):
+                        c.drawString(x + col_num * 80, y, str(value))
+                    y -= 15
+
+                    c.setFont("Helvetica", 9)
+                    for row in tabla_editada.itertuples(index=False):
+                        for col_num, value in enumerate(row):
+                            c.drawString(x + col_num * 80, y, str(value))
+                        y -= 15
+                        if y < 50:
+                            c.showPage()
+                            y = height - 50
+
+                    c.save()
+                    pdf_buffer.seek(0)
+                    st.download_button(
+                        label="📄 Descargar matriz de riesgo en PDF",
+                        data=pdf_buffer,
+                        file_name="matriz_riesgo.pdf",
+                        mime="application/pdf"
+                    )
+
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")

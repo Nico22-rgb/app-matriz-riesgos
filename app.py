@@ -70,34 +70,35 @@ if archivo:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
-             
                 try:
-                    df = pd.read_excel(archivo)
-            
+                    # Leer archivo sin encabezado
+                    df = pd.read_excel(archivo, header=None)
+
+                    # Diccionario de rangos por etapa (índices de pandas, empezando desde la fila 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 5),
-                        "Compresión": (6, 10),
-                        "Fusión": (11, 15),
-                        "Emulsión": (17, 22),
-                        "Mezcla": (22, 27),
-                        "Dispensado": (27, 32)
+                        "Dispensación": (1, 6),   # filas 2 a 6 del Excel
+                        "Compresión": (6, 11),    # filas 7 a 11 del Excel
+                        "Fusión": (11, 16),       # filas 12 a 16
+                        "Emulsión": (16, 21),     # filas 17 a 21
+                        "Mezcla": (21, 26),       # filas 22 a 26
+                        "Dispensado": (26, 31)    # filas 27 a 31
                     }
 
-                    encabezado = df.iloc[[0]]
+                    encabezado = df.iloc[[0]]  # fila 1 del Excel como encabezado
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
                         if etapa in rangos_por_etapa:
                             inicio, fin = rangos_por_etapa[etapa]
-                            bloque_actual = df.iloc[inicio:fin]
-                            bloques.append(bloque_actual)
-                          
-                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+                            bloques.append(df.iloc[inicio:fin])
 
+                    # Unir encabezado con los bloques seleccionados
+                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
+                    # Descargar Excel
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
@@ -108,6 +109,7 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
+                    # Crear PDF
                     pdf_buffer = io.BytesIO()
                     c = canvas.Canvas(pdf_buffer, pagesize=letter)
                     width, height = letter
@@ -141,10 +143,6 @@ if archivo:
                         file_name="matriz_riesgo.pdf",
                         mime="application/pdf"
                     )
-
-                except Exception as e:
-                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
-
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")

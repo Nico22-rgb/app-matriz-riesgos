@@ -32,20 +32,14 @@ if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
-   if tipo_validacion == "Validación de procesos":
-    tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
-        "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
+    if tipo_validacion == "Validación de procesos":
+        tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"], index=None)
 
-    if tipo_linea == "Línea de medicamentos sólidos":
-        st.markdown("### Seleccione las etapas que aplican al proceso:")
+        if tipo_linea == "Línea de medicamentos sólidos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
 
-        etapa_dispensacion = st.toggle("Dispensación")
-        etapa_compresion = st.toggle("Compresión")
-
-        etapas_seleccionadas = []
-        if etapa_dispensacion:
-            etapas_seleccionadas.append("Dispensación")
-        if etapa_compresion:
-            etapas_seleccionadas.append("Compresión")
+            etapa_dispensacion = st.toggle("Dispensación")
+            etapa_compresion_
 
         

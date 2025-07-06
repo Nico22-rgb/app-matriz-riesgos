@@ -35,8 +35,16 @@ if archivo:
         tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
                                   "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
 
-        if tipo_linea == "Linea 1":
-            etapas_seleccionadas = st.multiselect("Seleccione las etapas que apliquen", [
+ if tipo_validacion == "Validación de campaña":
+        tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
+                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+
+ if tipo_validacion == "Validación de limpieza":
+        tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
+                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+
+            if tipo_linea == "Linea de medicamentos sólidos":
+            etapas_seleccionadas = st.multiselect("Seleccione las etapas que aplican al proceso de manufactura/envase/empaque de su producto", [
                                                   "Green", "Yellow", "Red", "Blue"])
 
 

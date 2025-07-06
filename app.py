@@ -1,4 +1,6 @@
 import streamlit as st
+import io
+import base64
 from PIL import Image
 
 # Configurar la página

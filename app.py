@@ -75,7 +75,7 @@ if archivo:
                     # Diccionario de rangos por etapa (índices base 0)
                     rangos_por_etapa = {
                         "Dispensación": (1, 5),   
-                        "Compresión": (5, 10),   
+                        "Compresión": (6, 10),   
                         "Fusión": (11, 16),
                         "Emulsión": (16, 21),
                         "Mezcla": (21, 26),

@@ -126,7 +126,7 @@ if archivo:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
                 # Definición de los rangos de filas para cada etapa, organizados por nombre de hoja.
-                # ¡IMPORTANTE!: Ajusta estos rangos según la estructura EXACTA de tu Excel.
+                # ¡IMPORTANT E!: Ajusta estos rangos según la estructura EXACTA de tu Excel.
                 # Los índices son base 0 para Pandas, donde la fila 1 de Excel es el índice 0.
                 rangos_por_hoja = {
                     "MR 1 sólidos": {
@@ -269,8 +269,6 @@ if archivo:
 
         # La sección de descarga de PDF ha sido eliminada.
 
-    else: # Mensaje si no hay tabla generada aún
-        st.info("Selecciona un tipo de validación, línea de fabricación y etapas, luego haz clic en 'Generar matriz de riesgo' para empezar.")
+    # El bloque 'else' que muestra el mensaje "Selecciona un tipo de validación..." ha sido eliminado.
 else: # Mensaje si no se ha subido ningún archivo
     st.info("Por favor, sube un archivo Excel para comenzar.")
-

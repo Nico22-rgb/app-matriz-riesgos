@@ -20,7 +20,7 @@ with col2:
     
 # Mostrar el texto en grande
 st.markdown(
-    "<h4 style='text-align: center;'>📎 Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
+    "<h4> Por favor sube el archivo de la base de datos de las matrices de riesgo</h4>",
     unsafe_allow_html=True
 )
 # Subir el archivo

@@ -44,7 +44,7 @@ if archivo:
             "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
     # Bloque común a cualquier tipo de validación
-if tipo_linea == "Línea de medicamentos sólidos":
+if 'tipo_linea' in locals() and tipo_linea == "Línea de medicamentos sólidos":
     st.markdown("### Seleccione las etapas que aplican al proceso:")
 
     etapa_green = st.toggle("Green")
@@ -52,7 +52,6 @@ if tipo_linea == "Línea de medicamentos sólidos":
     etapa_red = st.toggle("Red")
     etapa_blue = st.toggle("Blue")
 
-    # Guardar las etapas seleccionadas en una lista
     etapas_seleccionadas = []
     if etapa_green:
         etapas_seleccionadas.append("Green")

@@ -19,11 +19,11 @@ with col2:
     st.image(imagen, width=300)  # Puedes ajustar el ancho según necesites
 
 # Subir el archivo
-archivo = st.file_uploader("Sube el archivo de la base de datos 204", [".xlsx"])
+archivo = st.file_uploader("Por favor sube el archivo de la base de datos de las matrices de riesgo"", [".xlsx"])
 
 if archivo:
 
-    tipo_validacion = st.selectbox("¿Qué tipo de validación desea?", [
+    tipo_validacion = st.selectbox("Selccione el tipo de validación a realizar", [
                                    "Validacion 1", "Validacion 2", "Validacion 3"], index=None)
 
     if tipo_validacion == "Validacion 1":

@@ -49,6 +49,8 @@ if archivo:
                 etapas_seleccionadas.append("Dispensación")
             if st.toggle("Compresión"):
                 etapas_seleccionadas.append("Compresión")
+            if st.toggle("Fusión"):
+                etapas_seleccionadas.append("Fusión")
 
         elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
             st.markdown("Seleccione las etapas que aplican al proceso:")
@@ -74,7 +76,7 @@ if archivo:
             
                     rangos_por_etapa = {
                         "Dispensación": (1, 7),
-                        "Compresión": (7, 12),
+                        "Compresión": (7, 11),
                         "Fusión": (12, 17),
                         "Emulsión": (17, 22),
                         "Mezcla": (22, 27),

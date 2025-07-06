@@ -46,5 +46,92 @@ if archivo:
 
         if tipo_linea == "Línea de medicamentos sólidos":
             st.markdown("### Seleccione las etapas que aplican al proceso:")
-            etapa_dispensacion = s_
+            etapa_dispensacion = st.toggle("Dispensación")
+            etapa_compresion = st.toggle("Compresión")
+            if etapa_dispensacion:
+                etapas_seleccionadas.append("Dispensación")
+            if etapa_compresion:
+                etapas_seleccionadas.append("Compresión")
+
+        elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
+            etapa_fusion = st.toggle("Fusión")
+            etapa_emulsion = st.toggle("Emulsión")
+            if etapa_fusion:
+                etapas_seleccionadas.append("Fusión")
+            if etapa_emulsion:
+                etapas_seleccionadas.append("Emulsión")
+
+        elif tipo_linea == "Línea de cosméticos":
+            st.markdown("### Seleccione las etapas que aplican al proceso:")
+            etapa_mezcla = st.toggle("Mezcla")
+            etapa_dispensado = st.toggle("Dispensado")
+            if etapa_mezcla:
+                etapas_seleccionadas.append("Mezcla")
+            if etapa_dispensado:
+                etapas_seleccionadas.append("Dispensado")
+
+        # Mostrar botón solo si hay etapas seleccionadas
+        if etapas_seleccionadas:
+            if st.button("Generar matriz de riesgo"):
+                st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+
+                try:
+                    # Leer Excel
+                    df = pd.read_excel(archivo)
+                    # Extraer encabezado y contenido
+                    encabezado = df.iloc[[0], 0:6]
+                    contenido = df.iloc[2:5, 0:6]
+                    tabla = pd.concat([encabezado, contenido], ignore_index=True)
+
+                    st.write("Por favor completa tu matriz de riesgo:")
+                    tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
+
+                    # Descargar como Excel
+                    buffer = io.BytesIO()
+                    tabla_editada.to_excel(buffer, index=False, header=False)
+                    buffer.seek(0)
+                    st.download_button(
+                        label="📥 Descargar matriz de riesgo en Excel",
+                        data=buffer,
+                        file_name="matriz_riesgo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+
+                    # Crear PDF
+                    pdf_buffer = io.BytesIO()
+                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+                    width, height = letter
+                    x = 50
+                    y = height - 50
+
+                    c.setFont("Helvetica-Bold", 12)
+                    c.drawString(x, y, "Matriz de Riesgo")
+                    y -= 20
+
+                    c.setFont("Helvetica-Bold", 10)
+                    for col_num, value in enumerate(tabla_editada.columns):
+                        c.drawString(x + col_num * 80, y, str(value))
+                    y -= 15
+
+                    c.setFont("Helvetica", 9)
+                    for row in tabla_editada.itertuples(index=False):
+                        for col_num, value in enumerate(row):
+                            c.drawString(x + col_num * 80, y, str(value))
+                        y -= 15
+                        if y < 50:
+                            c.showPage()
+                            y = height - 50
+
+                    c.save()
+                    pdf_buffer.seek(0)
+                    st.download_button(
+                        label="📄 Descargar matriz de riesgo en PDF",
+                        data=pdf_buffer,
+                        file_name="matriz_riesgo.pdf",
+                        mime="application/pdf"
+                    )
+
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
 

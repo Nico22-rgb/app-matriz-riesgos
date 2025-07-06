@@ -16,8 +16,13 @@ st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
+
+# Carga y visualización de la imagen del logo
+# Se utiliza una URL de marcador de posición para asegurar la ejecución sin archivos locales.
+image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
 try:
-    imagen = Image.open("altea.jpg")
+    response = requests.get(image_url)
+    imagen = Image.open(io.BytesIO(response.content))
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)
@@ -50,9 +55,12 @@ if archivo:
         ], index=None)
 
         etapas_seleccionadas = []
+        sheet_to_use = None # Variable para almacenar el nombre de la hoja a usar
 
-        # Selección de etapas específicas según la línea de fabricación
+        # Asignar el nombre de la hoja de Excel según el tipo de línea seleccionado
+        # Se utilizan los nombres de hoja proporcionados por el usuario.
         if tipo_linea == "Línea de medicamentos sólidos":
+            sheet_to_use = "MR 1 sólidos"
             st.markdown("Seleccione las etapas que aplican al proceso:")
             if st.toggle("Dispensación"):
                 etapas_seleccionadas.append("Dispensación")
@@ -62,6 +70,7 @@ if archivo:
                 etapas_seleccionadas.append("Fusión")
 
         elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
+            sheet_to_use = "MR 1 líquidos y semisólidos"
             st.markdown("Seleccione las etapas que aplican al proceso:")
             if st.toggle("Fusión"):
                 etapas_seleccionadas.append("Fusión")
@@ -69,21 +78,24 @@ if archivo:
                 etapas_seleccionadas.append("Emulsión")
 
         elif tipo_linea == "Línea de cosméticos":
+            sheet_to_use = "NombreDeTuHojaCosmeticos" # Placeholder, user needs to provide this name
             st.markdown("Seleccione las etapas que aplican al proceso:")
             if st.toggle("Mezcla"):
                 etapas_seleccionadas.append("Mezcla")
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
-        # Botón para generar la matriz de riesgo si hay etapas seleccionadas
-        if etapas_seleccionadas:
+        # Botón para generar la matriz de riesgo si hay etapas seleccionadas y una hoja definida
+        if etapas_seleccionadas and sheet_to_use:
             if st.button("Generar matriz de riesgo"):
-                st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+                if sheet_to_use == "NombreDeTuHojaCosmeticos":
+                    st.warning("Por favor, especifica el nombre de la hoja para 'Línea de cosméticos' en el código.")
+                else:
+                    st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Lectura del archivo Excel sin considerar encabezados automáticamente
-                    # Esto permite un control preciso de las filas por índice.
-                    df = pd.read_excel(archivo, header=None)
+                    # Lectura del archivo Excel desde la hoja determinada por tipo_linea, sin considerar encabezados automáticamente
+                    df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
                     # Definición de los rangos de filas para cada etapa en el Excel original
                     # Los índices son base 0 para Pandas, donde la fila 1 de Excel es el índice 0.
@@ -161,6 +173,40 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
+                    # Creación y descarga del archivo PDF
+                    pdf_buffer = io.BytesIO()
+                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+                    width, height = letter
+                    x_start = 50
+                    y_start = height - 50
+
+                    c.setFont("Helvetica-Bold", 12)
+                    c.drawString(x_start, y_start, "Matriz de Riesgo")
+                    y_position = y_start - 20
+
+                    c.setFont("Helvetica-Bold", 10)
+                    for col_num, value in enumerate(tabla_editada.columns):
+                        c.drawString(x_start + col_num * 80, y_position, str(value))
+                    y_position -= 15
+
+                    c.setFont("Helvetica", 9)
+                    for row in tabla_editada.itertuples(index=False):
+                        for col_num, value in enumerate(row):
+                            c.drawString(x_start + col_num * 80, y_position, str(value))
+                        y_position -= 15
+                        if y_position < 50:
+                            c.showPage()
+                            y_position = height - 50
+
+                    c.save()
+                    pdf_buffer.seek(0)
+
+                    st.download_button(
+                        label="📄 Descargar matriz de riesgo en PDF",
+                        data=pdf_buffer,
+                        file_name="matriz_riesgo.pdf",
+                        mime="application/pdf"
+                    )
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")

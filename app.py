@@ -8,26 +8,25 @@ from reportlab.pdfgen import canvas
 # Configurar la página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Título centrado
+# Título
 st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
 
-# Cargar imagen
+# Imagen centrada
 imagen = Image.open("altea.jpg")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(imagen, width=300)
 
-# Subida de archivo
+# Carga de archivo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
 )
 archivo = st.file_uploader("", type=[".xlsx"])
 
-# Paso 1: si se sube el archivo
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -63,22 +62,24 @@ if archivo:
             if st.toggle("Dispensado"):
                 etapas_seleccionadas.append("Dispensado")
 
-        # Botón de generación de matriz
         if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 
                 try:
-                    # Leer archivo Excel
                     df = pd.read_excel(archivo)
 
-                    # Diccionario de rangos por etapa (índices base 0)
+                    # Mapea etapas a rangos de filas (índices base 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 5),   
-                        "Compresión": (5, 10),    
-                                        }
+                        "Dispensación": (1, 6),   # filas 2-6 de Excel
+                        "Compresión": (6, 11),    # filas 7-11
+                        "Fusión": (11, 16),
+                        "Emulsión": (16, 21),
+                        "Mezcla": (21, 26),
+                        "Dispensado": (26, 31)
+                    }
 
-                    # Extraer encabezado
+                    # Encabezado (fila 1 del Excel)
                     encabezado = df.iloc[[0]]
                     bloques = []
 
@@ -87,10 +88,10 @@ if archivo:
                             inicio, fin = rangos_por_etapa[etapa]
                             bloques.append(df.iloc[inicio:fin])
 
-                    # Concatenar tabla final
+                    # Concatenar encabezado + bloques seleccionados
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
-                    # Editor de tabla
+                    # Mostrar tabla editable
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 

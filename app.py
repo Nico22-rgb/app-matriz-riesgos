@@ -31,7 +31,7 @@ if archivo:
     tipo_validacion = st.selectbox("Selccione el tipo de validación a realizar", [
                                    "Validación de procesos", "Validacion de campaña", "Validacion de limpieza"], index=None)
 
-    if tipo_validacion == "Validacion de procesos":
+    if tipo_validacion == "Validación de procesos":
         tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
                                   "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
 

@@ -4,6 +4,8 @@ import io
 from PIL import Image
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment
 
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
@@ -76,15 +78,15 @@ if archivo:
 
                     # Diccionario de rangos por etapa (índices de pandas, empezando desde la fila 0)
                     rangos_por_etapa = {
-                        "Dispensación": (1, 6),   # filas 2 a 6 del Excel
-                        "Compresión": (6, 11),    # filas 7 a 11 del Excel
-                        "Fusión": (11, 16),       # filas 12 a 16
-                        "Emulsión": (16, 21),     # filas 17 a 21
-                        "Mezcla": (21, 26),       # filas 22 a 26
-                        "Dispensado": (26, 31)    # filas 27 a 31
+                        "Dispensación": (1, 6),
+                        "Compresión": (6, 11),
+                        "Fusión": (11, 16),
+                        "Emulsión": (16, 21),
+                        "Mezcla": (21, 26),
+                        "Dispensado": (26, 31)
                     }
 
-                    encabezado = df.iloc[[0]]  # fila 1 del Excel como encabezado
+                    encabezado = df.iloc[[0]]
                     bloques = []
 
                     for etapa in etapas_seleccionadas:
@@ -92,25 +94,29 @@ if archivo:
                             inicio, fin = rangos_por_etapa[etapa]
                             bloques.append(df.iloc[inicio:fin])
 
-                    # Unir encabezado con los bloques seleccionados
                     tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
                     st.write("Por favor completa tu matriz de riesgo:")
                     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
-                    # Descargar Excel
+                    # ➕ Generar Excel con celdas combinadas automáticamente
                     buffer = io.BytesIO()
                     tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
-                    st.download_button(
-                        label="📥 Descargar matriz de riesgo en Excel",
-                        data=buffer,
-                        file_name="matriz_riesgo.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
 
-                
+                    wb = load_workbook(buffer)
+                    ws = wb.active
 
-                except Exception as e:
-                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
+                    for col in range(1, ws.max_column + 1):
+                        current_value = None
+                        start_row = None
+                        for row in range(1, ws.max_row + 1):
+                            value = ws.cell(row=row, column=col).value
+                            if value != current_value:
+                                if start_row is not None and row - start_row > 1:
+                                    ws.merge_cells(start_row=start_row, start_column=col,
+                                                   end_row=row - 1, end_column=col)
+                                    ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
+                                curre
+
 

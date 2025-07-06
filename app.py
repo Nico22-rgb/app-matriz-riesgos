@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 
-st.set_page_config(page_title="Ejemplo extracción Excel", layout="centered")
+st.set_page_config(page_title="Ejemplo extracciónn Excel", layout="centered")
 st.title("Ejemplo: Mostrar fragmento de Excel editable")
 
 # Simular un archivo Excel si el usuario no sube uno

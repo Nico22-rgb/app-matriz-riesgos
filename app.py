@@ -92,7 +92,7 @@ if archivo:
                             bloques.append(df.iloc[inicio:fin])
 
                     # Concatenar tabla final
-                    tabla = pd.concat([encabezado] + bloques, ignore_index=False)
+                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
 
                     # Editor de tabla
                     st.write("Por favor completa tu matriz de riesgo:")
@@ -100,7 +100,7 @@ if archivo:
 
                     # Descargar Excel
                     buffer = io.BytesIO()
-                    tabla_editada.to_excel(buffer, index=False, header=True)
+                    tabla_editada.to_excel(buffer, index=False, header=False)
                     buffer.seek(0)
                     st.download_button(
                         label="📥 Descargar matriz de riesgo en Excel",

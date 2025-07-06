@@ -92,7 +92,7 @@ if archivo:
                             bloques.append(df.iloc[inicio:fin])
 
                     # Concatenar tabla final
-                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+                    tabla = pd.concat([encabezado] + bloques, ignore_index=False)
 
                     # Editor de tabla
                     st.write("Por favor completa tu matriz de riesgo:")

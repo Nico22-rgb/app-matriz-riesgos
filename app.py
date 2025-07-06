@@ -117,6 +117,25 @@ if archivo:
                                     ws.merge_cells(start_row=start_row, start_column=col,
                                                    end_row=row - 1, end_column=col)
                                     ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
-                                curre
+                                current_value = value
+                                start_row = row
+                        if start_row is not None and ws.max_row - start_row >= 1:
+                            ws.merge_cells(start_row=start_row, start_column=col,
+                                           end_row=ws.max_row, end_column=col)
+                            ws.cell(row=start_row, column=col).alignment = Alignment(horizontal="center", vertical="center")
+
+                    output = io.BytesIO()
+                    wb.save(output)
+                    output.seek(0)
+
+                    st.download_button(
+                        label="📥 Descargar matriz de riesgo en Excel",
+                        data=output,
+                        file_name="matriz_riesgo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
 

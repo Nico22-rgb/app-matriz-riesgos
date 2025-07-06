@@ -48,5 +48,6 @@ if archivo:
             if etapa_compresion:
                 etapas_seleccionadas.append("Compresión")
 
-        st.button("Generar matriz de riesgo"):
-        st.success("¡Matriz de riesgo generada con éxito!")
+      # Botón para generar matriz
+    if st.button("Generar matriz de riesgo"):
+        st.success("¡Matriz de riesgo generada con éxito!")  # Aquí puedes poner el código que genere el resultado

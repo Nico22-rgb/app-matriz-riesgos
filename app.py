@@ -14,11 +14,13 @@ st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
-imagen = Image.open("altea.jpg")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image(imagen, width=300)
+# Cargar imagen
+imagen = Image.open("altea.jpg")
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image(imagen, width=300)
+
 
 # Subida de archivo
 st.markdown(

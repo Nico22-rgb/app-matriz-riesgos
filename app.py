@@ -76,7 +76,7 @@ if archivo:
                     rangos_por_etapa = {
                         "Dispensación": (1, 6),   
                         "Compresión": (6, 11),   
-                       
+                    }
                     # Extraer encabezado
                     encabezado = df.iloc[[0]]
                     bloques = []

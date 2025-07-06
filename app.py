@@ -39,4 +39,5 @@ if archivo:
         if tipo_linea == "Línea de medicamentos sólidos":
             st.markdown("### Seleccione las etapas que aplican al proceso:")
 
+on = st.toggle ("Dispensación")
         

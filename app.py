@@ -72,12 +72,8 @@ if archivo:
             if etapa_dispensado:
                 etapas_seleccionadas.append("Dispensado")
 
-        # Mostrar botón solo si hay etapas seleccionadas
+      # Mostrar botón solo si hay etapas seleccionadas
         if etapas_seleccionadas:
-            if st.button("Generar matriz de riesgo"):
-                st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
-
- if etapas_seleccionadas:
             if st.button("Generar matriz de riesgo"):
                 st.success(f"¡Matriz de riesgo generada con éxito!\n\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
 

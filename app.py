@@ -28,27 +28,27 @@ archivo = st.file_uploader("", [".xlsx"])
 
 if archivo:
 
-    tipo_validacion = st.selectbox("Selccione el tipo de validación a realizar", [
-                                   "Validación de procesos", "Validacion de campaña", "Validacion de limpieza"], index=None)
+    tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
+        "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
     if tipo_validacion == "Validación de procesos":
-        tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
-                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
- if tipo_validacion == "Validación de campaña":
-        tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
-                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+    elif tipo_validacion == "Validación de campaña":
+        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
- if tipo_validacion == "Validación de limpieza":
-        tipo_linea = st.selectbox("¿Para que línea de fabricación desea hacer su análisis de riesgo??", [
-                                  "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
+    elif tipo_validacion == "Validación de limpieza":
+        tipo_linea = st.selectbox("¿Para qué línea de fabricación desea hacer su análisis de riesgo?", [
+            "Línea de medicamentos sólidos", "Línea de medicamentos líquidos y semisólidos", "Línea de cosméticos"])
 
-            if tipo_linea == "Linea de medicamentos sólidos":
-            etapas_seleccionadas = st.multiselect("Seleccione las etapas que aplican al proceso de manufactura/envase/empaque de su producto", [
-                                                  "Green", "Yellow", "Red", "Blue"])
-
-
-
+    # Bloque común a cualquier tipo de validación
+    if tipo_linea == "Línea de medicamentos sólidos":
+        etapas_seleccionadas = st.multiselect(
+            "Seleccione las etapas que aplican al proceso de manufactura/envase/empaque de su producto",
+            ["Green", "Yellow", "Red", "Blue"]
+        )
 
 
 

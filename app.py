@@ -37,7 +37,7 @@ try:
     contenido = df.iloc[2:5, 0:6]
     tabla = pd.concat([encabezado, contenido], ignore_index=True)
 
-    st.markdown("### Vista editable del fragmento del archivo:")
+    st.markdown("### Vista editable del fragmentoO del archivo:")
     tabla_editada = st.data_editor(tabla, use_container_width=True, num_rows="dynamic")
 
 except Exception as e:

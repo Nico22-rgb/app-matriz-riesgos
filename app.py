@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
+import requests # Asegurarse de que requests esté importado
 
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
@@ -14,10 +15,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# Cargar imagen
+# Load image from a URL (replacing local file loading)
+# A placeholder image is used to ensure the application is runnable without a local file.
+image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
 try:
-    imagen = Image.open("altea.jpg")
+    response = requests.get(image_url)
+    imagen = Image.open(io.BytesIO(response.content))
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)
@@ -54,7 +57,7 @@ if archivo:
                 etapas_seleccionadas.append("Dispensación")
             if st.toggle("Compresión"):
                 etapas_seleccionadas.append("Compresión")
-            if st.toggle("Fusión"): # Added based on user's query code
+            if st.toggle("Fusión"):
                 etapas_seleccionadas.append("Fusión")
 
         elif tipo_linea == "Línea de medicamentos líquidos y semisólidos":
@@ -121,20 +124,39 @@ if archivo:
                     wb = load_workbook(buffer)
                     ws = wb.active
 
+                    st.subheader("Información de Depuración para Fusión de Celdas:")
+                    st.write(f"Filas totales en la hoja de cálculo: {ws.max_row}")
+                    st.write(f"Columnas totales en la hoja de cálculo: {ws.max_column}")
+                    st.write("Valores en la primera columna de la tabla editada (lo que openpyxl ve):")
+                    for r_idx in range(1, ws.max_row + 1):
+                        st.write(f"Fila {r_idx}: '{ws.cell(row=r_idx, column=1).value}'")
+
+
                     # Logic to merge cells in the first column (col=1)
                     col_to_merge = 1  # First column in Excel (1-indexed)
                     current_value = ws.cell(row=1, column=col_to_merge).value
                     start_row = 1
 
+                    st.write(f"Iniciando fusión de celdas en la columna {col_to_merge}")
+                    st.write(f"Valor inicial (fila 1): '{current_value}'")
+                    st.write(f"Fila de inicio de bloque: {start_row}")
+
                     for row in range(2, ws.max_row + 2):  # Up to one row past the end to ensure last block is merged
                         value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
+                        st.write(f"Procesando fila {row}: Valor actual = '{value}', Valor anterior = '{current_value}'")
                         if value != current_value:
+                            st.write(f"Valor cambiado en fila {row}. Bloque anterior de {start_row} a {row-1}.")
                             if row - start_row > 1:
+                                st.write(f"Fusionando celdas de {start_row} a {row-1} en columna {col_to_merge}")
                                 ws.merge_cells(start_row=start_row, start_column=col_to_merge,
                                                end_row=row - 1, end_column=col_to_merge)
                                 ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
+                            else:
+                                st.write(f"No se fusiona: bloque de una sola fila ({start_row}).")
                             current_value = value
                             start_row = row
+                        else:
+                            st.write(f"Valor igual: '{value}'. Continuar bloque.")
 
                     output = io.BytesIO()
                     wb.save(output)

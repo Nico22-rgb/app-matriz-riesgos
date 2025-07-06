@@ -32,7 +32,7 @@ if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"], index=None)
 
-    if tipo_validacion == "Validacion de procesos":
+    if tipo_validacion == "Validación de procesos":
         tipo_linea = st.selectbox("¿A qué linea de fabricación pertenece su producto?", [
                                   "Linea de medicamentos sólidos", "Linea de medicamentos líquidos y semisólidos", "Linea de cosméticos"], index=None)
 

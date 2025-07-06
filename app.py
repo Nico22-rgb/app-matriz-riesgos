@@ -109,40 +109,7 @@ if archivo:
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
-                    # Crear PDF
-                    pdf_buffer = io.BytesIO()
-                    c = canvas.Canvas(pdf_buffer, pagesize=letter)
-                    width, height = letter
-                    x_start = 50
-                    y_start = height - 50
-
-                    c.setFont("Helvetica-Bold", 12)
-                    c.drawString(x_start, y_start, "Matriz de Riesgo")
-                    y_position = y_start - 20
-
-                    c.setFont("Helvetica-Bold", 10)
-                    for col_num, value in enumerate(tabla_editada.columns):
-                        c.drawString(x_start + col_num * 80, y_position, str(value))
-                    y_position -= 15
-
-                    c.setFont("Helvetica", 9)
-                    for row in tabla_editada.itertuples(index=False):
-                        for col_num, value in enumerate(row):
-                            c.drawString(x_start + col_num * 80, y_position, str(value))
-                        y_position -= 15
-                        if y_position < 50:
-                            c.showPage()
-                            y_position = height - 50
-
-                    c.save()
-                    pdf_buffer.seek(0)
-
-                    st.download_button(
-                        label="📄 Descargar matriz de riesgo en PDF",
-                        data=pdf_buffer,
-                        file_name="matriz_riesgo.pdf",
-                        mime="application/pdf"
-                    )
+                
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")

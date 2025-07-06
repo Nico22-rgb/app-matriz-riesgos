@@ -4,7 +4,6 @@ import io
 from PIL import Image
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-import requests
 
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
@@ -12,16 +11,18 @@ st.markdown(
     "<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>",
     unsafe_allow_html=True
 )
+
 # Cargar imagen
-imagen = Image.open("altea.jpg")
+try:
+    imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)
 except Exception as e:
     st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
-    st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
+    st.info("Asegúrate de tener conexión a internet o que el archivo 'altea.jpg' exista en tu carpeta.")
 
-
+# Subida de archivo
 st.markdown(
     "<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>",
     unsafe_allow_html=True
@@ -146,6 +147,10 @@ if archivo:
                         file_name="matriz_riesgo.pdf",
                         mime="application/pdf"
                     )
+
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
 
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")

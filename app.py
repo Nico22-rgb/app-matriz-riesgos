@@ -242,7 +242,7 @@ if archivo:
             ws.conditional_formatting.add("Q2:Q1048576", FormulaRule(formula=["Q2=\"Sí\""], fill=amarillo))
             # <<< FIN FORMATO >>>
 
-             for column in ws.columns:
+            for column in ws.columns:
             max_length = 0
             column_letter = get_column_letter(column[0].column) # Obtiene la letra de la columna (ej. 'A', 'B')
             for cell in column:

@@ -266,11 +266,9 @@ if archivo:
                     pass # Ignorar errores al procesar celdas
 
             # Ajustar el ancho de la columna con un margen más generoso
-            adjusted_width = (max_length + 5) # Añadir un margen de 5 caracteres
+            adjusted_width = (max_length + 10) # Añadir un margen de 5 caracteres
             ws.column_dimensions[column_letter].width = adjusted_width
         # --- Fin ajuste de ancho de columnas ---
-
-            
             output = io.BytesIO()
             wb.save(output)
             output.seek(0)

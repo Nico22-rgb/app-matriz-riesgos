@@ -255,7 +255,7 @@ if archivo:
                                 max_length = max(max_length, len(cell_value_str))
                     except Exception:
                         pass
-                adjusted_width = (max_length + 10)
+                adjusted_width = (max_length + 6)
                 ws.column_dimensions[column_letter].width = adjusted_width
 
             output = io.BytesIO()

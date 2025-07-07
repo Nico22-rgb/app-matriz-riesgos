@@ -119,7 +119,7 @@ if archivo:
             try:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-                rangos_por_hoja = { rangos_por_hoja = {
+                rangos_por_hoja = 
     "MR 1 sólidos": {
         "Verificación de prerrequisitos de validación": (1, 2),
         "Pesaje/Dispensación de materias primas": (2, 3),
@@ -167,7 +167,7 @@ if archivo:
         "Uso, desmonte y prelavado de las mangas": (5, 6),
         "Verificación y limpieza de las mangas": (6, 7)
     }
-} }  # (omitido aquí por brevedad, ya está en tu código)
+}   
 
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:

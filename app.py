@@ -240,7 +240,7 @@ if archivo:
         formula_columns_info = {
             15: "=POWER((J{row}*L{row}*N{row}),1/3)",
             16: "=IF(O{row}<1.33,\"Bajo\",IF(AND(O{row}>=1.33,O{row}<2.67),\"Moderado\",IF(AND(O{row}>=2.67,O{row}<4),\"Alto\",\"\")))",
-            17: "=IF(O{row}<1.33,\"Bajo\",IF(AND(O{row}>=1.33,O{row}<2.67),\"Moderado\",IF(AND(O{row}>=2.67,O{row}<4),\"Alto\",\"\")))"
+            17: "=IF(P{row}=\"Alto\",\"Sí\",\"No\")" # Corregido: La fórmula de Q depende de P
         }
         # --- FIN DE LA LÓGICA PARA PRESERVAR FÓRMULAS ---
 

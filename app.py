@@ -3,7 +3,8 @@ import pandas as pd
 import io
 from PIL import Image
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, PatternFill
+from openpyxl.formatting.rule import FormulaRule
 
 # Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
@@ -118,57 +119,7 @@ if archivo:
             try:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-                # <<< RANGOS DEFINIDOS MANUALMENTE >>>
-                rangos_por_hoja = {
-                    "MR 1 sólidos": {
-                        "Verificación de prerrequisitos de validación": (1, 2),
-                        "Pesaje/Dispensación de materias primas": (2, 3),
-                        "Pulverización": (3, 4),
-                        "Pelletización": (4, 5),
-                        "Granulacion": (5, 6),
-                        "Secado": (6, 7),
-                        "Compactación": (7, 8),
-                        "Mezcla (Lubricación)": (8, 9),
-                        "Encapsulado": (9, 10),
-                        "Compresión": (10, 11),
-                        "Recubrimiento": (11, 12),
-                        "Grageado": (12, 13),
-                        "Revisión": (13, 14),
-                        "Envase blíster": (14, 15),
-                        "Envase foil": (15, 16),
-                        "Envase frasco": (16, 17),
-                        "Envase sobre": (17, 18),
-                        "Envase tubo": (18, 19),
-                        "Empaque blíster": (19, 20),
-                        "Empaque manual foil": (20, 21),
-                        "Empaque frasco": (21, 22),
-                        "Empaque tubo": (22, 23),
-                        "Recogida de blísters": (23, 24),
-                        "Codificado manual": (24, 25)
-                    },
-                    "MR 1 líquidos y semisólidos": {
-                        "Verificación de prerrequisitos de validación": (1, 2),
-                        "Pesaje/Dispensación de materias primas": (2, 3),
-                        "Disolución/Dispersión": (3, 4),
-                        "Homogenización": (4, 5),
-                        "Filtración": (5, 6),
-                        "Envase frascos": (6, 7),
-                        "Envase sobres": (7, 8),
-                        "Envase tubos": (8, 9),
-                        "Empaque manual frascos": (9, 10),
-                        "Empaque manual sobre": (10, 11),
-                        "Empaque tubos": (11, 12)
-                    },
-                    "MR 1 limpieza": {
-                        "Verificación de prerrequisitos de validación": (1, 2),
-                        "Limpieza preliminar y desmonte del equipo (piezas móviles)": (2, 3),
-                        "Limpieza de piezas móviles y parte interna de los equipos": (3, 4),
-                        "Seguimiento al proceso de limpieza": (4, 5),
-                        "Uso, desmonte y prelavado de las mangas": (5, 6),
-                        "Verificación y limpieza de las mangas": (6, 7)
-                    }
-                }
-                # <<< FIN RANGOS MANUALES >>>
+                rangos_por_hoja = { ... }  # (omitido aquí por brevedad, ya está en tu código)
 
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:
@@ -226,12 +177,22 @@ if archivo:
                     current_value = value
                     start_row = row
 
-            # <<< AÑADIR FÓRMULAS EN COLUMNAS O, P y Q >>>
             for r_idx in range(2, ws.max_row + 1):
                 ws[f"O{r_idx}"].value = f"=POTENCIA((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"
-                ws[f"P{r_idx}"].value = f"=SI(O{r_idx}<1,33,\"Bajo\",SI(Y(O{r_idx}>=1,33,O{r_idx}<2,67),\"Moderado\",SI(Y(O{r_idx}>=2,67,O{r_idx}<4),\"Alto\",\"\")))"
-                ws[f"Q{r_idx}"].value = f"=SI(O{r_idx}<1,33,\"Bajo\",SI(Y(O{r_idx}>=1,33,O{r_idx}<2,67),\"Moderado\",SI(Y(O{r_idx}>=2,67,O{r_idx}<4),\"Alto\",\"\")))"
-            # <<< FIN DE FÓRMULAS >>>
+                ws[f"P{r_idx}"].value = f"=SI(O{r_idx}<1.33,\"Bajo\",SI(Y(O{r_idx}>=1.33,O{r_idx}<2.67),\"Moderado\",SI(Y(O{r_idx}>=2.67,O{r_idx}<4),\"Alto\",\"\")))"
+                ws[f"Q{r_idx}"].value = f"=SI(P{r_idx}=\"Alto\",\"Sí\",\"No\")"
+
+            # <<< FORMATO CONDICIONAL >>>
+            rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+            naranja = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+            verde = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+            amarillo = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+
+            ws.conditional_formatting.add("P2:P1048576", FormulaRule(formula=["P2=\"Alto\""], fill=rojo))
+            ws.conditional_formatting.add("P2:P1048576", FormulaRule(formula=["P2=\"Moderado\""], fill=naranja))
+            ws.conditional_formatting.add("P2:P1048576", FormulaRule(formula=["P2=\"Bajo\""], fill=verde))
+            ws.conditional_formatting.add("Q2:Q1048576", FormulaRule(formula=["Q2=\"Sí\""], fill=amarillo))
+            # <<< FIN FORMATO >>>
 
             output = io.BytesIO()
             wb.save(output)

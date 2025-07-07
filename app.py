@@ -267,6 +267,10 @@ if archivo:
                         pass
                 adjusted_width = (max_length + 3)
                 ws.column_dimensions[column_letter].width = adjusted_width
+            # Alinear todo el contenido del Excel al centro (horizontal y vertical)
+            for row in ws.iter_rows():
+                for cell in row:
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
 
             output = io.BytesIO()
             wb.save(output)

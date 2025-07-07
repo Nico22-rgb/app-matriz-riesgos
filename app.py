@@ -3,7 +3,7 @@ import pandas as pd
 import io
 from PIL import Image
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, PatternFill
+from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 

@@ -212,7 +212,7 @@ if archivo:
             ws = wb.active
 
              # Aplicar formato a la fila 1 (encabezado)
-            palegreen_fill = PatternFill(start_color="9AFD9A", end_color="9AFD9A", fill_type="solid")
+            palegreen_fill = PatternFill(start_color="#C0E080", end_color="#C0E080", fill_type="solid")
             bold_font = Font(bold=True)
             center_alignment = Alignment(horizontal="center", vertical="center")
             for cell in ws[1]:

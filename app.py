@@ -220,26 +220,26 @@ if archivo:
                 cell.font = bold_font
                 cell.alignment = center_alignment
 
-      # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
-columnas_a_combinar = [1, 3, 4]
+                  # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
+            columnas_a_combinar = [1, 3, 4]
+            
+            for col_to_merge in columnas_a_combinar:
+                current_value = ws.cell(row=1, column=col_to_merge).value
+                start_row = 1
 
-for col_to_merge in columnas_a_combinar:
-    current_value = ws.cell(row=1, column=col_to_merge).value
-    start_row = 1
-
-    for row in range(2, ws.max_row + 2):
-        value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
-        if value != current_value:
-            if row - start_row > 1:
-                ws.merge_cells(
-                    start_row=start_row,
-                    start_column=col_to_merge,
-                    end_row=row - 1,
-                    end_column=col_to_merge
-                )
-                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
-            current_value = value
-            start_row = row
+                    for row in range(2, ws.max_row + 2):
+                        value = ws.cell(row=row, column=col_to_merge).value if row <= ws.max_row else None
+                        if value != current_value:
+                            if row - start_row > 1:
+                                ws.merge_cells(
+                                    start_row=start_row,
+                                    start_column=col_to_merge,
+                                    end_row=row - 1,
+                                    end_column=col_to_merge
+                                )
+                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
+                            current_value = value
+                            start_row = row
 
 
             for r_idx in range(2, ws.max_row + 1):

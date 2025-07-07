@@ -226,9 +226,9 @@ if archivo:
                     start_row = row
 
             for r_idx in range(2, ws.max_row + 1):
-                ws[f"O{r_idx}"].value = f"=POTENCIA((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"
-                ws[f"P{r_idx}"].value = f"=SI(O{r_idx}<1.33,\"Bajo\",SI(Y(O{r_idx}>=1.33,O{r_idx}<2.67),\"Moderado\",SI(Y(O{r_idx}>=2.67,O{r_idx}<4),\"Alto\",\"\")))"
-                ws[f"Q{r_idx}"].value = f"=SI(P{r_idx}=\"Alto\",\"Sí\",\"No\")"
+                ws[f"O{r_idx}"].value = f"=POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"
+               ws[f"P{r_idx}"].value = f"=IF(O{r_idx}<1.33,\"Bajo\",IF(AND(O{r_idx}>=1.33,O{r_idx}<2.67),\"Moderado\",IF(AND(O{r_idx}>=2.67,O{r_idx}<4),\"Alto\",\"\")))"
+                ws[f"Q{r_idx}"].value = f"=IF(P{r_idx}=\"Alto\",\"Sí\",\"No\")"
 
             # <<< FORMATO CONDICIONAL >>>
             rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")

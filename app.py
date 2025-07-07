@@ -15,7 +15,7 @@ if 'edited_data_table' not in st.session_state:
     st.session_state.edited_data_table = pd.DataFrame()
 if 'guardar_cambios' not in st.session_state:
     st.session_state.guardar_cambios = False
-# <<< FIN CAMBIO >>>
+
 
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 

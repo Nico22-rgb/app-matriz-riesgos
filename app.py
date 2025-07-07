@@ -238,7 +238,37 @@ if archivo:
                             ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center")
                     current_value = value
                     start_row = row
-            
+
+
+            # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
+            from openpyxl.styles import Alignment
+
+            columnas_a_combinar = [1, 3, 4]
+
+            for col_to_merge in columnas_a_combinar:
+                current_value = str(ws.cell(row=1, column=col_to_merge).value).strip()
+                start_row = 1
+
+                for row in range(2, ws.max_row + 2):  # Incluye una fila extra para comparar la última
+                    if row <= ws.max_row:
+                        value = ws.cell(row=row, column=col_to_merge).value
+                        value = str(value).strip() if value is not None else ""
+                    else:
+                        value = ""
+
+                    if value != current_value:
+                        if row - start_row > 1:
+                            ws.merge_cells(
+                                start_row=start_row,
+                                start_column=col_to_merge,
+                                end_row=row - 1,
+                                end_column=col_to_merge
+                            )
+
+                            ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+                        current_value = value
+                        start_row = row
+
             for r_idx in range(2, ws.max_row + 1):
                 ws[f"O{r_idx}"].value = f"=POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"
                 ws[f"P{r_idx}"].value = f"=IF(O{r_idx}<1.33,\"Bajo\",IF(AND(O{r_idx}>=1.33,O{r_idx}<3),\"Moderado\",IF(AND(O{r_idx}>=3,O{r_idx}<4),\"Alto\",\"\")))"

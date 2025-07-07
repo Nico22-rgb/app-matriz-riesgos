@@ -23,9 +23,10 @@ st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Val
 
 # Carga y visualización de la imagen del logo
 # Se utiliza una URL de marcador de posición para asegurar la ejecución sin archivos locales.
-
+image_url = "https://placehold.co/300x100/A0A0A0/FFFFFF?text=Altea+Logo"
 try:
-    imagen = Image.open("altea.jpg")
+    response = requests.get(image_url)
+    imagen = Image.open(io.BytesIO(response.content))
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image(imagen, width=300)
@@ -305,3 +306,5 @@ if archivo:
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")
+
+  

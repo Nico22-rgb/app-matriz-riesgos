@@ -270,7 +270,11 @@ if archivo:
             # Alinear todo el contenido del Excel al centro (horizontal y vertical)
             for row in ws.iter_rows():
                 for cell in row:
-                    cell.alignment = Alignment(horizontal="center", vertical="center")
+                   # Alinear todo el contenido del Excel al centro y ajustar texto
+                    for row in ws.iter_rows():
+                        for cell in row:
+                            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
 
             output = io.BytesIO()
             wb.save(output)

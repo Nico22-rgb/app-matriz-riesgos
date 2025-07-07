@@ -211,6 +211,16 @@ if archivo:
             wb = load_workbook(buffer)
             ws = wb.active
 
+             # Aplicar formato a la fila 1 (encabezado)
+            palegreen_fill = PatternFill(start_color="9AFD9A", end_color="9AFD9A", fill_type="solid")
+            bold_font = Font(bold=True)
+            center_alignment = Alignment(horizontal="center", vertical="center")
+            for cell in ws[1]:
+                cell.fill = palegreen_fill
+                cell.font = bold_font
+                cell.alignment = center_alignment
+
+            
             col_to_merge = 1
             current_value = ws.cell(row=1, column=col_to_merge).value
             start_row = 1

@@ -226,6 +226,13 @@ if archivo:
                     current_value = value
                     start_row = row
 
+            # <<< AÑADIR FÓRMULAS EN COLUMNAS O, P y Q >>>
+            for r_idx in range(2, ws.max_row + 1):
+                ws[f"O{r_idx}"].value = f"=POTENCIA((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"
+                ws[f"P{r_idx}"].value = f"=SI(O{r_idx}<1,33,\"Bajo\",SI(Y(O{r_idx}>=1,33,O{r_idx}<2,67),\"Moderado\",SI(Y(O{r_idx}>=2,67,O{r_idx}<4),\"Alto\",\"\")))"
+                ws[f"Q{r_idx}"].value = f"=SI(O{r_idx}<1,33,\"Bajo\",SI(Y(O{r_idx}>=1,33,O{r_idx}<2,67),\"Moderado\",SI(Y(O{r_idx}>=2,67,O{r_idx}<4),\"Alto\",\"\")))"
+            # <<< FIN DE FÓRMULAS >>>
+
             output = io.BytesIO()
             wb.save(output)
             output.seek(0)
@@ -239,4 +246,3 @@ if archivo:
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")
-

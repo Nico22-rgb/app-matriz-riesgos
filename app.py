@@ -242,33 +242,33 @@ if archivo:
             ws.conditional_formatting.add("Q2:Q1048576", FormulaRule(formula=["Q2=\"Sí\""], fill=amarillo))
             # <<< FIN FORMATO >>>
 
-            for column in ws.columns:
-            max_length = 0
-            column_letter = get_column_letter(column[0].column) # Obtiene la letra de la columna (ej. 'A', 'B')
-            for cell in column:
-                try:
-                    if cell.value is not None:
-                        cell_value_str = str(cell.value) # Convertir a string para medir longitud
-                        # Si es una fórmula, intentar obtener una longitud estimada del resultado esperado
-                        # o un valor razonable para evitar anchos muy pequeños.
-                        if cell.data_type == 'f':
-                            # Para las columnas P y Q que tienen resultados de texto predecibles
-                            if column_letter in ['P', 'Q']:
-                                max_length = max(max_length, len("Moderado")) # "Moderado" es el más largo de los textos
-                            else:
-                                # Para otras columnas con fórmulas, se puede intentar una estimación
-                                # o simplemente usar una longitud mínima si no se puede predecir el resultado.
-                                # Por ahora, se usará la longitud de la fórmula misma como un fallback.
-                                max_length = max(max_length, len(cell_value_str))
-                        else:
-                            max_length = max(max_length, len(cell_value_str))
-                except Exception:
-                    pass # Ignorar errores al procesar celdas
+from openpyxl.utils import get_column_letter  # Asegúrate de tener esto importado
 
-            # Ajustar el ancho de la columna con un margen más generoso
-            adjusted_width = (max_length + 10) # Añadir un margen de 5 caracteres
-            ws.column_dimensions[column_letter].width = adjusted_width
-        # --- Fin ajuste de ancho de columnas ---
+for column in ws.columns:
+    max_length = 0
+    column_letter = get_column_letter(column[0].column)  # Obtiene la letra de la columna (ej. 'A', 'B')
+    for cell in column:
+        try:
+            if cell.value is not None:
+                cell_value_str = str(cell.value)
+                if cell.data_type == 'f':
+                    if column_letter in ['P', 'Q']:
+                        max_length = max(max_length, len("Moderado"))
+                    else:
+                        max_length = max(max_length, len(cell_value_str))
+                else:
+                    max_length = max(max_length, len(cell_value_str))
+        except Exception:
+            pass
+    adjusted_width = (max_length + 10)
+    ws.column_dimensions[column_letter].width = adjusted_width
+
+
+
+
+
+
+            
             output = io.BytesIO()
             wb.save(output)
             output.seek(0)

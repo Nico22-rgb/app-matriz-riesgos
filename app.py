@@ -119,7 +119,55 @@ if archivo:
             try:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
 
-                rangos_por_hoja = { ... }  # (omitido aquí por brevedad, ya está en tu código)
+                rangos_por_hoja = { rangos_por_hoja = {
+    "MR 1 sólidos": {
+        "Verificación de prerrequisitos de validación": (1, 2),
+        "Pesaje/Dispensación de materias primas": (2, 3),
+        "Pulverización": (3, 4),
+        "Pelletización": (4, 5),
+        "Granulacion": (5, 6),
+        "Secado": (6, 7),
+        "Compactación": (7, 8),
+        "Mezcla (Lubricación)": (8, 9),
+        "Encapsulado": (9, 10),
+        "Compresión": (10, 11),
+        "Recubrimiento": (11, 12),
+        "Grageado": (12, 13),
+        "Revisión": (13, 14),
+        "Envase blíster": (14, 15),
+        "Envase foil": (15, 16),
+        "Envase frasco": (16, 17),
+        "Envase sobre": (17, 18),
+        "Envase tubo": (18, 19),
+        "Empaque blíster": (19, 20),
+        "Empaque manual foil": (20, 21),
+        "Empaque frasco": (21, 22),
+        "Empaque tubo": (22, 23),
+        "Recogida de blísters": (23, 24),
+        "Codificado manual": (24, 25)
+    },
+    "MR 1 líquidos y semisólidos": {
+        "Verificación de prerrequisitos de validación": (1, 2),
+        "Pesaje/Dispensación de materias primas": (2, 3),
+        "Disolución/Dispersión": (3, 4),
+        "Homogenización": (4, 5),
+        "Filtración": (5, 6),
+        "Envase frascos": (6, 7),
+        "Envase sobres": (7, 8),
+        "Envase tubos": (8, 9),
+        "Empaque manual frascos": (9, 10),
+        "Empaque manual sobre": (10, 11),
+        "Empaque tubos": (11, 12)
+    },
+    "MR 1 limpieza": {
+        "Verificación de prerrequisitos de validación": (1, 2),
+        "Limpieza preliminar y desmonte del equipo (piezas móviles)": (2, 3),
+        "Limpieza de piezas móviles y parte interna de los equipos": (3, 4),
+        "Seguimiento al proceso de limpieza": (4, 5),
+        "Uso, desmonte y prelavado de las mangas": (5, 6),
+        "Verificación y limpieza de las mangas": (6, 7)
+    }
+} }  # (omitido aquí por brevedad, ya está en tu código)
 
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:

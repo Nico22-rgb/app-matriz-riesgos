@@ -48,15 +48,6 @@ st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 # Mostrar imagen y título desde el principio
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
-from PIL import Image
-try:
-    imagen = Image.open("altea.jpg")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image(imagen, width=300)
-except Exception as e:
-    st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
-
 # ======== Autenticación ========
 CONTRASENA = "Motasyjacobo22"
 

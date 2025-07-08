@@ -1,12 +1,46 @@
 import streamlit as st
 import pandas as pd
 import io
+import base64
 from PIL import Image
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
+def mostrar_logo_adaptable(path_png_transparente):
+    try:
+        with open(path_png_transparente, "rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
+
+        st.markdown(f"""
+        <style>
+            .logo-container {{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }}
+            body[data-theme="dark"] .logo-container {{
+                background-color: #0e1117;
+            }}
+            body[data-theme="light"] .logo-container {{
+                background-color: #f0f2f6;
+            }}
+            .logo-container img {{
+                width: 300px;
+            }}
+        </style>
+        <div class="logo-container">
+            <img src="data:image/png;base64,{encoded}" alt="Logo Altea" />
+        </div>
+        """, unsafe_allow_html=True)
+    except Exception as e:
+        st.warning(f"No se pudo cargar el logo. Error: {e}")
+        st.info("Verifica que el archivo exista y esté en formato PNG transparente.")
+
+# Muestra el logo adaptativo
+mostrar_logo_adaptable("altea.png")
 
 # Configuración de página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")

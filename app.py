@@ -13,24 +13,31 @@ st.set_page_config(page_title="Ingreso", layout="centered")
 # Contraseña correcta
 CONTRASENA_CORRECTA = "altea123"
 
-# Estado de sesión
+# Inicializar el estado
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
+if "intentado" not in st.session_state:
+    st.session_state.intentado = False
 
-# Interfaz de login
+# Página de login
 if not st.session_state.autenticado:
     st.write("### Ingrese la contraseña para acceder:")
     password = st.text_input("Contraseña", type="password")
+    login_btn = st.button("Ingresar")
 
-    if st.button("Ingresar"):
+    if login_btn:
+        st.session_state.intentado = True
         if password == CONTRASENA_CORRECTA:
             st.session_state.autenticado = True
-            st.experimental_rerun()  # <- Esta línea hace que la app recargue una vez logueado
         else:
-            st.error("Contraseña incorrecta.")
-    st.stop()  # Detiene el resto del código si no se ha autenticado
+            st.session_state.autenticado = False
 
-# --- CONTENIDO PRINCIPAL DE LA APP ---
+    # Mostrar error si intentó pero no autenticó
+    if st.session_state.intentado and not st.session_state.autenticado:
+        st.error("Contraseña incorrecta.")
+    st.stop()
+
+# Página principal (solo visible si autenticado)
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
 # Aquí continúa el resto de tu aplicación...

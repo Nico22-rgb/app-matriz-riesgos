@@ -11,7 +11,7 @@ from openpyxl.utils import get_column_letter
 st.set_page_config(page_title="Ingreso", layout="centered")
 
 # --- CONTRASEÑA CORRECTA ---
-CONTRASENA_CORRECTA = "Motasyjacobo22"  # Cámbiala por la que desees
+CONTRASENA_CORRECTA = "altea123"  # Cambia esto por tu contraseña real
 
 # --- CONTROL DE SESIÓN ---
 if "autenticado" not in st.session_state:
@@ -25,11 +25,11 @@ if not st.session_state.autenticado:
     if st.button("Ingresar"):
         if password == CONTRASENA_CORRECTA:
             st.session_state.autenticado = True
-            st.success("Acceso concedido.")
-            st.experimental_rerun()
+            st.success("Acceso concedido. Carga en curso...")
         else:
             st.error("Contraseña incorrecta.")
-    st.stop()  # Detener ejecución si no se ha autenticado
+    st.stop()  # Detener ejecución si no está autenticado
+
 
 # --- CONTENIDO PRINCIPAL DE LA APP ---
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)

@@ -7,52 +7,25 @@ from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
-import streamlit as st
-from PIL import Image
-
+# Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Contraseña correcta
-CONTRASENA_CORRECTA = "validaciones2025"
+# Inicializar el estado de la tabla editada solo si aún no existe en session_state
+if 'edited_data_table' not in st.session_state:
+    st.session_state.edited_data_table = pd.DataFrame()
+if 'guardar_cambios' not in st.session_state:
+    st.session_state.guardar_cambios = False
 
-# Inicializar estados
-if "pantalla_inicial" not in st.session_state:
-    st.session_state.pantalla_inicial = True
-if "autenticado" not in st.session_state:
-    st.session_state.autenticado = False
-
-# --- PANTALLA DE BIENVENIDA CON LOGO ---
-if st.session_state.pantalla_inicial:
-    st.markdown("<h1 style='text-align: center;'>Bienvenido al Sistema de Análisis de Riesgos</h1>", unsafe_allow_html=True)
-
-    try:
-        imagen = Image.open("altea.jpg")
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image(imagen, width=300)
-    except Exception as e:
-        st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
-        st.info("Asegúrate de tener conexión a internet para cargar la imagen.")
-
-    if st.button("Ir al inicio de sesión"):
-        st.session_state.pantalla_inicial = False
-    st.stop()
-
-# --- PANTALLA DE LOGIN ---
-if not st.session_state.autenticado:
-    st.title("🔐 Inicio de sesión")
-    password = st.text_input("Ingrese la contraseña:", type="password")
-
-    if st.button("Ingresar"):
-        if password == CONTRASENA_CORRECTA:
-            st.session_state.autenticado = True
-            st.success("✅ Acceso concedido. Bienvenido.")
-        else:
-            st.error("❌ Contraseña incorrecta.")
-    st.stop()
-
-# --- INICIO DE LA APP FUNCIONAL ---
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
+
+try:
+    imagen = Image.open("altea.jpg")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(imagen, width=300)
+except Exception as e:
+    st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
+    st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
 
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=[".xlsx"])

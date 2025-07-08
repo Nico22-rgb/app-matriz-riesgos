@@ -8,6 +8,13 @@ from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
+
+# Configuración de página
+st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
+
+# Mostrar imagen y título desde el principio
+st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
+
 def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
@@ -41,13 +48,6 @@ def mostrar_logo_adaptable(path_png_transparente):
 
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
-
-# Configuración de página
-st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
-
-# Mostrar imagen y título desde el principio
-st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
-
 # ======== Autenticación ========
 CONTRASENA = "Motasyjacobo22"
 

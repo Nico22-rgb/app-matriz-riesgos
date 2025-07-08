@@ -7,17 +7,17 @@ from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
-# --- CONFIGURACIÓN DE LA PÁGINA ---
+# Configuración de la página
 st.set_page_config(page_title="Ingreso", layout="centered")
 
-# --- CONTRASEÑA CORRECTA ---
-CONTRASENA_CORRECTA = "altea123"  # Cambia esto por tu contraseña real
+# Contraseña correcta
+CONTRASENA_CORRECTA = "altea123"
 
-# --- CONTROL DE SESIÓN ---
+# Estado de sesión
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
-# --- LOGIN SIMPLIFICADO ---
+# Interfaz de login
 if not st.session_state.autenticado:
     st.write("### Ingrese la contraseña para acceder:")
     password = st.text_input("Contraseña", type="password")
@@ -25,11 +25,10 @@ if not st.session_state.autenticado:
     if st.button("Ingresar"):
         if password == CONTRASENA_CORRECTA:
             st.session_state.autenticado = True
-            st.success("Acceso concedido. Carga en curso...")
+            st.experimental_rerun()  # <- Esta línea hace que la app recargue una vez logueado
         else:
             st.error("Contraseña incorrecta.")
-    st.stop()  # Detener ejecución si no está autenticado
-
+    st.stop()  # Detiene el resto del código si no se ha autenticado
 
 # --- CONTENIDO PRINCIPAL DE LA APP ---
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)

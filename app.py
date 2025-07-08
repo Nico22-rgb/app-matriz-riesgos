@@ -8,38 +8,26 @@ from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
 # Configuración de la página
-st.set_page_config(page_title="Ingreso", layout="centered")
+st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Contraseña correcta
+# === Autenticación con contraseña ===
 CONTRASENA_CORRECTA = "altea123"
 
-# Inicializar el estado
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
-if "intentado" not in st.session_state:
-    st.session_state.intentado = False
 
-# Página de login
 if not st.session_state.autenticado:
-    st.write("### Ingrese la contraseña para acceder:")
-    password = st.text_input("Contraseña", type="password")
-    login_btn = st.button("Ingresar")
-
-    if login_btn:
-        st.session_state.intentado = True
-        if password == CONTRASENA_CORRECTA:
+    st.markdown("### Ingrese la contraseña para continuar:")
+    contrasena = st.text_input("Contraseña", type="password")
+    if st.button("Entrar"):
+        if contrasena == CONTRASENA_CORRECTA:
             st.session_state.autenticado = True
         else:
-            st.session_state.autenticado = False
-
-    # Mostrar error si intentó pero no autenticó
-    if st.session_state.intentado and not st.session_state.autenticado:
-        st.error("Contraseña incorrecta.")
+            st.error("❌ Contraseña incorrecta")
     st.stop()
 
-# Página principal (solo visible si autenticado)
+# === Contenido principal de la app ===
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
-
 # Aquí continúa el resto de tu aplicación...
 
 try:

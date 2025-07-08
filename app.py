@@ -6,12 +6,15 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
-# Configuración de la página
+
+
+# Configuración de página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Mostrar título e imagen al inicio (antes de autenticarse)
+# Mostrar imagen y título desde el principio
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
+from PIL import Image
 try:
     imagen = Image.open("altea.jpg")
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -20,8 +23,8 @@ try:
 except Exception as e:
     st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
 
-# === Autenticación ===
-CONTRASENA = "altea123"  # Puedes cambiarla
+# ======== Autenticación ========
+CONTRASENA = "altea123"
 
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -29,13 +32,13 @@ if "autenticado" not in st.session_state:
 if not st.session_state.autenticado:
     st.markdown("## 🔐 Ingreso restringido")
     contrasena = st.text_input("Ingrese la contraseña para continuar:", type="password")
-    if st.button("Entrar"):
-        if contrasena == CONTRASENA:
-            st.session_state.autenticado = True
-            st.experimental_rerun()
-        else:
-            st.error("❌ Contraseña incorrecta. Inténtalo de nuevo.")
-    st.stop()
+    if contrasena == CONTRASENA:
+        st.session_state.autenticado = True
+        st.success("✅ Acceso concedido. Continúe más abajo.")
+    else:
+        if contrasena != "":
+            st.error("❌ Contraseña incorrecta.")
+        st.stop()  # Detiene la ejecución hasta que se autentique correctamente
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=[".xlsx"])
 

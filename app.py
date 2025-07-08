@@ -24,7 +24,7 @@ except Exception as e:
     st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
 
 # ======== Autenticación ========
-CONTRASENA = "altea123"
+CONTRASENA = "Motasyjacobo22"
 
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -34,7 +34,7 @@ if not st.session_state.autenticado:
     contrasena = st.text_input("Ingrese la contraseña para continuar:", type="password")
     if contrasena == CONTRASENA:
         st.session_state.autenticado = True
-        st.success("✅ Acceso concedido. Continúe más abajo.")
+        st.success("✅ Acceso concedido.")
     else:
         if contrasena != "":
             st.error("❌ Contraseña incorrecta.")

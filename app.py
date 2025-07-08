@@ -6,16 +6,10 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
-
-# Configuración inicial de la página de Streamlit
+# Configuración de la página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Inicializar el estado de la tabla editada solo si aún no existe en session_state
-if 'edited_data_table' not in st.session_state:
-    st.session_state.edited_data_table = pd.DataFrame()
-if 'guardar_cambios' not in st.session_state:
-    st.session_state.guardar_cambios = False
-
+# Mostrar título e imagen al inicio (antes de autenticarse)
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
 try:
@@ -25,8 +19,23 @@ try:
         st.image(imagen, width=300)
 except Exception as e:
     st.warning(f"No se pudo cargar la imagen del logo. Error: {e}")
-    st.info("Asegúrate de tener conexión a internet para cargar la imagen de marcador de posición.")
 
+# === Autenticación ===
+CONTRASENA = "altea123"  # Puedes cambiarla
+
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.markdown("## 🔐 Ingreso restringido")
+    contrasena = st.text_input("Ingrese la contraseña para continuar:", type="password")
+    if st.button("Entrar"):
+        if contrasena == CONTRASENA:
+            st.session_state.autenticado = True
+            st.experimental_rerun()
+        else:
+            st.error("❌ Contraseña incorrecta. Inténtalo de nuevo.")
+    st.stop()
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=[".xlsx"])
 

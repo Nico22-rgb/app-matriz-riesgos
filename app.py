@@ -7,16 +7,34 @@ from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
-# Configuración inicial de la página de Streamlit
-st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
+# --- CONFIGURACIÓN DE LA PÁGINA ---
+st.set_page_config(page_title="Ingreso", layout="centered")
 
-# Inicializar el estado de la tabla editada solo si aún no existe en session_state
-if 'edited_data_table' not in st.session_state:
-    st.session_state.edited_data_table = pd.DataFrame()
-if 'guardar_cambios' not in st.session_state:
-    st.session_state.guardar_cambios = False
+# --- CONTRASEÑA CORRECTA ---
+CONTRASENA_CORRECTA = "Motasyjacobo22"  # Cámbiala por la que desees
 
+# --- CONTROL DE SESIÓN ---
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+# --- LOGIN SIMPLIFICADO ---
+if not st.session_state.autenticado:
+    st.write("### Ingrese la contraseña para acceder:")
+    password = st.text_input("Contraseña", type="password")
+
+    if st.button("Ingresar"):
+        if password == CONTRASENA_CORRECTA:
+            st.session_state.autenticado = True
+            st.success("Acceso concedido.")
+            st.experimental_rerun()
+        else:
+            st.error("Contraseña incorrecta.")
+    st.stop()  # Detener ejecución si no se ha autenticado
+
+# --- CONTENIDO PRINCIPAL DE LA APP ---
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
+
+# Aquí continúa el resto de tu aplicación...
 
 try:
     imagen = Image.open("altea.jpg")

@@ -7,6 +7,26 @@ from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.utils import get_column_letter
 
+# Configura tu contraseña aquí (puedes encriptarla si quieres mayor seguridad)
+CONTRASENA_CORRECTA = "motasyjacobo22"
+
+# Verifica si ya se autenticó previamente
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.title("🔒 Acceso restringido")
+    password = st.text_input("Ingrese la contraseña para acceder:", type="password")
+
+    if st.button("Ingresar"):
+        if password == CONTRASENA_CORRECTA:
+            st.session_state.autenticado = True
+            st.success("✅ Acceso concedido. Bienvenido.")
+            st.experimental_rerun()  # recarga la app para mostrar el contenido
+        else:
+            st.error("❌ Contraseña incorrecta. Intente de nuevo.")
+    st.stop()  # Detiene la app si no está autenticado
+
 # Configuración inicial de la página de Streamlit
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 

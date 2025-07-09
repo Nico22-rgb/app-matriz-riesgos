@@ -12,7 +12,7 @@ from openpyxl.utils import get_column_letter
 # Configuración de página
 st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 
-# Mostrar imagen y título desde el principio
+# Imagen y título inicial
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
 def mostrar_logo_adaptable(path_png_transparente):

@@ -239,7 +239,7 @@ if archivo:
                     st.session_state.edited_data_table = edited_table.copy()
                     st.success("✅ Cambios guardados correctamente. Puedes descargar el archivo actualizado.")
 
-        if st.session_state.edited_data_table is not None:
+        if "edited_data_table" in st.session_state and st.session_state.edited_data_table is not None:
             buffer = io.BytesIO()
             st.session_state.edited_data_table.iloc[:, 0] = st.session_state.edited_data_table.iloc[:, 0].ffill()
             st.session_state.edited_data_table.to_excel(buffer, index=False, header=False)

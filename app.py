@@ -226,7 +226,7 @@ if archivo:
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
-    if not st.session_state.edited_data_table.empty:
+      if "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
         st.markdown("### Por favor completa tu matriz de riesgo:")
         edited_table = st.data_editor(
             st.session_state.edited_data_table,

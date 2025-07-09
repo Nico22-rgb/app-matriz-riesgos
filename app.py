@@ -226,18 +226,18 @@ if archivo:
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
-      if "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
-        st.markdown("### Por favor completa tu matriz de riesgo:")
-        edited_table = st.data_editor(
-            st.session_state.edited_data_table,
-            use_container_width=True,
-            num_rows="dynamic",
-            key="editor_riesgo"
-        )
+            if "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
+                st.markdown("### Por favor completa tu matriz de riesgo:")
+                edited_table = st.data_editor(
+                    st.session_state.edited_data_table,
+                    use_container_width=True,
+                    num_rows="dynamic",
+                    key="editor_riesgo"
+                )
 
-        if st.button("Guardar cambios en la matriz"):
-            st.session_state.edited_data_table = edited_table.copy()
-            st.success("✅ Cambios guardados correctamente. Puedes descargar el archivo actualizado.")
+                if st.button("Guardar cambios en la matriz"):
+                    st.session_state.edited_data_table = edited_table.copy()
+                    st.success("✅ Cambios guardados correctamente. Puedes descargar el archivo actualizado.")
 
         if st.session_state.edited_data_table is not None:
             buffer = io.BytesIO()

@@ -157,7 +157,7 @@ if archivo:
                 etapas_seleccionadas.append(etapa)
 
     if etapas_seleccionadas and sheet_to_use:
-        if st.button("Generar matriz de riesgo en Excel"):
+        if st.button("Generar matriz de riesgo con Excel"):
             try:
                 df = load_excel(archivo, sheet_to_use)
 
@@ -289,21 +289,21 @@ if archivo:
 
                 # Ajustar ancho de columnas
                 for column in ws.columns:
-                    max_length = 0
                     column_letter = get_column_letter(column[0].column)
-                    for cell in column:
-                        try:
-                            if cell.value is not None:
-                                cell_value_str = str(cell.value)
-                                max_length = max(max_length, len(cell_value_str))
-                        except Exception:
-                            pass
-                    # Ajustar ancho solo para columnas P y Q al texto, otras columnas mantienen el cálculo
-                    if column_letter in ['P', 'Q']:
-                        adjusted_width = max_length + 2  # Ajuste mínimo al texto
+                    if column_letter == 'P':
+                        ws.column_dimensions[column_letter].width = 30  # Aproximadamente 214 píxeles
+                    elif column_letter == 'Q':
+                        ws.column_dimensions[column_letter].width = 14  # Aproximadamente 99 píxeles
                     else:
-                        adjusted_width = max_length + 3  # Mantiene el ancho original para otras columnas
-                    ws.column_dimensions[column_letter].width = adjusted_width
+                        max_length = 0
+                        for cell in column:
+                            try:
+                                if cell.value is not None:
+                                    cell_value_str = str(cell.value)
+                                    max_length = max(max_length, len(cell_value_str))
+                            except Exception:
+                                pass
+                        ws.column_dimensions[column_letter].width = max_length + 3
 
                 # Alinear todo el contenido al centro
                 for row in ws.iter_rows():
@@ -316,12 +316,12 @@ if archivo:
                 output.seek(0)
 
                 st.download_button(
-                    label="📥 Descargar matriz de riesgo en Excel",
+                    label="Generar matriz de riesgo con Excel",
                     data=output,
                     file_name="matriz_riesgo.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-                st.success(f"¡Matriz de riesgo generada !\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
+                st.success(f"¡Matriz de riesgo generada y lista para descargar!\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")

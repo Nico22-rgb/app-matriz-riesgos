@@ -243,43 +243,32 @@ if archivo:
 
     # ======== Edición de la tabla (solo si la matriz fue generada) ========
     if st.session_state.get("matriz_generada", False) and "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
-        # Contenedor para la tabla
-        with st.container():
-            st.markdown("### Por favor completa tu matriz de riesgo:")
-            # Mostrar feedback si se editó la tabla
-            if st.session_state.get("editor_riesgo", {}).get("edited_rows"):
-                st.info("Cambios en la tabla guardados automáticamente.")
-            
-            # Configuración de columnas para validación de datos
-            column_config = {
-                9: st.column_config.NumberColumn("Severidad", min_value=1, max_value=4, step=1),  # Columna J
-                11: st.column_config.NumberColumn("Ocurrencia", min_value=1, max_value=4, step=1),  # Columna L
-                13: st.column_config.NumberColumn("Detección", min_value=1, max_value=4, step=1)  # Columna N
-            }
-            
-            # Mostrar la tabla interactiva
-            edited_table = st.data_editor(
-                st.session_state.edited_data_table,
-                use_container_width=True,
-                num_rows="dynamic",
-                column_config=column_config,
-                key="editor_riesgo"
-            )
+        st.markdown("### Por favor completa tu matriz de riesgo:")
+        # Configuración de columnas para validación y deshabilitar columnas calculadas
+        column_config = {
+            9: st.column_config.NumberColumn("Severidad", min_value=1, max_value=10, step=1),  # Columna J
+            11: st.column_config.NumberColumn("Ocurrencia", min_value=1, max_value=10, step=1),  # Columna L
+            13: st.column_config.NumberColumn("Detección", min_value=1, max_value=10, step=1),  # Columna N
+            14: st.column_config.Column("NPR Ajustado", disabled=True),  # Columna O
+            15: st.column_config.Column("Clasificación", disabled=True),  # Columna P
+            16: st.column_config.Column("Traducción", disabled=True)  # Columna Q
+        }
+        
+        # Mostrar la tabla interactiva
+        edited_table = st.data_editor(
+            st.session_state.edited_data_table,
+            use_container_width=True,
+            num_rows="dynamic",
+            column_config=column_config,
+            key="editor_riesgo"
+        )
 
-            # Actualizar session_state con los cambios
-            st.session_state.edited_data_table = edited_table.copy()
+        # Mostrar feedback si se editó la tabla
+        if st.session_state.get("editor_riesgo", {}).get("edited_rows"):
+            st.info("Cambios en la tabla guardados automáticamente.")
 
-            # JavaScript para mantener el scroll en la tabla
-            st.markdown("""
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const tableContainer = document.querySelector('.element-container');
-                    if (tableContainer) {
-                        tableContainer.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            </script>
-            """, unsafe_allow_html=True)
+        # Actualizar session_state con los cambios
+        st.session_state.edited_data_table = edited_table.copy()
 
         # Botón para descargar el Excel
         if st.button("📥 Generar y descargar matriz de riesgo en Excel"):

@@ -49,7 +49,7 @@ def mostrar_logo_adaptable(path_png_transparente):
 mostrar_logo_adaptable("altea.png")
 
 # ======== Autenticación ========
-CONTRASENA = "Motasyjacobo22"
+CONTRASENA = "M"
 
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False

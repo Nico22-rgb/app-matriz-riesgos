@@ -49,7 +49,7 @@ def mostrar_logo_adaptable(path_png_transparente):
 mostrar_logo_adaptable("altea.png")
 
 # ======== Autenticación ========
-CONTRASENA = "M"
+CONTRASENA = "Motasyjacobo22"
 
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -68,10 +68,6 @@ if not st.session_state.autenticado:
 # ======== Carga de archivo y selección de opciones ========
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=["xlsx"])
-
-# Inicializar variable para controlar si la matriz fue generada
-if "matriz_generada" not in st.session_state:
-    st.session_state.matriz_generada = False
 
 # Función para cargar datos con caché
 @st.cache_data
@@ -161,9 +157,7 @@ if archivo:
                 etapas_seleccionadas.append(etapa)
 
     if etapas_seleccionadas and sheet_to_use:
-        if st.button("Generar matriz de riesgo"):
-            st.session_state.matriz_generada = True
-            st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
+        if st.button("Generar y descargar matriz de riesgo en Excel"):
             try:
                 df = load_excel(archivo, sheet_to_use)
 
@@ -220,7 +214,6 @@ if archivo:
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:
                     st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
-                    st.session_state.matriz_generada = False
                     st.stop()
 
                 encabezado = df.iloc[[0]]
@@ -234,122 +227,100 @@ if archivo:
                         st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
 
                 tabla = pd.concat([encabezado] + bloques, ignore_index=True)
-                st.session_state.edited_data_table = tabla.copy()
+                buffer = io.BytesIO()
+                tabla.to_excel(buffer, index=False)
+                buffer.seek(0)
+
+                wb = load_workbook(buffer)
+                ws = wb.active
+
+                # Aplicar formato a la fila 1 (encabezado)
+                palegreen_fill = PatternFill(start_color="C0E080", end_color="C0E080", fill_type="solid")
+                bold_font = Font(bold=True)
+                center_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+                for cell in ws[1]:
+                    cell.fill = palegreen_fill
+                    cell.font = bold_font
+                    cell.alignment = center_alignment
+
+                # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
+                columnas_a_combinar = [1, 3, 4]
+                for col_to_merge in columnas_a_combinar:
+                    current_value = None
+                    start_row = 2
+                    for row in range(2, ws.max_row + 1):
+                        value = ws.cell(row=row, column=col_to_merge).value
+                        value = str(value).strip() if value is not None else ""
+                        if row == 2:
+                            current_value = value
+                            continue
+                        if value != current_value or row == ws.max_row:
+                            if row - start_row > 1 or (row == ws.max_row and value == current_value):
+                                end_row = row if value != current_value else row + 1
+                                ws.merge_cells(
+                                    start_row=start_row,
+                                    start_column=col_to_merge,
+                                    end_row=end_row - 1,
+                                    end_column=col_to_merge
+                                )
+                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(
+                                    horizontal="center", vertical="center", wrap_text=True
+                                )
+                            current_value = value
+                            start_row = row
+
+                # Aplicar fórmulas en columnas O (15), P (16), Q (17) basadas en J (10), L (12), N (14)
+                for r_idx in range(2, ws.max_row + 1):
+                    ws[f"O{r_idx}"].value = f"=POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"  # Usar J, L, N
+                    ws[f"P{r_idx}"].value = f'=IF(O{r_idx}<1.33,"Bajo",IF(O{r_idx}<3,"Moderado","Alto"))'
+                    ws[f"Q{r_idx}"].value = f'=IF(P{r_idx}="Alto","Alta",IF(P{r_idx}="Moderado","Media","Baja"))'
+
+                # Aplicar formato condicional
+                rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+                naranja = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+                verde = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+
+                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Alto"'], fill=rojo))
+                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Moderado"'], fill=naranja))
+                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Bajo"'], fill=verde))
+                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Alta"'], fill=rojo))
+                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Media"'], fill=naranja))
+                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Baja"'], fill=verde))
+
+                # Ajustar ancho de columnas
+                for column in ws.columns:
+                    max_length = 0
+                    column_letter = get_column_letter(column[0].column)
+                    for cell in column:
+                        try:
+                            if cell.value is not None:
+                                cell_value_str = str(cell.value)
+                                max_length = max(max_length, len(cell_value_str))
+                        except Exception:
+                            pass
+                    adjusted_width = max_length + 3
+                    ws.column_dimensions[column_letter].width = adjusted_width
+
+                # Alinear todo el contenido al centro
+                for row in ws.iter_rows():
+                    for cell in row:
+                        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+                # Guardar el archivo Excel
+                output = io.BytesIO()
+                wb.save(output)
+                output.seek(0)
+
+                st.download_button(
+                    label="📥 Descargar matriz de riesgo en Excel",
+                    data=output,
+                    file_name="matriz_riesgo.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                st.success(f"¡Matriz de riesgo generada y lista para descargar!\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
-                st.session_state.matriz_generada = False
-                st.stop()
-
-    # ======== Edición de la tabla (solo si la matriz fue generada) ========
-    if st.session_state.get("matriz_generada", False) and "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
-        st.markdown("### Por favor completa tu matriz de riesgo:")
-        # Mostrar tabla no editable como vista previa
-        st.dataframe(st.session_state.edited_data_table)
-
-        # Formulario para editar valores
-        with st.form("edit_form"):
-            row_idx = st.number_input("Fila a editar (índice, empezando desde 1)", min_value=1, max_value=len(st.session_state.edited_data_table) - 1, step=1)
-            col_to_edit = st.selectbox("Columna a editar", ["Severidad (Columna J)", "Ocurrencia (Columna L)", "Detección (Columna N)"])
-            new_value = st.number_input("Nuevo valor (1-4)", min_value=1, max_value=4, step=1)
-            if st.form_submit_button("Actualizar celda"):
-                col_map = {"Severidad (Columna J)": 9, "Ocurrencia (Columna L)": 11, "Detección (Columna N)": 13}  # Índices basados en 0
-                st.session_state.edited_data_table.iloc[row_idx, col_map[col_to_edit]] = new_value
-                st.success("Celda actualizada. Puedes continuar editando.")
-
-        # Botón para descargar el Excel
-        if st.button("📥 Generar y descargar matriz de riesgo en Excel"):
-            buffer = io.BytesIO()
-            st.session_state.edited_data_table.iloc[:, 0] = st.session_state.edited_data_table.iloc[:, 0].ffill()
-            st.session_state.edited_data_table.to_excel(buffer, index=False)
-            buffer.seek(0)
-
-            wb = load_workbook(buffer)
-            ws = wb.active
-
-            # Aplicar formato a la fila 1 (encabezado)
-            palegreen_fill = PatternFill(start_color="C0E080", end_color="C0E080", fill_type="solid")
-            bold_font = Font(bold=True)
-            center_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-            for cell in ws[1]:
-                cell.fill = palegreen_fill
-                cell.font = bold_font
-                cell.alignment = center_alignment
-
-            # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
-            columnas_a_combinar = [1, 3, 4]
-            for col_to_merge in columnas_a_combinar:
-                current_value = None
-                start_row = 2
-                for row in range(2, ws.max_row + 1):
-                    value = ws.cell(row=row, column=col_to_merge).value
-                    value = str(value).strip() if value is not None else ""
-                    if row == 2:
-                        current_value = value
-                        continue
-                    if value != current_value or row == ws.max_row:
-                        if row - start_row > 1 or (row == ws.max_row and value == current_value):
-                            end_row = row if value != current_value else row + 1
-                            ws.merge_cells(
-                                start_row=start_row,
-                                start_column=col_to_merge,
-                                end_row=end_row - 1,
-                                end_column=col_to_merge
-                            )
-                            ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(
-                                horizontal="center", vertical="center", wrap_text=True
-                            )
-                        current_value = value
-                        start_row = row
-
-            # Aplicar fórmulas en columnas O (15), P (16), Q (17) basadas en J (10), L (12), N (14)
-            for r_idx in range(2, ws.max_row + 1):
-                ws[f"O{r_idx}"].value = f"=POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"  # Usar J, L, N
-                ws[f"P{r_idx}"].value = f'=IF(O{r_idx}<1.33,"Bajo",IF(O{r_idx}<3,"Moderado","Alto"))'
-                ws[f"Q{r_idx}"].value = f'=IF(P{r_idx}="Alto","Alta",IF(P{r_idx}="Moderado","Media","Baja"))'
-
-            # Aplicar formato condicional
-            rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
-            naranja = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
-            verde = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
-
-            ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Alto"'], fill=rojo))
-            ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Moderado"'], fill=naranja))
-            ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Bajo"'], fill=verde))
-            ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Alta"'], fill=rojo))
-            ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Media"'], fill=naranja))
-            ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Baja"'], fill=verde))
-
-            # Ajustar ancho de columnas
-            for column in ws.columns:
-                max_length = 0
-                column_letter = get_column_letter(column[0].column)
-                for cell in column:
-                    try:
-                        if cell.value is not None:
-                            cell_value_str = str(cell.value)
-                            max_length = max(max_length, len(cell_value_str))
-                    except Exception:
-                        pass
-                adjusted_width = max_length + 3
-                ws.column_dimensions[column_letter].width = adjusted_width
-
-            # Alinear todo el contenido al centro
-            for row in ws.iter_rows():
-                for cell in row:
-                    cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-
-            # Guardar el archivo Excel
-            output = io.BytesIO()
-            wb.save(output)
-            output.seek(0)
-
-            st.download_button(
-                label="📥 Descargar matriz de riesgo en Excel",
-                data=output,
-                file_name="matriz_riesgo.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

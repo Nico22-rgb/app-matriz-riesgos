@@ -310,18 +310,25 @@ if archivo:
                     for cell in row:
                         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-                # Guardar el archivo Excel
+                # Guardar el archivo Excel en la sesión
                 output = io.BytesIO()
                 wb.save(output)
                 output.seek(0)
+                st.session_state['excel_buffer'] = output
 
-                st.download_button(
-                    label="Generar matriz de riesgo con Excel",
-                    data=output,
-                    file_name="matriz_riesgo.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                st.success("¡Matriz de riesgo generada con éxito!")
+
+                # Botón de descarga sin logo, solo con emoji
+                st.markdown(
+                    f"""
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(st.session_state['excel_buffer'].read()).decode()}" download="matriz_riesgo.xlsx">
+                            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Descargar matriz de riesgo 📥</button>
+                        </a>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
-                st.success(f"¡Matriz de riesgo generada y lista para descargar!\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")

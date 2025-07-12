@@ -317,7 +317,7 @@ if archivo:
                     file_name="matriz_riesgo.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-                st.success(f"¡Matriz de riesgo generada y lista para descargar!\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
+                st.success(f"¡Matriz de riesgo generada !\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el nivel de riesgo.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")

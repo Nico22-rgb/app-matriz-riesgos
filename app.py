@@ -69,6 +69,10 @@ if not st.session_state.autenticado:
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=["xlsx"])
 
+# Inicializar variable para controlar si la matriz fue generada
+if "matriz_generada" not in st.session_state:
+    st.session_state.matriz_generada = False
+
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -153,6 +157,7 @@ if archivo:
 
     if etapas_seleccionadas and sheet_to_use:
         if st.button("Generar matriz de riesgo"):
+            st.session_state.matriz_generada = True  # Marcar que la matriz fue generada
             st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
             try:
                 df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
@@ -227,10 +232,11 @@ if archivo:
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
+                st.session_state.matriz_generada = False
                 st.stop()
 
-    # ======== Edición de la tabla ========
-    if "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
+    # ======== Edición de la tabla (solo si la matriz fue generada) ========
+    if st.session_state.get("matriz_generada", False) and "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
         st.markdown("### Por favor completa tu matriz de riesgo:")
         # Usar una clave única para el data_editor y conectar directamente con session_state
         edited_table = st.data_editor(
@@ -339,4 +345,3 @@ if archivo:
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")
-

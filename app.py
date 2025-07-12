@@ -49,7 +49,7 @@ def mostrar_logo_adaptable(path_png_transparente):
 mostrar_logo_adaptable("altea.png")
 
 # ======== Autenticación ========
-CONTRASENA = "M"
+CONTRASENA = "Motasyjacobo22"
 
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -157,7 +157,7 @@ if archivo:
                 etapas_seleccionadas.append(etapa)
 
     if etapas_seleccionadas and sheet_to_use:
-        if st.button("Generar matriz de riesgo en Excel"):
+        if st.button("Generar y descargar matriz de riesgo en Excel"):
             try:
                 df = load_excel(archivo, sheet_to_use)
 
@@ -271,7 +271,7 @@ if archivo:
 
                 # Aplicar fórmulas en columnas O (15), P (16), Q (17) basadas en J (10), L (12), N (14)
                 for r_idx in range(2, ws.max_row + 1):
-                    ws[f"O{r_idx}"].value = f"=POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3)"  # Usar J, L, N
+                    ws[f"O{r_idx}"].value = f"=ROUND(POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3),1)"  # Redondear a 1 decimal
                     ws[f"P{r_idx}"].value = f'=IF(O{r_idx}<1.33,"Bajo",IF(O{r_idx}<3,"Moderado","Alto"))'
                     ws[f"Q{r_idx}"].value = f'=IF(P{r_idx}="Alto","Alta",IF(P{r_idx}="Moderado","Media","Baja"))'
 
@@ -298,7 +298,11 @@ if archivo:
                                 max_length = max(max_length, len(cell_value_str))
                         except Exception:
                             pass
-                    adjusted_width = max_length + 3
+                    # Ajustar ancho solo para columnas P y Q al texto, otras columnas mantienen el cálculo
+                    if column_letter in ['P', 'Q']:
+                        adjusted_width = max_length + 2  # Ajuste mínimo al texto
+                    else:
+                        adjusted_width = max_length + 3  # Mantiene el ancho original para otras columnas
                     ws.column_dimensions[column_letter].width = adjusted_width
 
                 # Alinear todo el contenido al centro
@@ -311,15 +315,14 @@ if archivo:
                 wb.save(output)
                 output.seek(0)
 
-              
-                st.success(f"¡Matriz de riesgo generada !\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el nivel de riesgo.")
-                
                 st.download_button(
                     label="📥 Descargar matriz de riesgo en Excel",
                     data=output,
                     file_name="matriz_riesgo.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
+                st.success(f"¡Matriz de riesgo generada y lista para descargar!\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el NPR Ajustado.")
+
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
 

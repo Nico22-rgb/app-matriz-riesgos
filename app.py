@@ -73,6 +73,11 @@ archivo = st.file_uploader("", type=["xlsx"])
 if "matriz_generada" not in st.session_state:
     st.session_state.matriz_generada = False
 
+# Función para cargar datos con caché
+@st.cache_data
+def load_excel(file, sheet_name):
+    return pd.read_excel(file, sheet_name=sheet_name, header=None)
+
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
         "Validación de procesos", "Validación de campaña", "Validación de limpieza"
@@ -157,10 +162,10 @@ if archivo:
 
     if etapas_seleccionadas and sheet_to_use:
         if st.button("Generar matriz de riesgo"):
-            st.session_state.matriz_generada = True  # Marcar que la matriz fue generada
+            st.session_state.matriz_generada = True
             st.success(f"¡Matriz de riesgo generada con éxito!\nEtapas seleccionadas: {', '.join(etapas_seleccionadas)}")
             try:
-                df = pd.read_excel(archivo, sheet_name=sheet_to_use, header=None)
+                df = load_excel(archivo, sheet_to_use)
 
                 rangos_por_hoja = {
                     "MR 1 sólidos": {
@@ -215,6 +220,7 @@ if archivo:
                 rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
                 if not rangos_para_hoja_actual:
                     st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
+                    st.session_state.matriz_generada = False
                     st.stop()
 
                 encabezado = df.iloc[[0]]
@@ -237,19 +243,45 @@ if archivo:
 
     # ======== Edición de la tabla (solo si la matriz fue generada) ========
     if st.session_state.get("matriz_generada", False) and "edited_data_table" in st.session_state and not st.session_state.edited_data_table.empty:
-        st.markdown("### Por favor completa tu matriz de riesgo:")
-        # Usar una clave única para el data_editor y conectar directamente con session_state
-        edited_table = st.data_editor(
-            st.session_state.edited_data_table,
-            use_container_width=True,
-            num_rows="dynamic",
-            key="editor_riesgo"
-        )
+        # Contenedor para la tabla
+        with st.container():
+            st.markdown("### Por favor completa tu matriz de riesgo:")
+            # Mostrar feedback si se editó la tabla
+            if st.session_state.get("editor_riesgo", {}).get("edited_rows"):
+                st.info("Cambios en la tabla guardados automáticamente.")
+            
+            # Configuración de columnas para validación de datos
+            column_config = {
+                9: st.column_config.NumberColumn("Severidad", min_value=1, max_value=4, step=1),  # Columna J
+                11: st.column_config.NumberColumn("Ocurrencia", min_value=1, max_value=4, step=1),  # Columna L
+                13: st.column_config.NumberColumn("Detección", min_value=1, max_value=4, step=1)  # Columna N
+            }
+            
+            # Mostrar la tabla interactiva
+            edited_table = st.data_editor(
+                st.session_state.edited_data_table,
+                use_container_width=True,
+                num_rows="dynamic",
+                column_config=column_config,
+                key="editor_riesgo"
+            )
 
-        # Actualizar session_state automáticamente con los cambios en la tabla
-        st.session_state.edited_data_table = edited_table.copy()
+            # Actualizar session_state con los cambios
+            st.session_state.edited_data_table = edited_table.copy()
 
-        # ======== Generación y descarga del Excel ========
+            # JavaScript para mantener el scroll en la tabla
+            st.markdown("""
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const tableContainer = document.querySelector('.element-container');
+                    if (tableContainer) {
+                        tableContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            </script>
+            """, unsafe_allow_html=True)
+
+        # Botón para descargar el Excel
         if st.button("📥 Generar y descargar matriz de riesgo en Excel"):
             buffer = io.BytesIO()
             st.session_state.edited_data_table.iloc[:, 0] = st.session_state.edited_data_table.iloc[:, 0].ffill()

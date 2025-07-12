@@ -157,7 +157,7 @@ if archivo:
                 etapas_seleccionadas.append(etapa)
 
     if etapas_seleccionadas and sheet_to_use:
-        if st.button("Generar y descargar matriz de riesgo en Excel"):
+        if st.button("Generar matriz de riesgo en Excel"):
             try:
                 df = load_excel(archivo, sheet_to_use)
 

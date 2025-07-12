@@ -311,14 +311,15 @@ if archivo:
                 wb.save(output)
                 output.seek(0)
 
+              
+                st.success(f"¡Matriz de riesgo generada !\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el nivel de riesgo.")
+                
                 st.download_button(
                     label="📥 Descargar matriz de riesgo en Excel",
                     data=output,
                     file_name="matriz_riesgo.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-                st.success(f"¡Matriz de riesgo generada !\nEdita los valores de Severidad (J), Ocurrencia (L) y Detección (N) en el Excel para calcular el nivel de riesgo.")
-
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
 

@@ -404,9 +404,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-else:
-    st.warning("❌ No se encontró el archivo 'muestreo.png'. Verifica su ruta y nombre."
-)
+
 # Formulario en una fila
 with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
     col1, col2, col3 = st.columns(3)

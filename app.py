@@ -322,9 +322,9 @@ if archivo:
 
             # Mostrar multiselect solo después de descargar
             if st.session_state.get("descarga_realizada", False):
-                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:</h5>", unsafe_allow_html=True)
+                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
                 selected_alta = st.multiselect(
-                    "Seleccione las operaciones:",
+                    "Seleccione las operaciones con criticidad alta:",
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )

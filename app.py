@@ -338,78 +338,77 @@ if archivo:
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
 
-    # Mostrar imagen con zonas clicables solo si se activó el botón
-    if st.session_state.get('mostrar_matriz', False):
-        
-        def mostrar_imagen_con_zonas(path_png_transparente):
-            try:
-                with open(path_png_transparente, "rb") as image_file:
-                    encoded = base64.b64encode(image_file.read()).decode()
-                
-                st.markdown(
-                    f"""
-                    <div style="display: flex; justify-content: center;">
-                        <img src="data:image/png;base64,{encoded}" width="800">
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            except Exception as e:
-                st.error(f"Error al cargar la imagen: {e}")
+   if st.session_state.get('mostrar_matriz', False):
+    def mostrar_imagen_con_zonas(path_png_transparente):
+        try:
+            with open(path_png_transparente, "rb") as image_file:
+                encoded = base64.b64encode(image_file.read()).decode()
+            
+            st.markdown(
+                f"""
+                <div style="display: flex; justify-content: center;">
+                    <img src="data:image/png;base64,{encoded}" width="800">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        except Exception as e:
+            st.error(f"Error al cargar la imagen: {e}")
 
-        mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
-       
-        st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación/etapa**")
+    mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+   
+    st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación/etapa**")
 
-        # Información adicional
-        with st.expander("🟢 Área Verde"):
-            st.write("No es necesario implementar controles adicionales en esta operación-etapa para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final Se recomienda monitoreo rutinario.")
-        
-        with st.expander("🟡 Área Amarilla"):
-            st.write("Considera implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
-        
-        with st.expander("🔴 Área Roja"):
-            st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
+    # Expander para áreas con seguimiento de consulta de Área Roja
+    if "area_roja_consultada" not in st.session_state:
+        st.session_state['area_roja_consultada'] = False
 
+    with st.expander("🟢 Área Verde"):
+        st.write("No es necesario implementar controles adicionales en esta operación-etapa para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final Se recomienda monitoreo rutinario.")
+    
+    with st.expander("🟡 Área Amarilla"):
+        st.write("Considera implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
+    
+    with st.expander("🔴 Área Roja"):
+        st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
+        st.session_state['area_roja_consultada'] = True  # Marcar como consultada al expandir
 
-else:
-    # Solo mostrar este mensaje cuando NO hay archivo subido
-    st.info("Por favor, sube un archivo Excel para comenzar.")
+    # Mostrar Plan de Muestreo solo después de consultar Área Roja
+    if st.session_state.get('area_roja_consultada', False):
+        # Título centrado con margen inferior
+        st.markdown("""
+            <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
+        """, unsafe_allow_html=True)
 
-# Título centrado con margen inferior
-st.markdown("""
-    <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
-""", unsafe_allow_html=True)
+        # Contenedor con imagen y texto separados con espacio
+        st.markdown(f"""
+            <div style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 35px;">
+                <img src="data:image/png;base64,{base64.b64encode(open('muestreo.png', 'rb').read()).decode()}" 
+                     style="width: 130px; height: auto; border-radius: 5px;" />
+                <p style="text-align: justify; max-width: 600px;">
+                    La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra 
+                    para poblaciones de tamaño finito del capítulo <b><1010></b> de la Farmacopea de los Estados Unidos de América, y en 
+                    las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b> sobre el muestreo y análisis de datos en la 
+                    validación de procesos de manufactura en Altea Farmacéutica S.A.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-# Contenedor con imagen y texto separados con espacio
-st.markdown(f"""
-    <div style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 35px;">
-        <img src="data:image/png;base64,{base64.b64encode(open('muestreo.png', 'rb').read()).decode()}" 
-             style="width: 130px; height: auto; border-radius: 5px;" />
-        <p style="text-align: justify; max-width: 600px;">
-            La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra 
-            para poblaciones de tamaño finito del capítulo <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en 
-            las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b> sobre el muestreo y análisis de datos en la 
-            validación de procesos de manufactura en Altea Farmacéutica S.A.
-        </p>
-    </div>
-""", unsafe_allow_html=True)
+        # Espacio adicional antes del siguiente componente
+        st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-# Espacio adicional antes del siguiente componente
-st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+        # Formulario en una fila
+        with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])
+            with col2:
+                operacion = st.selectbox("Operación", ["Prueba 1", "Prueba 2", "Inspección"])
+            with col3:
+                atributo = st.selectbox("Atributo", ["Dimensión", "Peso", "Pureza"])
 
-# Formulario en una fila
-with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])
-    with col2:
-        operacion = st.selectbox("Operación", ["Prueba 1", "Prueba 2", "Inspección"])
-    with col3:
-        atributo = st.selectbox("Atributo", ["Dimensión", "Peso", "Pureza"])
-
-    col4, col5 = st.columns(2)
-    with col4:
-        criticidad = st.selectbox("Nivel de Criticidad", ["Bajo", "Moderado", "Alto"])
-    with col5:
-        aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+            col4, col5 = st.columns(2)
+            with col4:
+                criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+            with col5:
+                aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)

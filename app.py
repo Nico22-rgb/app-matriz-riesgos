@@ -381,30 +381,32 @@ st.markdown("---")  # Separador visual
 st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
 
 # Leer y codificar la imagen en base64
-with open("muestreo.png", "rb") as f:
-    img_bytes = f.read()
-    encoded = base64.b64encode(img_bytes).decode()
+if os.path.exists("muestreo.png"):
+    with open("muestreo.png", "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
 
-# HTML con imagen en base64 + texto justificado al lado
-st.markdown("---")  # Separador visual
-st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
 
-st.markdown(
-    f"""
-    <div style="display: flex; align-items: flex-start; justify-content: center; gap: 20px;">
-        <div style="flex: 0 0 auto;">
-            <img src="data:image/png;base64,{encoded}" style="width: 250px; height: auto; border-radius: 5px;">
+    st.markdown(
+        f"""
+        <div style="display: flex; align-items: flex-start; justify-content: center; gap: 20px;">
+            <div style="flex: 0 0 auto;">
+                <img src="data:image/png;base64,{encoded}" style="width: 250px; height: auto; border-radius: 5px;">
+            </div>
+            <div style="flex: 1; text-align: justify; font-size: 16px;">
+                <p>
+                    La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra para poblaciones de tamaño finito del capítulo 
+                    <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b>
+                    sobre el muestreo y análisis de datos en la validación de procesos de manufactura en Altea Farmacéutica S.A.
+                </p>
+            </div>
         </div>
-        <div style="flex: 1; text-align: justify; font-size: 16px;">
-            <p>
-                La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra para poblaciones de tamaño finito del capítulo 
-                <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b>
-                sobre el muestreo y análisis de datos en la validación de procesos de manufactura en Altea Farmacéutica S.A.
-            </p>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.warning("❌ No se encontró el archivo 'muestreo.png'. Verifica su ruta y nombre.")
 )
 # Formulario en una fila
 with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):

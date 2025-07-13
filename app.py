@@ -358,85 +358,75 @@ if archivo:
 
         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
-class ImageClickDetector:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Detector de Clics en Matriz de Riesgos")
-        
-        # Cargar la imagen
-        try:
-            self.image = Image.open("Matriz de priorizacion de riesgos.png")
-            self.photo = ImageTk.PhotoImage(self.image)
-        except FileNotFoundError:
-            messagebox.showerror("Error", "No se encontró la imagen 'Matriz de priorizacion de riesgos.png'")
-            return
-        
-        # Crear canvas
-        self.canvas = tk.Canvas(root, width=747, height=293)
-        self.canvas.pack()
-        
-        # Mostrar imagen
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
-        
-        # Bind click event
-        self.canvas.bind("<Button-1>", self.on_click)
-        
+class StreamlitImageDetector:
+    def __init__(self):
         # Definir áreas clickeables
         self.areas = {
             "VERDE 1": {
                 "coords": [131, 246, 131, 94, 507, 245, 235, 248],
                 "shape": "poly",
-                "message": "Has clickeado en el área VERDE 1 - Riesgo Bajo"
+                "message": "Has clickeado en el área VERDE 1 - Riesgo Bajo",
+                "color": "green"
             },
             "VERDE 2": {
                 "coords": [249, 90, 133, 94, 257, 144, 252, 113],
                 "shape": "poly",
-                "message": "Has clickeado en el área VERDE 2 - Riesgo Bajo"
+                "message": "Has clickeado en el área VERDE 2 - Riesgo Bajo",
+                "color": "green"
             },
             "VERDE 3": {
                 "coords": [381, 192, 252, 142, 379, 141],
                 "shape": "poly",
-                "message": "Has clickeado en el área VERDE 3 - Riesgo Bajo"
+                "message": "Has clickeado en el área VERDE 3 - Riesgo Bajo",
+                "color": "green"
             },
             "VERDE 4": {
                 "coords": [381, 194, 504, 196, 503, 241],
                 "shape": "poly",
-                "message": "Has clickeado en el área VERDE 4 - Riesgo Bajo"
+                "message": "Has clickeado en el área VERDE 4 - Riesgo Bajo",
+                "color": "green"
             },
             "AMARILLO 1": {
                 "coords": [254, 88, 129, 36],
                 "shape": "rect",
-                "message": "Has clickeado en el área AMARILLO 1 - Riesgo Medio"
+                "message": "Has clickeado en el área AMARILLO 1 - Riesgo Medio",
+                "color": "orange"
             },
             "AMARILLO 2": {
                 "coords": [256, 91, 380, 138],
                 "shape": "rect",
-                "message": "Has clickeado en el área AMARILLO 2 - Riesgo Medio"
+                "message": "Has clickeado en el área AMARILLO 2 - Riesgo Medio",
+                "color": "orange"
             },
             "AMARILLO 3": {
                 "coords": [383, 145, 505, 191],
                 "shape": "rect",
-                "message": "Has clickeado en el área AMARILLO 3 - Riesgo Medio"
+                "message": "Has clickeado en el área AMARILLO 3 - Riesgo Medio",
+                "color": "orange"
             },
             "AMARILLO 4": {
                 "coords": [508, 200, 633, 247],
                 "shape": "rect",
-                "message": "Has clickeado en el área AMARILLO 4 - Riesgo Medio"
+                "message": "Has clickeado en el área AMARILLO 4 - Riesgo Medio",
+                "color": "orange"
             },
             "ROJO 1": {
                 "coords": [385, 39, 632, 145],
                 "shape": "rect",
-                "message": "Has clickeado en el área ROJO 1 - Riesgo Alto"
+                "message": "Has clickeado en el área ROJO 1 - Riesgo Alto",
+                "color": "red"
             },
             "ROJO 2": {
                 "coords": [258, 42, 384, 88],
                 "shape": "rect",
-                "message": "Has clickeado en el área ROJO 2 - Riesgo Alto"
+                "message": "Has clickeado en el área ROJO 2 - Riesgo Alto",
+                "color": "red"
             },
             "ROJO 3": {
                 "coords": [508, 148, 631, 192],
                 "shape": "rect",
-                "message": "Has clickeado en el área ROJO 3 - Riesgo Alto"
+                "message": "Has clickeado en el área ROJO 3 - Riesgo Alto",
+                "color": "red"
             }
         }
     
@@ -464,41 +454,114 @@ class ImageClickDetector:
         x1, y1, x2, y2 = rect_coords
         return min(x1, x2) <= x <= max(x1, x2) and min(y1, y2) <= y <= max(y1, y2)
     
-    def on_click(self, event):
-        """Manejar el evento de clic"""
-        click_x, click_y = event.x, event.y
-        
-        # Verificar en qué área se hizo clic
+    def check_click_area(self, click_x, click_y):
+        """Verificar en qué área se hizo clic"""
         for area_name, area_data in self.areas.items():
             coords = area_data["coords"]
             shape = area_data["shape"]
             
             if shape == "rect":
                 if self.point_in_rect(click_x, click_y, coords):
-                    messagebox.showinfo("Área Detectada", area_data["message"])
-                    print(f"Clic en {area_name} - Coordenadas: ({click_x}, {click_y})")
-                    return
+                    return area_name, area_data
             
             elif shape == "poly":
                 # Convertir coordenadas a lista de tuplas
                 polygon = [(coords[i], coords[i+1]) for i in range(0, len(coords), 2)]
                 if self.point_in_polygon(click_x, click_y, polygon):
-                    messagebox.showinfo("Área Detectada", area_data["message"])
-                    print(f"Clic en {area_name} - Coordenadas: ({click_x}, {click_y})")
-                    return
+                    return area_name, area_data
         
-        # Si no se encontró área
-        print(f"Clic fuera de las áreas definidas - Coordenadas: ({click_x}, {click_y})")
+        return None, None
 
 def main():
-    root = tk.Tk()
-    app = ImageClickDetector(root)
-    root.mainloop()
+    st.set_page_config(page_title="Matriz de Riesgos Interactiva", layout="wide")
+    
+    st.title("🎯 Matriz de Priorización de Riesgos")
+    st.markdown("---")
+    
+    # Inicializar detector
+    detector = StreamlitImageDetector()
+    
+    # Inicializar estado de sesión
+    if 'clicked_area' not in st.session_state:
+        st.session_state.clicked_area = None
+    if 'click_message' not in st.session_state:
+        st.session_state.click_message = None
+    
+    # Cargar imagen
+    try:
+        image = Image.open("Matriz de priorizacion de riesgos.png")
+        
+        # Mostrar imagen
+        st.image(image, caption="Haz clic en las áreas de la matriz para obtener información", width=747)
+        
+        # Crear botones para simular clics en áreas
+        st.markdown("### 🔍 Selecciona un área para analizar:")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("**🟢 ÁREAS VERDES (Riesgo Bajo)**")
+            for i in range(1, 5):
+                area_name = f"VERDE {i}"
+                if st.button(f"Área {area_name}", key=f"verde_{i}"):
+                    st.session_state.clicked_area = area_name
+                    st.session_state.click_message = detector.areas[area_name]["message"]
+        
+        with col2:
+            st.markdown("**🟡 ÁREAS AMARILLAS (Riesgo Medio)**")
+            for i in range(1, 5):
+                area_name = f"AMARILLO {i}"
+                if st.button(f"Área {area_name}", key=f"amarillo_{i}"):
+                    st.session_state.clicked_area = area_name
+                    st.session_state.click_message = detector.areas[area_name]["message"]
+        
+        with col3:
+            st.markdown("**🔴 ÁREAS ROJAS (Riesgo Alto)**")
+            for i in range(1, 4):
+                area_name = f"ROJO {i}"
+                if st.button(f"Área {area_name}", key=f"rojo_{i}"):
+                    st.session_state.clicked_area = area_name
+                    st.session_state.click_message = detector.areas[area_name]["message"]
+        
+        # Mostrar mensaje si se seleccionó un área
+        if st.session_state.clicked_area and st.session_state.click_message:
+            area_data = detector.areas[st.session_state.clicked_area]
+            color = area_data["color"]
+            
+            if color == "green":
+                st.success(st.session_state.click_message)
+            elif color == "orange":
+                st.warning(st.session_state.click_message)
+            elif color == "red":
+                st.error(st.session_state.click_message)
+        
+        # Información adicional
+        st.markdown("---")
+        st.markdown("### 📊 Información de las Áreas")
+        
+        with st.expander("🟢 Áreas Verdes - Riesgo Bajo"):
+            st.write("Estas áreas representan riesgos de baja probabilidad e impacto. Se recomienda monitoreo rutinario.")
+        
+        with st.expander("🟡 Áreas Amarillas - Riesgo Medio"):
+            st.write("Estas áreas requieren atención y medidas preventivas. Se debe desarrollar un plan de mitigación.")
+        
+        with st.expander("🔴 Áreas Rojas - Riesgo Alto"):
+            st.write("Estas áreas requieren acción inmediata. Se deben implementar controles urgentes.")
+        
+        # Sección de coordenadas para desarrollo
+        if st.checkbox("Mostrar información técnica"):
+            st.markdown("### 🔧 Coordenadas de las Áreas")
+            for area_name, area_data in detector.areas.items():
+                st.write(f"**{area_name}**: {area_data['coords']} ({area_data['shape']})")
+    
+    except FileNotFoundError:
+        st.error("❌ No se encontró la imagen 'Matriz de priorizacion de riesgos.png'")
+        st.info("Asegúrate de que la imagen esté en el mismo directorio que el archivo app.py")
+    
+    except Exception as e:
+        st.error(f"❌ Error al cargar la imagen: {str(e)}")
 
 if __name__ == "__main__":
     main()
-
-
-
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

@@ -330,10 +330,11 @@ if archivo:
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )
-                if st.button("Generar matriz de priorización del riesgo"):
+                if selected_alta:
+                    if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
                         st.rerun()
-                    
+
                 # Mostrar imagen con zonas clicables solo si se activó el botón
                 if st.session_state.get('mostrar_matriz', False):
                     st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
@@ -350,14 +351,11 @@ if archivo:
                                     const image = document.getElementById('custom-image');
                                     // Define las zonas clicables basadas en las coordenadas de tu imagen
                                     const zones = [
-                                        // Zona Verde (aproximación de VERDE 1 como rectángulo)
-                                        { id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                        // Zona Amarilla (basada en AMARILLO 1 corregido)
-                                        { id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                        // Zona Roja (basada en ROJO 1)
-                                        { id: 'zone-red', x: '51.54%', y: '13.31%', width: '33.20%', height: '36.52%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }
+                                        {{ id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }},
+                                        {{ id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }},
+                                        {{ id: 'zone-red', x: '51.54%', y: '13.31%', width: '33.20%', height: '36.52%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }}
                                     ];
-                                    zones.forEach(zone => {
+                                    zones.forEach(zone => {{
                                         const div = document.createElement('div');
                                         div.id = zone.id;
                                         div.style.position = 'absolute';
@@ -368,29 +366,29 @@ if archivo:
                                         div.style.backgroundColor = zone.id === 'zone-red' ? '#FFC7CE' : zone.id === 'zone-yellow' ? '#FFEB9C' : '#C6EFCE';
                                         div.style.cursor = 'pointer';
                                         div.style.opacity = '0.5'; // Ajusta la opacidad para ver la imagen debajo
-                                        div.addEventListener('click', () => {
-                                            window.parent.postMessage({type: 'matrix_click', value: zone.message}, '*');
-                                        });
+                                        div.addEventListener('click', () => {{
+                                            window.parent.postMessage({{type: 'matrix_click', value: zone.message}}, '*');
+                                        }});
                                         image.parentElement.appendChild(div);
-                                    });
+                                    }});
                                 </script>
-                                    """,
-                                    unsafe_allow_html=True
-                                )
-                            except FileNotFoundError:
-                                st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo esté en el mismo directorio que este script.")
-                            except Exception as e:
-                                st.warning(f"No se pudo cargar la imagen. Error: {e}")
-                                st.info("Verifica que el archivo exista y esté en formato PNG.")
-                        mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+                                """,
+                                unsafe_allow_html=True
+                            )
+                        except FileNotFoundError:
+                            st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo esté en el mismo directorio que este script.")
+                        except Exception as e:
+                            st.warning(f"No se pudo cargar la imagen. Error: {e}")
+                            st.info("Verifica que el archivo exista y esté en formato PNG.")
+                    mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
-                        if 'matrix_message' not in st.session_state:
-                            st.session_state['matrix_message'] = None
-                        if st.query_params.get("matrix_click", [None])[0]:  # Cambiado a st.query_params
-                            st.session_state['matrix_message'] = st.query_params.get("matrix_click", [None])[0]
-                            st.rerun()
-                        if st.session_state['matrix_message']:
-                            st.write(st.session_state['matrix_message'])
+                    if 'matrix_message' not in st.session_state:
+                        st.session_state['matrix_message'] = None
+                    if st.query_params.get("matrix_click", [None])[0]:  # Cambiado a st.query_params
+                        st.session_state['matrix_message'] = st.query_params.get("matrix_click", [None])[0]
+                        st.rerun()
+                    if st.session_state['matrix_message']:
+                        st.write(st.session_state['matrix_message'])
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

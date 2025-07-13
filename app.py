@@ -331,12 +331,12 @@ if archivo:
                     key="alta_seleccion"
                 )
                 if selected_alta:
-                    st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
+                    st.info(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
 
                     # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
-                        st.experimental_rerun()
+                        st.rerun()  # Cambiado a st.rerun()
 
                     # Mostrar matriz y texto solo si se activó el botón
                     if st.session_state.get('mostrar_matriz', False):
@@ -379,7 +379,7 @@ if archivo:
                             st.session_state['matrix_message'] = None
                         if st.experimental_get_query_params().get("matrix_click", [None])[0]:
                             st.session_state['matrix_message'] = st.experimental_get_query_params().get("matrix_click", [None])[0]
-                            st.experimental_rerun()
+                            st.rerun()  # Cambiado a st.rerun()
                         if st.session_state['matrix_message']:
                             st.write(st.session_state['matrix_message'])
 

@@ -33,7 +33,6 @@ def mostrar_logo_adaptable(path_png_transparente):
 
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
-
 # ======== Autenticación ========
 CONTRASENA = "M"
 
@@ -53,24 +52,20 @@ if not st.session_state.autenticado:
 
 # ======== Carga de archivo y selección de opciones ========
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
-archivo = st.file_uploader("", type=["xlsx"])
+archivo = st.file_uploader("", type=["xlsx"], key="file_uploader_unique")
 
-# Carga inicial de datos de operaciones y atributos
+# Carga inicial de datos de la hoja ET_OP_AT
 if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
         operaciones_atributos_df = load_excel(archivo, sheet_name="ET_OP_AT")
-        st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
+        st.session_state['ET_OP_AT_df'] = operaciones_atributos_df
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
-        st.session_state['operaciones_atributos_df'] = pd.DataFrame({
+        st.session_state['ET_OP_AT_df'] = pd.DataFrame({
             "Etapa": ["Verificación", "Pesaje", "Limpieza", "Mezcla"],
             "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
             "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
         })
-
-# ======== Carga de archivo y selección de opciones ========
-st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
-archivo = st.file_uploader("", type=["xlsx"])
 
 # Función para cargar datos con caché
 @st.cache_data
@@ -84,7 +79,6 @@ if archivo:
 
     etapas_seleccionadas = []
     sheet_to_use = None
-    # ... (resto del código existente)
 
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
@@ -397,7 +391,7 @@ if st.session_state.get('mostrar_matriz', False):
             st.session_state['area_roja_consultada'] = True
             st.rerun()  # Forzar recarga para reflejar el cambio
 
-    # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
+  # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
 if st.session_state.get('area_roja_consultada', False):
     # Título centrado con margen inferior
     st.markdown("""
@@ -422,34 +416,32 @@ if st.session_state.get('area_roja_consultada', False):
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
     # Formulario en una fila con etapas críticas dinámicas
-    # Formulario en una fila con etapas críticas dinámicas
-with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
-    # Obtener las etapas críticas seleccionadas en el multiselect
-    etapas_criticas = st.session_state.get('alta_seleccion', [])
-    if not etapas_criticas:
-        st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
-    else:
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            etapa = st.selectbox("Etapa", options=etapas_criticas)
-        
-        # Filtrar operaciones y atributos según la etapa seleccionada
-        ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
-        if not operaciones_atributos_df.empty:
-            operaciones_filtradas = ET_OP-AT_df[operaciones_atributos_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
-            atributos_filtrados = ET_OP_AT_df[operaciones_atributos_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
+    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+        # Obtener las etapas críticas seleccionadas en el multiselect
+        etapas_criticas = st.session_state.get('alta_seleccion', [])
+        if not etapas_criticas:
+            st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
         else:
-            operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
-            atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                etapa = st.selectbox("Etapa", options=etapas_criticas)
+            
+            # Filtrar operaciones y atributos según la etapa seleccionada
+            ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
+            if not ET_OP_AT_df.empty:
+                operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
+                atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
+            else:
+                operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
+                atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
 
-        with col2:
-            operacion = st.selectbox("Operación", options=operaciones_filtradas)
-        with col3:
-            atributo = st.selectbox("Atributo", options=atributos_filtrados)
+            with col2:
+                operacion = st.selectbox("Operación", options=operaciones_filtradas)
+            with col3:
+                atributo = st.selectbox("Atributo", options=atributos_filtrados)
 
-        col4, col5 = st.columns(2)
-        with col4:
-            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
-        with col5:
-            aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
-
+            col4, col5 = st.columns(2)
+            with col4:
+                criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+            with col5:
+                aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)

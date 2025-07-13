@@ -3,5 +3,5 @@ pandas
 openpyxl
 fpdf
 reportlab
-streamlit-js-eval
 pillow
+numpy

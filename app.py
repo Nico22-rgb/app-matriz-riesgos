@@ -386,7 +386,7 @@ en la fórmula para el cálculo del tamaño de muestra para poblacione de tamañ
 finito del capítulo <1010> de la Farmacopea de los Estados Unidos de América, 
 y en las recomendaciones del procedimiento estándar de operación PSO-VAL-007
 sobre el Muestreo y análisis de datos en la valdiación de procesos de manufactura
-en Altea Farmaceútica S.A
+en Altea Farmaceútica S.A'''
 
 st.markdown(multi)
 

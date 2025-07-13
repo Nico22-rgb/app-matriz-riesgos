@@ -16,18 +16,20 @@ st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Val
 def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
-            encoded = image_file.read()
+            encoded = base64.b64encode(image_file.read()).decode()
         st.markdown(
             f"""
             <div style="display: flex; justify-content: center;">
-                <img src="data:image/png;base64,{base64.b64encode(encoded).decode()}" width="300">
+                <img src="data:image/png;base64,{encoded}" width="300">
             </div>
             """,
             unsafe_allow_html=True
         )
+    except FileNotFoundError:
+        st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo 'altea.png' esté en el mismo directorio que este script.")
     except Exception as e:
         st.warning(f"No se pudo cargar el logo. Error: {e}")
-        st.info("Verifica que el archivo exista y esté en formato PNG transparente.")
+        st.info("Verifica que el archivo exista, esté en formato PNG transparente y que la ruta sea correcta.")
 
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
@@ -320,7 +322,7 @@ if archivo:
                 on_click=lambda: st.session_state.update({"descarga_realizada": True})
             )
 
-            # Mostrar multiselect solo después de descargar
+            # Mostrar multiselect y botón de priorización solo después de descargar
             if st.session_state.get("descarga_realizada", False):
                 st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
                 selected_alta = st.multiselect(
@@ -331,50 +333,55 @@ if archivo:
                 if selected_alta:
                     st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
 
-# Botón para generar matriz de priorización del riesgo (fuera del bloque if archivo)
-st.button("Generar matriz de priorización del riesgo", on_click=lambda: st.session_state.update({'mostrar_matriz': True}))
+                    # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
+                    if st.button("Generar matriz de priorización del riesgo"):
+                        st.session_state['mostrar_matriz'] = True
+                        st.experimental_rerun()
 
-# Mostrar matriz y texto solo si se activó el botón
-if st.session_state.get('mostrar_matriz', False):
-    st.markdown("**En la siguiente matriz, por favor ubica el nivel de riesgo obtenido.**")
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center;">
-            <div id="risk-matrix" style="width: 400px; height: 400px; position: relative; border: 2px solid black;">
-                <div id="zone-red" style="position: absolute; top: 0; right: 0; width: 50%; height: 50%; background-color: #FFC7CE; cursor: pointer;"></div>
-                <div id="zone-yellow" style="position: absolute; top: 0; left: 0; width: 50%; height: 50%; background-color: #FFEB9C; cursor: pointer;"></div>
-                <div id="zone-green" style="position: absolute; bottom: 0; left: 0; width: 50%; height: 50%; background-color: #C6EFCE; cursor: pointer;"></div>
-                <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%);">NPR ajustado</div>
-                <div style="position: absolute; left: -50px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; transform: rotate(180deg);">Ocurrencia</div>
-            </div>
-        </div>
-        <script>
-            const matrix = document.getElementById('risk-matrix');
-            const zones = matrix.getElementsByTagName('div');
-            for (let zone of zones) {
-                zone.addEventListener('click', function() {
-                    const zoneId = this.id;
-                    let message = '';
-                    if (zoneId === 'zone-red') {
-                        message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                    } else if (zoneId === 'zone-green') {
-                        message = 'No es necesario implementar controles adicionales para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                    } else if (zoneId === 'zone-yellow') {
-                        message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                    }
-                    window.parent.postMessage({type: 'matrix_click', value: message}, '*');
-                });
-            }
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+                    # Mostrar matriz y texto solo si se activó el botón
+                    if st.session_state.get('mostrar_matriz', False):
+                        st.markdown("**En la siguiente matriz, por favor ubica el nivel de riesgo obtenido.**")
+                        st.markdown(
+                            """
+                            <div style="display: flex; justify-content: center;">
+                                <div id="risk-matrix" style="width: 400px; height: 400px; position: relative; border: 2px solid black;">
+                                    <div id="zone-red" style="position: absolute; top: 0; right: 0; width: 50%; height: 50%; background-color: #FFC7CE; cursor: pointer;"></div>
+                                    <div id="zone-yellow" style="position: absolute; top: 0; left: 0; width: 50%; height: 50%; background-color: #FFEB9C; cursor: pointer;"></div>
+                                    <div id="zone-green" style="position: absolute; bottom: 0; left: 0; width: 50%; height: 50%; background-color: #C6EFCE; cursor: pointer;"></div>
+                                    <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%);">NPR ajustado</div>
+                                    <div style="position: absolute; left: -50px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; transform: rotate(180deg);">Ocurrencia</div>
+                                </div>
+                            </div>
+                            <script>
+                                const matrix = document.getElementById('risk-matrix');
+                                const zones = matrix.getElementsByTagName('div');
+                                for (let zone of zones) {
+                                    zone.addEventListener('click', function() {
+                                        const zoneId = this.id;
+                                        let message = '';
+                                        if (zoneId === 'zone-red') {
+                                            message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                        } else if (zoneId === 'zone-green') {
+                                            message = 'No es necesario implementar controles adicionales para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                        } else if (zoneId === 'zone-yellow') {
+                                            message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                        }
+                                        window.parent.postMessage({type: 'matrix_click', value: message}, '*');
+                                    });
+                                }
+                            </script>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
-    # Escuchar el mensaje del clic en la matriz
-    if 'matrix_message' not in st.session_state:
-        st.session_state['matrix_message'] = None
-    if st.experimental_get_query_params().get("matrix_click", [None])[0]:
-        st.session_state['matrix_message'] = st.experimental_get_query_params().get("matrix_click", [None])[0]
-        st.experimental_rerun()
-    if st.session_state['matrix_message']:
-        st.write(st.session_state['matrix_message'])
+                        # Escuchar el mensaje del clic en la matriz
+                        if 'matrix_message' not in st.session_state:
+                            st.session_state['matrix_message'] = None
+                        if st.experimental_get_query_params().get("matrix_click", [None])[0]:
+                            st.session_state['matrix_message'] = st.experimental_get_query_params().get("matrix_click", [None])[0]
+                            st.experimental_rerun()
+                        if st.session_state['matrix_message']:
+                            st.write(st.session_state['matrix_message'])
+
+else:
+    st.info("Por favor, sube un archivo Excel para comenzar.")

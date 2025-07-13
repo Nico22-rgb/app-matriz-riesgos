@@ -320,111 +320,100 @@ if archivo:
                 on_click=lambda: st.session_state.update({"descarga_realizada": True})
             )
 
-            # Mostrar multiselect solo después de descargar
-            if st.session_state.get("descarga_realizada", False):
-                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
-                selected_alta = st.multiselect(
-                    "Seleccione las operaciones con criticidad alta:",
-                    options=st.session_state['etapas_seleccionadas'],
-                    key="alta_seleccion"
-                )
-                
-                if selected_alta:
-                    operaciones_texto = ', '.join(selected_alta)
-                    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
+          # Mostrar multiselect solo después de descargar
+if st.session_state.get("descarga_realizada", False):
+    st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
+    selected_alta = st.multiselect(
+        "Seleccione las operaciones con criticidad alta:",
+        options=st.session_state['etapas_seleccionadas'],
+        key="alta_seleccion"
+    )
 
+    if selected_alta:
+        operaciones_texto = ', '.join(selected_alta)
+        st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
 
-if st.button("Generar matriz de priorización del riesgo"):
-                st.session_state['mostrar_matriz'] = True
-                # No st.rerun() here, as the image display is conditional on 'mostrar_matriz'
-                # and Streamlit will rerun naturally to update the UI.
+        if st.button("Generar matriz de priorización del riesgo"):
+            st.session_state['mostrar_matriz'] = True
 
-        # Mostrar imagen con zonas clicables solo si se activó el botón
-        if st.session_state.get('mostrar_matriz', False):
-            st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
+# Mostrar imagen con zonas clicables solo si se activó el botón
+if st.session_state.get('mostrar_matriz', False):
+    st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
 
-            def mostrar_imagen_con_zonas(path_png_transparente):
-                try:
-                    with open(path_png_transparente, "rb") as image_file:
-                        encoded = base64.b64encode(image_file.read()).decode()
+    def mostrar_imagen_con_zonas(path_png_transparente):
+        try:
+            with open(path_png_transparente, "rb") as image_file:
+                encoded = base64.b64encode(image_file.read()).decode()
 
-                    # Use a unique ID for the image and map to ensure no conflicts
-                    # The onclick now uses streamlit_js_eval to send data back to Streamlit
-                    st.markdown(
-                        f"""
-                        <div style="display: flex; justify-content: center;">
-                            <div style="position: relative;">
-                                <img src="data:image/png;base64,{encoded}" usemap="#image-map-matrix" style="max-width: 100%; height: auto;">
-                                <map name="image-map-matrix">
-                                    <area target="" alt="VERDE 1" title="VERDE 1" href="#" coords="131,246,131,94,507,245,235,248" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 1'); return false;">
-                                    <area target="" alt="VERDE 2" title="VERDE 2" href="#" coords="249,90,133,94,257,144,252,113" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 2'); return false;">
-                                    <area target="" alt="VERDE 3" title="VERDE 3" href="#" coords="381,192,252,142,379,141" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 3'); return false;">
-                                    <area target="" alt="VERDE 4" title="VERDE 4" href="#" coords="381,194,504,196,503,241" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 4'); return false;">
+            st.markdown(
+                f"""
+                <div style="display: flex; justify-content: center;">
+                    <div style="position: relative;">
+                        <img src="data:image/png;base64,{encoded}" usemap="#image-map-matrix" style="max-width: 100%; height: auto;">
+                        <map name="image-map-matrix">
+                            <area target="" alt="VERDE 1" title="VERDE 1" href="#" coords="131,246,131,94,507,245,235,248" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 1'); return false;">
+                            <area target="" alt="VERDE 2" title="VERDE 2" href="#" coords="249,90,133,94,257,144,252,113" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 2'); return false;">
+                            <area target="" alt="VERDE 3" title="VERDE 3" href="#" coords="381,192,252,142,379,141" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 3'); return false;">
+                            <area target="" alt="VERDE 4" title="VERDE 4" href="#" coords="381,194,504,196,503,241" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 4'); return false;">
+                            <area target="" alt="AMARILLO 1" title="AMARILLO 1" href="#" coords="254,88,129,36" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 1'); return false;">
+                            <area target="" alt="AMARILLO 2" title="AMARILLO 2" href="#" coords="256,91,380,138" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 2'); return false;">
+                            <area target="" alt="AMARILLO 3" title="AMARILLO 3" href="#" coords="383,145,505,191" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 3'); return false;">
+                            <area target="" alt="AMARILLO 4" title="AMARILLO 4" href="#" coords="508,200,633,247" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 4'); return false;">
+                            <area target="" alt="ROJO 1" title="ROJO 1" href="#" coords="385,39,632,145" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 1'); return false;">
+                            <area target="" alt="ROJO 2" title="ROJO 2" href="#" coords="258,42,384,88" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 2'); return false;">
+                            <area target="" alt="ROJO 3" title="ROJO 3" href="#" coords="508,148,631,192" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 3'); return false;">
+                        </map>
+                    </div>
+                </div>
 
-                                    <area target="" alt="AMARILLO 1" title="AMARILLO 1" href="#" coords="254,88,129,36" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 1'); return false;">
-                                    <area target="" alt="AMARILLO 2" title="AMARILLO 2" href="#" coords="256,91,380,138" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 2'); return false;">
-                                    <area target="" alt="AMARILLO 3" title="AMARILLO 3" href="#" coords="383,145,505,191" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 3'); return false;">
-                                    <area target="" alt="AMARILLO 4" title="AMARILLO 4" href="#" coords="508,200,633,247" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 4'); return false;">
+                <script>
+                    function sendToStreamlit(color, area) {{
+                        let message = '';
+                        switch(color) {{
+                            case 'verde':
+                                message = 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                break;
+                            case 'amarillo':
+                                message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                break;
+                            case 'rojo':
+                                message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                break;
+                        }}
+                        window.parent.postMessage({{"type": "streamlit:setFrameHeight"}}, "*");
+                        window.parent.postMessage({{"type": "streamlit:sendMessage", "payload": {{"type": "scriptFinished", "value": message, "area": area, "color": color}}}}, "*");
+                    }}
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+        except FileNotFoundError:
+            st.warning(f"No se encontró el archivo '{path_png_transparente}'.")
+        except Exception as e:
+            st.warning(f"No se pudo cargar la imagen. Error: {e}")
+            st.info("Verifica que el archivo exista y esté en formato PNG.")
 
-                                    <area target="" alt="ROJO 1" title="ROJO 1" href="#" coords="385,39,632,145" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 1'); return false;">
-                                    <area target="" alt="ROJO 2" title="ROJO 2" href="#" coords="258,42,384,88" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 2'); return false;">
-                                    <area target="" alt="ROJO 3" title="ROJO 3" href="#" coords="508,148,631,192" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 3'); return false;">
-                                </map>
-                            </div>
-                        </div>
+    mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
-                        <script>
-                            function sendToStreamlit(color, area) {{
-                                let message = '';
-
-                                switch(color) {{
-                                    case 'verde':
-                                        message = 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                    case 'amarillo':
-                                        message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                    case 'rojo':
-                                        message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                }}
-                                // Use window.parent.postMessage to communicate with Streamlit
-                                window.parent.postMessage({{"type": "streamlit:setFrameHeight"}}, "*"); // Optional: helps adjust frame height if needed
-                                window.parent.postMessage({{"type": "streamlit:sendMessage", "payload": {{"type": "scriptFinished", "value": message, "area": area, "color": color}}}}, "*");
-                            }}
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                except FileNotFoundError:
-                    st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo esté en el mismo directorio que este script.")
-                except Exception as e:
-                    st.warning(f"No se pudo cargar la imagen. Error: {e}")
-                    st.info("Verifica que el archivo exista y esté en formato PNG.")
-
-            mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
-
-            # Handling messages from JavaScript using streamlit_js_eval
-            # This captures the value sent from the JavaScript
-            js_result = streamlit_js_eval(js_expressions="""
-                window.addEventListener('message', event => {
-                    if (event.data.type === 'streamlit:sendMessage' && event.data.payload.type === 'scriptFinished') {
-                        parent.streamlit.setComponentValue({
-                            value: event.data.payload.value,
-                            area: event.data.payload.area,
-                            color: event.data.payload.color
-                        });
-                    }
+    js_result = streamlit_js_eval(js_expressions="""
+        window.addEventListener('message', event => {
+            if (event.data.type === 'streamlit:sendMessage' && event.data.payload.type === 'scriptFinished') {
+                parent.streamlit.setComponentValue({
+                    value: event.data.payload.value,
+                    area: event.data.payload.area,
+                    color: event.data.payload.color
                 });
-                null; // Return null initially, value will be set by the JS message
-            """, key="matrix_click_receiver")
+            }
+        });
+        null;
+    """, key="matrix_click_receiver")
 
-            if js_result:
-                message = js_result.get('value')
-                area = js_result.get('area')
-                color = js_result.get('color')
-                if message:
-                    st.info(f"Has seleccionado la zona {area} ({color}). Mensaje: {message}")
+    if js_result:
+        message = js_result.get('value')
+        area = js_result.get('area')
+        color = js_result.get('color')
+        if message:
+            st.info(f"Has seleccionado la zona {area} ({color}). Mensaje: {message}")
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

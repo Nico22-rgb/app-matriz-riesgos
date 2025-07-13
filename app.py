@@ -392,7 +392,7 @@ if st.session_state.get('mostrar_matriz', False):
             st.session_state['area_roja_consultada'] = True
             st.rerun()  # Forzar recarga para reflejar el cambio
 
- # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
+# Mostrar Plan de Muestreo solo después de interactuar con Área Roja
 if st.session_state.get('area_roja_consultada', False):
     # Título centrado con margen inferior
     st.markdown("""
@@ -435,8 +435,10 @@ if st.session_state.get('area_roja_consultada', False):
             # Normalizar solo para comparación, mantener original para mostrar
             ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
             etapa_normalizada = etapa.strip().lower()
-            operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]["Operación"].dropna().unique().tolist()
-            atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]["Atributo"].dropna().unique().tolist()
+            # Filtrar todas las filas para la etapa y tomar todas las operaciones/atributos
+            filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
+            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones sin eliminar duplicados
+            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos sin eliminar duplicados
         else:
             operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
             atributos_filtrados = ["Dimensión", "Peso", "Pureza"]

@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 import base64
+from streamlit_js_eval import streamlit_js_eval
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule

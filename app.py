@@ -293,42 +293,55 @@ if archivo:
                 st.session_state['excel_buffer'] = output
                 st.session_state['etapas_seleccionadas'] = etapas_seleccionadas  # Guardar etapas seleccionadas
 
-                # Animación de confeti
+                # Animación de confeti estática
                 st.markdown(
                     """
                     <style>
-                    .confetti {
+                    .confetti-container {
                         position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        pointer-events: none;
+                        z-index: 1000;
+                        display: none;
+                    }
+                    .confetti {
+                        position: absolute;
                         width: 10px;
                         height: 10px;
-                        background: #f00;
+                        background: hsl(var(--hue), 70%, 50%);
                         border-radius: 50%;
-                        animation: fall 2s linear infinite;
-                        pointer-events: none;
+                        animation: fall 2s linear forwards;
                     }
                     @keyframes fall {
                         0% { transform: translateY(-100vh); opacity: 1; }
                         100% { transform: translateY(100vh); opacity: 0; }
                     }
-                    .confetti:nth-child(2n) { background: #0f0; }
-                    .confetti:nth-child(3n) { background: #00f; }
-                    .confetti:nth-child(4n) { background: #ff0; }
+                    .confetti:nth-child(2n) { --hue: 120; }
+                    .confetti:nth-child(3n) { --hue: 240; }
+                    .confetti:nth-child(4n) { --hue: 60; }
                     </style>
+                    <div class="confetti-container" id="confetti-container"></div>
                     <script>
                     function createConfetti() {
+                        const container = document.getElementById('confetti-container');
+                        container.innerHTML = '';
                         for (let i = 0; i < 50; i++) {
                             const confetti = document.createElement('div');
                             confetti.className = 'confetti';
                             confetti.style.left = Math.random() * 100 + 'vw';
-                            confetti.style.animationDuration = Math.random() * 2 + 1 + 's';
-                            confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                            document.body.appendChild(confetti);
+                            confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+                            confetti.style.setProperty('--hue', Math.random() * 360);
+                            container.appendChild(confetti);
                         }
+                        container.style.display = 'block';
                         setTimeout(() => {
-                            document.querySelectorAll('.confetti').forEach(e => e.remove());
+                            container.style.display = 'none';
                         }, 2000);
                     }
-                    createConfeti();
+                    document.querySelector('button').onclick = createConfetti;
                     </script>
                     """,
                     unsafe_allow_html=True

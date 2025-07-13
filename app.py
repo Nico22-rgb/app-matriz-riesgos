@@ -34,20 +34,25 @@ def mostrar_logo_adaptable(path_png_transparente):
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
 
+# ... (importaciones y configuración inicial permanecen iguales)
+
 # Función para cargar datos con openpyxl
 @st.cache_data
 def load_excel(file, sheet_name):
-    import pandas as pd
     from openpyxl import load_workbook
+    import pandas as pd
     wb = load_workbook(file)
     ws = wb[sheet_name]
     data = []
     headers = [cell.value for cell in ws[1] if cell.value]  # Obtener encabezados de la primera fila
+    st.write("Encabezados detectados:", headers)  # Depuración de encabezados
     for row in ws.iter_rows(min_row=2, values_only=False):  # Leer todas las filas
         row_data = [cell.value for cell in row if cell.value is not None]  # Solo valores no nulos
         if row_data:  # Ignorar filas completamente vacías
             data.append(row_data)
-    return pd.DataFrame(data, columns=headers)
+    df = pd.DataFrame(data, columns=headers)
+    st.write("Datos crudos cargados:", df)  # Depuración de datos crudos
+    return df
 
 # ======== Autenticación ========
 CONTRASENA = "M"
@@ -75,8 +80,6 @@ if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
         ET_OP_AT_df = load_excel(archivo, sheet_name="ET_OP_AT")
         st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
-        # Depuración: Mostrar datos cargados
-        st.write("Datos cargados de ET_OP_AT:", ET_OP_AT_df)
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
         st.session_state['ET_OP_AT_df'] = pd.DataFrame({

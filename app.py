@@ -380,34 +380,39 @@ if st.session_state.get('mostrar_matriz', False):
             st.rerun()  # Forzar recarga para reflejar el cambio
 
     # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
-    if st.session_state.get('area_roja_consultada', False):
-        # Título centrado con margen inferior
-        st.markdown("""
-            <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
-        """, unsafe_allow_html=True)
+if st.session_state.get('area_roja_consultada', False):
+    # Título centrado con margen inferior
+    st.markdown("""
+        <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
+    """, unsafe_allow_html=True)
 
-        # Contenedor con imagen y texto separados con espacio
-        st.markdown(f"""
-            <div style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 35px;">
-                <img src="data:image/png;base64,{base64.b64encode(open('muestreo.png', 'rb').read()).decode()}" 
-                     style="width: 130px; height: auto; border-radius: 5px;" />
-                <p style="text-align: justify; max-width: 600px;">
-                    La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra 
-                    para poblaciones de tamaño finito del capítulo <b><1010></b> de la Farmacopea de los Estados Unidos de América, y en 
-                    las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b> sobre el muestreo y análisis de datos en la 
-                    validación de procesos de manufactura en Altea Farmacéutica S.A.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+    # Contenedor con imagen y texto separados con espacio
+    st.markdown(f"""
+        <div style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 35px;">
+            <img src="data:image/png;base64,{base64.b64encode(open('muestreo.png', 'rb').read()).decode()}" 
+                 style="width: 130px; height: auto; border-radius: 5px;" />
+            <p style="text-align: justify; max-width: 600px;">
+                La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra 
+                para poblaciones de tamaño finito del capítulo <b><1010></b> de la Farmacopea de los Estados Unidos de América, y en 
+                las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b> sobre el muestreo y análisis de datos en la 
+                validación de procesos de manufactura en Altea Farmacéutica S.A.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
-        # Espacio adicional antes del siguiente componente
-        st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+    # Espacio adicional antes del siguiente componente
+    st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-        # Formulario en una fila
-        with st.expander("Por favor diligencia los campos correspondientes de acuerdo con la matriz de riesgo obtenida para el proceso ", expanded=True):
+    # Formulario en una fila con etapas críticas dinámicas
+    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+        # Obtener las etapas críticas seleccionadas en el multiselect
+        etapas_criticas = st.session_state.get('alta_seleccion', [])
+        if not etapas_criticas:
+            st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
+        else:
             col1, col2, col3 = st.columns(3)
             with col1:
-                etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])
+                etapa = st.selectbox("Etapa", options=etapas_criticas)
             with col2:
                 operacion = st.selectbox("Operación", ["Prueba 1", "Prueba 2", "Inspección"])
             with col3:

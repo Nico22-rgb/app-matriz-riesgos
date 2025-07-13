@@ -371,6 +371,26 @@ if archivo:
         with st.expander("🔴 Área Roja"):
             st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
 
+
+# Selectores en cascada
+etapa = st.selectbox("Etapa", opciones_etapa)
+operacion = st.selectbox("Operación", filtrar_operaciones(etapa))
+atributo = st.selectbox("Atributo", filtrar_atributos(operacion))
+
+# Controles interactivos
+criticidad = st.select_slider("Criticidad", ["Bajo", "Medio", "Alto"])
+aql = st.number_input("AQL (%)", min_value=0.1, max_value=10.0)
+
+# Visualización en tiempo real
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Tamaño Muestra", sample_size)
+with col2:
+    st.metric("Nivel Confianza", confidence_level)
+
+
+
+
 else:
     # Solo mostrar este mensaje cuando NO hay archivo subido
     st.info("Por favor, sube un archivo Excel para comenzar.")

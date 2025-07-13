@@ -437,8 +437,10 @@ if st.session_state.get('area_roja_consultada', False):
             etapa_normalizada = etapa.strip().lower()
             # Filtrar todas las filas para la etapa y tomar todas las operaciones/atributos
             filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones sin eliminar duplicados
-            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos sin eliminar duplicados
+            # Depuración temporal: Mostrar filas filtradas
+            st.write("Filas filtradas para la etapa seleccionada:", filas_filtradas)
+            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones
+            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos
         else:
             operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
             atributos_filtrados = ["Dimensión", "Peso", "Pureza"]

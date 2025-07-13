@@ -372,25 +372,26 @@ if archivo:
             st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
 
 
-# Selectores en cascada
-etapa = st.selectbox("Etapa", opciones_etapa)
-operacion = st.selectbox("Operación", filtrar_operaciones(etapa))
-atributo = st.selectbox("Atributo", filtrar_atributos(operacion))
-
-# Controles interactivos
-criticidad = st.select_slider("Criticidad", ["Bajo", "Medio", "Alto"])
-aql = st.number_input("AQL (%)", min_value=0.1, max_value=10.0)
-
-# Visualización en tiempo real
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Tamaño Muestra", sample_size)
-with col2:
-    st.metric("Nivel Confianza", confidence_level)
-
-
-
-
 else:
     # Solo mostrar este mensaje cuando NO hay archivo subido
     st.info("Por favor, sube un archivo Excel para comenzar.")
+
+# ======== Módulo de Plan de Muestreo ========
+st.markdown("---")  # Separador visual
+st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Generación de Plan de Muestreo</h3>", unsafe_allow_html=True)
+
+# Formulario en una fila
+with st.expander("Seleccionar Criterios de Muestreo", expanded=True):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])
+    with col2:
+        operacion = st.selectbox("Operación", ["Prueba 1", "Prueba 2", "Inspección"])
+    with col3:
+        atributo = st.selectbox("Atributo", ["Dimensión", "Peso", "Pureza"])
+
+    col4, col5 = st.columns(2)
+    with col4:
+        criticidad = st.selectbox("Nivel de Criticidad", ["Bajo", "Moderado", "Alto"])
+    with col5:
+        aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)

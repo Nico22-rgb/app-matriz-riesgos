@@ -337,8 +337,8 @@ if archivo:
 
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
-
-   if st.session_state.get('mostrar_matriz', False):
+                        # Mostrar imagen con zonas clicables solo si se activó el botón
+if st.session_state.get('mostrar_matriz', False):
     def mostrar_imagen_con_zonas(path_png_transparente):
         try:
             with open(path_png_transparente, "rb") as image_file:

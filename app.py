@@ -333,7 +333,7 @@ if archivo:
 
                 if selected_alta:
                     operaciones_texto = ', '.join(selected_alta)
-                    st.info(f"Las etapas que involcuran operaciones críticas son: {operaciones_texto}")
+                    st.info(f"Las etapas que involucran operaciones críticas son: {operaciones_texto}")
 
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True

@@ -330,21 +330,11 @@ if archivo:
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )
-               if st.button("Generar matriz de priorización del riesgo"):
+                if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
                         st.rerun()
-
-                   # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
-                    if st.button("Generar matriz de priorización del riesgo"):
-                        st.session_state['mostrar_matriz'] = True
-                        st.rerun()
-
-                  # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
-                    if st.button("Generar matriz de priorización del riesgo"):
-                        st.session_state['mostrar_matriz'] = True
-                        st.rerun()
-
-                    # Mostrar imagen con zonas clicables solo si se activó el botón
+                    
+                # Mostrar imagen con zonas clicables solo si se activó el botón
                     if st.session_state.get('mostrar_matriz', False):
                         st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
                         def mostrar_imagen_con_zonas(path_png_transparente):

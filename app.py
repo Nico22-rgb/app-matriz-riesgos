@@ -331,7 +331,6 @@ if archivo:
                 
                 if selected_alta:
                     operaciones_texto = ', '.join(selected_alta)
-                    st.markdown(f"**Las operaciones críticas seleccionadas son:** {operaciones_texto}")
-
+                    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

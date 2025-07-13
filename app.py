@@ -55,6 +55,23 @@ if not st.session_state.autenticado:
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
 archivo = st.file_uploader("", type=["xlsx"])
 
+# Carga inicial de datos de operaciones y atributos
+if "ET-OP-AT_df" not in st.session_state and archivo is not None:
+    try:
+        operaciones_atributos_df = load_excel(archivo, sheet_name="Operaciones_Atributos")
+        st.session_state['operaciones_atributos_df'] = operaciones_atributos_df
+    except Exception as e:
+        st.warning(f"No se pudo cargar la hoja 'ET-OP-AT'. Error: {e}. Usando valores predeterminados.")
+        st.session_state['operaciones_atributos_df'] = pd.DataFrame({
+            "Etapa": ["Verificación", "Pesaje", "Limpieza", "Mezcla"],
+            "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
+            "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
+        })
+
+# ======== Carga de archivo y selección de opciones ========
+st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
+archivo = st.file_uploader("", type=["xlsx"])
+
 # Función para cargar datos con caché
 @st.cache_data
 def load_excel(file, sheet_name):
@@ -67,6 +84,7 @@ if archivo:
 
     etapas_seleccionadas = []
     sheet_to_use = None
+    # ... (resto del código existente)
 
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
@@ -404,23 +422,34 @@ if st.session_state.get('area_roja_consultada', False):
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
     # Formulario en una fila con etapas críticas dinámicas
-    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
-        # Obtener las etapas críticas seleccionadas en el multiselect
-        etapas_criticas = st.session_state.get('alta_seleccion', [])
-        if not etapas_criticas:
-            st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
+    # Formulario en una fila con etapas críticas dinámicas
+with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+    # Obtener las etapas críticas seleccionadas en el multiselect
+    etapas_criticas = st.session_state.get('alta_seleccion', [])
+    if not etapas_criticas:
+        st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
+    else:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            etapa = st.selectbox("Etapa", options=etapas_criticas)
+        
+        # Filtrar operaciones y atributos según la etapa seleccionada
+        ET-OP-AT_df = st.session_state.get('ET-OP-AT_df', pd.DataFrame())
+        if not operaciones_atributos_df.empty:
+            operaciones_filtradas = ET-OP-AT_df[operaciones_atributos_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
+            atributos_filtrados = ET-OP-AT__df[operaciones_atributos_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
         else:
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                etapa = st.selectbox("Etapa", options=etapas_criticas)
-            with col2:
-                operacion = st.selectbox("Operación", ["Prueba 1", "Prueba 2", "Inspección"])
-            with col3:
-                atributo = st.selectbox("Atributo", ["Dimensión", "Peso", "Pureza"])
+            operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
+            atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
 
-            col4, col5 = st.columns(2)
-            with col4:
-                criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
-            with col5:
-                aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+        with col2:
+            operacion = st.selectbox("Operación", options=operaciones_filtradas)
+        with col3:
+            atributo = st.selectbox("Atributo", options=atributos_filtrados)
+
+        col4, col5 = st.columns(2)
+        with col4:
+            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+        with col5:
+            aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
 

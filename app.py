@@ -338,6 +338,8 @@ if archivo:
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
                         # Mostrar imagen con zonas clicables solo si se activó el botón
+
+# Mostrar imagen con zonas clicables solo si se activó el botón
 if st.session_state.get('mostrar_matriz', False):
     def mostrar_imagen_con_zonas(path_png_transparente):
         try:
@@ -359,21 +361,26 @@ if st.session_state.get('mostrar_matriz', False):
    
     st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación/etapa**")
 
-    # Expander para áreas con seguimiento de consulta de Área Roja
+    # Inicializar estado para Área Roja
     if "area_roja_consultada" not in st.session_state:
         st.session_state['area_roja_consultada'] = False
 
+    # Expander para áreas
     with st.expander("🟢 Área Verde"):
         st.write("No es necesario implementar controles adicionales en esta operación-etapa para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final Se recomienda monitoreo rutinario.")
     
     with st.expander("🟡 Área Amarilla"):
         st.write("Considera implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
     
+    # Expander para Área Roja con seguimiento de interacción
     with st.expander("🔴 Área Roja"):
         st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
-        st.session_state['area_roja_consultada'] = True  # Marcar como consultada al expandir
+        # Actualizar estado solo si no se ha consultado antes (evitar reinicio)
+        if not st.session_state.get('area_roja_consultada', False):
+            st.session_state['area_roja_consultada'] = True
+            st.rerun()  # Forzar recarga para reflejar el cambio
 
-    # Mostrar Plan de Muestreo solo después de consultar Área Roja
+    # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
     if st.session_state.get('area_roja_consultada', False):
         # Título centrado con margen inferior
         st.markdown("""
@@ -412,3 +419,7 @@ if st.session_state.get('mostrar_matriz', False):
                 criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
             with col5:
                 aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+
+else:
+    # Solo mostrar este mensaje cuando NO hay archivo subido
+    st.info("Por favor, sube un archivo Excel para comenzar.")

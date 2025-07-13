@@ -58,8 +58,8 @@ archivo = st.file_uploader("", type=["xlsx"])
 # Carga inicial de datos de operaciones y atributos
 if "ET-OP-AT_df" not in st.session_state and archivo is not None:
     try:
-        operaciones_atributos_df = load_excel(archivo, sheet_name="Operaciones_Atributos")
-        st.session_state['operaciones_atributos_df'] = operaciones_atributos_df
+        operaciones_atributos_df = load_excel(archivo, sheet_name="ET-OP-AT")
+        st.session_state['ET-OP-AT_df'] = ET-OP-AT_df
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET-OP-AT'. Error: {e}. Usando valores predeterminados.")
         st.session_state['operaciones_atributos_df'] = pd.DataFrame({

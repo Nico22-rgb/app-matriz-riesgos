@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import io
-import base64
-from PIL import Image
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
@@ -17,30 +15,8 @@ st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Val
 def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode()
-
-        st.markdown(f"""
-        <style>
-            .logo-container {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
-            }}
-            body[data-theme="dark"] .logo-container {{
-                background-color: #0e1117;
-            }}
-            body[data-theme="light"] .logo-container {{
-                background-color: #f0f2f6;
-            }}
-            .logo-container img {{
-                width: 300px;
-            }}
-        </style>
-        <div class="logo-container">
-            <img src="data:image/png;base64,{encoded}" alt="Logo Altea" />
-        </div>
-        """, unsafe_allow_html=True)
+            encoded = image_file.read()
+        st.image(encoded, use_column_width=True)
     except Exception as e:
         st.warning(f"No se pudo cargar el logo. Error: {e}")
         st.info("Verifica que el archivo exista y esté en formato PNG transparente.")
@@ -315,10 +291,52 @@ if archivo:
                 wb.save(output)
                 output.seek(0)
                 st.session_state['excel_buffer'] = output
+                st.session_state['etapas_seleccionadas'] = etapas_seleccionadas  # Guardar etapas seleccionadas
+
+                # Animación de confeti
+                st.markdown(
+                    """
+                    <style>
+                    .confetti {
+                        position: fixed;
+                        width: 10px;
+                        height: 10px;
+                        background: #f00;
+                        border-radius: 50%;
+                        animation: fall 2s linear infinite;
+                        pointer-events: none;
+                    }
+                    @keyframes fall {
+                        0% { transform: translateY(-100vh); opacity: 1; }
+                        100% { transform: translateY(100vh); opacity: 0; }
+                    }
+                    .confetti:nth-child(2n) { background: #0f0; }
+                    .confetti:nth-child(3n) { background: #00f; }
+                    .confetti:nth-child(4n) { background: #ff0; }
+                    </style>
+                    <script>
+                    function createConfetti() {
+                        for (let i = 0; i < 50; i++) {
+                            const confetti = document.createElement('div');
+                            confetti.className = 'confetti';
+                            confetti.style.left = Math.random() * 100 + 'vw';
+                            confetti.style.animationDuration = Math.random() * 2 + 1 + 's';
+                            confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                            document.body.appendChild(confetti);
+                        }
+                        setTimeout(() => {
+                            document.querySelectorAll('.confetti').forEach(e => e.remove());
+                        }, 2000);
+                    }
+                    createConfeti();
+                    </script>
+                    """,
+                    unsafe_allow_html=True
+                )
 
                 st.success("¡Matriz de riesgo generada con éxito!")
 
-                # Botón de descarga sin logo, solo con emoji
+                # Botón de descarga
                 st.markdown(
                     f"""
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -329,6 +347,16 @@ if archivo:
                     """,
                     unsafe_allow_html=True
                 )
+
+                # Selección de operaciones con criticidad Alta
+                st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
+                selected_alta = st.multiselect(
+                    "Seleccione las operaciones:",
+                    options=etapas_seleccionadas,
+                    key="alta_seleccion"
+                )
+                if selected_alta:
+                    st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")

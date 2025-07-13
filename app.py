@@ -328,15 +328,10 @@ if archivo:
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )
+                
                 if selected_alta:
-                   operaciones_texto = ', '.join(selected_alta)
-                   st.text_area(
-                       "Operaciones seleccionadas con criticidad alta:",
-                       value=operaciones_texto,
-                       height=100,
-                       disabled=True,
-                       help="Estas son las operaciones que requieren mayor atención en la validación"
-                   )
+                    operaciones_texto = ', '.join(selected_alta)
+                    st.markdown(f"**Las operaciones críticas seleccionadas son:** {operaciones_texto}")
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

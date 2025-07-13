@@ -337,27 +337,27 @@ if archivo:
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
 
-# Mostrar imagen con zonas clicables solo si se activó el botón
-if st.session_state.get('mostrar_matriz', False):
-    st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
+    # Mostrar imagen con zonas clicables solo si se activó el botón
+    if st.session_state.get('mostrar_matriz', False):
+        st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
 
-    def mostrar_imagen_con_zonas(path_png_transparente):
-        try:
-            with open(path_png_transparente, "rb") as image_file:
-                encoded = base64.b64encode(image_file.read()).decode()
-            
-            st.markdown(
-                f"""
-                <div style="display: flex; justify-content: center;">
-                    <img src="data:image/png;base64,{encoded}" width="800">
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        except Exception as e:
-            st.error(f"Error al cargar la imagen: {e}")
+        def mostrar_imagen_con_zonas(path_png_transparente):
+            try:
+                with open(path_png_transparente, "rb") as image_file:
+                    encoded = base64.b64encode(image_file.read()).decode()
+                
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: center;">
+                        <img src="data:image/png;base64,{encoded}" width="800">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            except Exception as e:
+                st.error(f"Error al cargar la imagen: {e}")
 
-    mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+        mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

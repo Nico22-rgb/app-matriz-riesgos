@@ -334,10 +334,19 @@ if archivo:
                         st.session_state['mostrar_matriz'] = True
                         st.rerun()
 
+                   # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
+                    if st.button("Generar matriz de priorización del riesgo"):
+                        st.session_state['mostrar_matriz'] = True
+                        st.rerun()
+
+                  # Botón para generar matriz de priorización del riesgo después de seleccionar operaciones
+                    if st.button("Generar matriz de priorización del riesgo"):
+                        st.session_state['mostrar_matriz'] = True
+                        st.rerun()
+
                     # Mostrar imagen con zonas clicables solo si se activó el botón
                     if st.session_state.get('mostrar_matriz', False):
-                        st.markdown("**Por favor ubica el nivel de riesgo obtenido.**")
-
+                        st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
                         def mostrar_imagen_con_zonas(path_png_transparente):
                             try:
                                 with open(path_png_transparente, "rb") as image_file:
@@ -345,15 +354,18 @@ if archivo:
                                 st.markdown(
                                     f"""
                                     <div style="display: flex; justify-content: center;">
-                                        <img id="custom-image" src="data:image/png;base64,{encoded}" width="400" style="position: relative;">
+                                        <img id="custom-image" src="data:image/png;base64,{encoded}" width="747" style="position: relative;">
                                     </div>
                                     <script>
                                         const image = document.getElementById('custom-image');
-                                        // Define las zonas clicables (ajusta las coordenadas según tu imagen)
+                                        // Define las zonas clicables basadas en las coordenadas de tu imagen
                                         const zones = [
-                                            { id: 'zone-red', x: 0, y: 0, width: '50%', height: '50%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                            { id: 'zone-yellow', x: '50%', y: 0, width: '50%', height: '50%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                            { id: 'zone-green', x: 0, y: '50%', width: '50%', height: '50%', message: 'No es necesario implementar controles adicionales para demostrar que verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }
+                                            // Zona Verde (aproximación de VERDE 1 como rectángulo)
+                                            { id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
+                                            // Zona Amarilla (basada en AMARILLO 1 corregido)
+                                            { id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
+                                            // Zona Roja (basada en ROJO 1)
+                                            { id: 'zone-red', x: '51.54%', y: '13.31%', width: '33.20%', height: '36.52%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }
                                         ];
                                         zones.forEach(zone => {
                                             const div = document.createElement('div');
@@ -381,14 +393,6 @@ if archivo:
                                 st.warning(f"No se pudo cargar la imagen. Error: {e}")
                                 st.info("Verifica que el archivo exista y esté en formato PNG.")
                         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
-
-                        if 'matrix_message' not in st.session_state:
-                            st.session_state['matrix_message'] = None
-                        if st.query_params.get("matrix_click", [None])[0]:  # Cambiado a st.query_params
-                            st.session_state['matrix_message'] = st.query_params.get("matrix_click", [None])[0]
-                            st.rerun()
-                        if st.session_state['matrix_message']:
-                            st.write(st.session_state['matrix_message'])
 
                         if 'matrix_message' not in st.session_state:
                             st.session_state['matrix_message'] = None

@@ -388,9 +388,6 @@ y en las recomendaciones del procedimiento estándar de operación PSO-VAL-007
 sobre el Muestreo y análisis de datos en la valdiación de procesos de manufactura
 en Altea Farmaceútica S.A
 
-If you end a line with two spaces,
-a soft return is used for the next line.
-
 st.markdown(multi)
 
 # Formulario en una fila

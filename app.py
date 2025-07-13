@@ -306,24 +306,17 @@ if archivo:
 
                 st.success("¡Matriz de riesgo generada con éxito!")
 
-                # Botón de descarga
-                st.markdown(
-                    f"""
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(st.session_state['excel_buffer'].read()).decode()}" download="matriz_riesgo.xlsx">
-                            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" id="download-button">Descargar matriz de riesgo 📥</button>
-                        </a>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
+                # Botón de descarga con Streamlit
+                st.download_button(
+                    label="Descargar matriz de riesgo 📥",
+                    data=st.session_state['excel_buffer'].getvalue(),
+                    file_name="matriz_riesgo.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    on_click=lambda: st.session_state.update({"descarga_realizada": True})
                 )
 
-                # Estado para rastrear si se hizo clic en descargar
-                if "descarga_realizada" not in st.session_state:
-                    st.session_state.descarga_realizada = False
-
                 # Mostrar multiselect solo después de descargar
-                if st.session_state.descarga_realizada:
+                if st.session_state.get("descarga_realizada", False):
                     st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
                     selected_alta = st.multiselect(
                         "Seleccione las operaciones:",
@@ -335,24 +328,6 @@ if archivo:
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
-
-        # Script para detectar clic en el botón de descarga
-        st.markdown(
-            """
-            <script>
-            document.getElementById('download-button').addEventListener('click', function() {
-                // Enviar mensaje a Streamlit para actualizar el estado
-                window.parent.postMessage({type: 'descarga', value: true}, '*');
-            });
-            </script>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # Escuchar mensajes del script para actualizar el estado con st.query_params
-        if st.query_params.get("descarga") == "true":
-            st.session_state.descarga_realizada = True
-            st.experimental_rerun()
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

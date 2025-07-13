@@ -362,8 +362,6 @@ if archivo:
 
         
         # Información adicional
-        st.markdown("---")
-        st.markdown("### 📊 Información de las Áreas")
         
         with st.expander("🟢 Áreas Verdes - Riesgo Bajo"):
             st.write("Estas áreas representan riesgos de baja probabilidad e impacto. Se recomienda monitoreo rutinario.")

@@ -420,6 +420,3 @@ if st.session_state.get('mostrar_matriz', False):
             with col5:
                 aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
 
-else:
-    # Solo mostrar este mensaje cuando NO hay archivo subido
-    st.info("Por favor, sube un archivo Excel para comenzar.")

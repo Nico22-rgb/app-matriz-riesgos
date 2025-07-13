@@ -56,12 +56,12 @@ st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices d
 archivo = st.file_uploader("", type=["xlsx"])
 
 # Carga inicial de datos de operaciones y atributos
-if "ET-OP-AT_df" not in st.session_state and archivo is not None:
+if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
-        operaciones_atributos_df = load_excel(archivo, sheet_name="ET-OP-AT")
-        st.session_state['ET-OP-AT_df'] = ET-OP-AT_df
+        operaciones_atributos_df = load_excel(archivo, sheet_name="ET_OP_AT")
+        st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
     except Exception as e:
-        st.warning(f"No se pudo cargar la hoja 'ET-OP-AT'. Error: {e}. Usando valores predeterminados.")
+        st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
         st.session_state['operaciones_atributos_df'] = pd.DataFrame({
             "Etapa": ["Verificación", "Pesaje", "Limpieza", "Mezcla"],
             "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
@@ -434,10 +434,10 @@ with st.expander("Por favor diligencia los campos correspondientes basado en la 
             etapa = st.selectbox("Etapa", options=etapas_criticas)
         
         # Filtrar operaciones y atributos según la etapa seleccionada
-        ET-OP-AT_df = st.session_state.get('ET-OP-AT_df', pd.DataFrame())
+        ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
         if not operaciones_atributos_df.empty:
-            operaciones_filtradas = ET-OP-AT_df[operaciones_atributos_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
-            atributos_filtrados = ET-OP-AT__df[operaciones_atributos_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
+            operaciones_filtradas = ET_OP-AT_df[operaciones_atributos_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
+            atributos_filtrados = ET_OP_AT_df[operaciones_atributos_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
         else:
             operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
             atributos_filtrados = ["Dimensión", "Peso", "Pureza"]

@@ -392,7 +392,7 @@ if st.session_state.get('mostrar_matriz', False):
             st.session_state['area_roja_consultada'] = True
             st.rerun()  # Forzar recarga para reflejar el cambio
 
-  # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
+ # Mostrar Plan de Muestreo solo después de interactuar con Área Roja
 if st.session_state.get('area_roja_consultada', False):
     # Título centrado con margen inferior
     st.markdown("""
@@ -418,31 +418,46 @@ if st.session_state.get('area_roja_consultada', False):
 
     # Formulario en una fila con etapas críticas dinámicas
     with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
-        # Obtener las etapas críticas seleccionadas en el multiselect
-        etapas_criticas = st.session_state.get('alta_seleccion', [])
-        if not etapas_criticas:
-            st.warning("Por favor, seleccione al menos una etapa con criticidad alta en la sección anterior.")
+        # Obtener las etapas disponibles desde ET_OP_AT
+        ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
+        if ET_OP_AT_df.empty:
+            st.warning("No se cargaron datos de la hoja 'ET_OP_AT'. Usando valores predeterminados.")
+            etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
         else:
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                etapa = st.selectbox("Etapa", options=etapas_criticas)
-            
-            # Filtrar operaciones y atributos según la etapa seleccionada
-            ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
-            if not ET_OP_AT_df.empty:
-                operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa]["Operación"].dropna().unique().tolist()
-                atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa]["Atributo"].dropna().unique().tolist()
-            else:
-                operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
-                atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
+            etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
+            if st.checkbox("Mostrar datos de ET_OP_AT (para depuración)", key="debug_et_op_at"):
+                st.write("Datos cargados de la hoja ET_OP_AT:", ET_OP_AT_df)
 
-            with col2:
-                operacion = st.selectbox("Operación", options=operaciones_filtradas)
-            with col3:
-                atributo = st.selectbox("Atributo", options=atributos_filtrados)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            etapa = st.selectbox("Etapa", options=etapas_disponibles)
+        
+        # Filtrar operaciones y atributos según la etapa seleccionada
+        if not ET_OP_AT_df.empty:
+            # Normalizar etiquetas para evitar problemas de coincidencia
+            ET_OP_AT_df["Etapa"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
+            etapa_normalizada = etapa.strip().lower()
+            operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa_normalizada]["Operación"].dropna().unique().tolist()
+            atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa_normalizada]["Atributo"].dropna().unique().tolist()
+        else:
+            operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
+            atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
 
-            col4, col5 = st.columns(2)
-            with col4:
-                criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
-            with col5:
-                aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+        # Validación y mensaje si no hay opciones
+        if not operaciones_filtradas:
+            st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            operaciones_filtradas = ["Sin opciones"]
+        if not atributos_filtrados:
+            st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            atributos_filtrados = ["Sin opciones"]
+
+        with col2:
+            operacion = st.selectbox("Operación", options=operaciones_filtradas)
+        with col3:
+            atributo = st.selectbox("Atributo", options=atributos_filtrados)
+
+        col4, col5 = st.columns(2)
+        with col4:
+            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+        with col5:
+            aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)

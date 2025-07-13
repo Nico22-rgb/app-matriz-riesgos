@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
-import base64  # Añadido para corregir el error de 'base64' no definido
+import base64
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
@@ -301,59 +301,8 @@ if archivo:
                 st.session_state['excel_buffer'] = output
                 st.session_state['etapas_seleccionadas'] = etapas_seleccionadas  # Guardar etapas seleccionadas
 
-                # Animación de confeti estática
-                st.markdown(
-                    """
-                    <style>
-                    .confetti-container {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        pointer-events: none;
-                        z-index: 1000;
-                        display: none;
-                    }
-                    .confetti {
-                        position: absolute;
-                        width: 10px;
-                        height: 10px;
-                        background: hsl(var(--hue), 70%, 50%);
-                        border-radius: 50%;
-                        animation: fall 2s linear forwards;
-                    }
-                    @keyframes fall {
-                        0% { transform: translateY(-100vh); opacity: 1; }
-                        100% { transform: translateY(100vh); opacity: 0; }
-                    }
-                    .confetti:nth-child(2n) { --hue: 120; }
-                    .confetti:nth-child(3n) { --hue: 240; }
-                    .confetti:nth-child(4n) { --hue: 60; }
-                    </style>
-                    <div class="confetti-container" id="confetti-container"></div>
-                    <script>
-                    function createConfetti() {
-                        const container = document.getElementById('confetti-container');
-                        container.innerHTML = '';
-                        for (let i = 0; i < 50; i++) {
-                            const confetti = document.createElement('div');
-                            confetti.className = 'confetti';
-                            confetti.style.left = Math.random() * 100 + 'vw';
-                            confetti.style.animationDelay = (Math.random() * 0.5) + 's';
-                            confetti.style.setProperty('--hue', Math.random() * 360);
-                            container.appendChild(confetti);
-                        }
-                        container.style.display = 'block';
-                        setTimeout(() => {
-                            container.style.display = 'none';
-                        }, 2000);
-                    }
-                    document.querySelector('button').onclick = createConfetti;
-                    </script>
-                    """,
-                    unsafe_allow_html=True
-                )
+                # Animación de globos
+                st.balloons()
 
                 st.success("¡Matriz de riesgo generada con éxito!")
 
@@ -362,25 +311,48 @@ if archivo:
                     f"""
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(st.session_state['excel_buffer'].read()).decode()}" download="matriz_riesgo.xlsx">
-                            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Descargar matriz de riesgo 📥</button>
+                            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" id="download-button">Descargar matriz de riesgo 📥</button>
                         </a>
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
 
-                # Selección de operaciones con criticidad Alta
-                st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
-                selected_alta = st.multiselect(
-                    "Seleccione las operaciones:",
-                    options=etapas_seleccionadas,
-                    key="alta_seleccion"
-                )
-                if selected_alta:
-                    st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
+                # Estado para rastrear si se hizo clic en descargar
+                if "descarga_realizada" not in st.session_state:
+                    st.session_state.descarga_realizada = False
+
+                # Mostrar multiselect solo después de descargar
+                if st.session_state.descarga_realizada:
+                    st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
+                    selected_alta = st.multiselect(
+                        "Seleccione las operaciones:",
+                        options=etapas_seleccionadas,
+                        key="alta_seleccion"
+                    )
+                    if selected_alta:
+                        st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+        # Script para detectar clic en el botón de descarga
+        st.markdown(
+            """
+            <script>
+            document.getElementById('download-button').addEventListener('click', function() {
+                // Enviar mensaje a Streamlit para actualizar el estado
+                window.parent.postMessage({type: 'descarga', value: true}, '*');
+            });
+            </script>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Escuchar mensajes del script para actualizar el estado
+        if st.experimental_get_query_params().get("descarga", [None])[0] == "true":
+            st.session_state.descarga_realizada = True
+            st.experimental_rerun()
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

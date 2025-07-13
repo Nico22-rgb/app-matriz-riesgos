@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
+import base64  # Añadido para corregir el error de 'base64' no definido
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
@@ -16,7 +17,14 @@ def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
             encoded = image_file.read()
-        st.image(encoded, width=300)  # Establecer ancho fijo de 300px en lugar de use_column_width
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center;">
+                <img src="data:image/png;base64,{base64.b64encode(encoded).decode()}" width="300">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     except Exception as e:
         st.warning(f"No se pudo cargar el logo. Error: {e}")
         st.info("Verifica que el archivo exista y esté en formato PNG transparente.")

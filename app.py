@@ -322,14 +322,21 @@ if archivo:
 
             # Mostrar multiselect solo después de descargar
             if st.session_state.get("descarga_realizada", False):
-                st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
+                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:</h5>", unsafe_allow_html=True)
                 selected_alta = st.multiselect(
                     "Seleccione las operaciones:",
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )
                 if selected_alta:
-                    st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
+                   operaciones_texto = ', '.join(selected_alta)
+                   st.text_area(
+                       "Operaciones seleccionadas con criticidad alta:",
+                       value=operaciones_texto,
+                       height=100,
+                       disabled=True,
+                       help="Estas son las operaciones que requieren mayor atención en la validación"
+                   )
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

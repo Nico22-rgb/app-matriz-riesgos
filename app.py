@@ -359,14 +359,14 @@ if archivo:
 
         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
        
-        st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación - etapa**")
+        st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación/etapa**")
 
         # Información adicional
         with st.expander("🟢 Área Verde"):
             st.write("No es necesario implementar controles adicionales en esta operación-etapa para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final Se recomienda monitoreo rutinario.")
         
         with st.expander("🟡 Área Amarilla"):
-            st.write("Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
+            st.write("Considera implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
         
         with st.expander("🔴 Área Roja"):
             st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")

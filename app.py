@@ -380,13 +380,7 @@ else:
 st.markdown("---")  # Separador visual
 st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
 
-# Leer y codificar la imagen en base64
-if os.path.exists("muestreo.png"):
-    with open("muestreo.png", "rb") as f:
-        encoded = base64.b64encode(f.read()).decode()
-
-    st.markdown("---")
-    st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
+st.image(muestreo.png)
 
     st.markdown(
         f"""

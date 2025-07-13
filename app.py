@@ -16,7 +16,7 @@ def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
             encoded = image_file.read()
-        st.image(encoded, use_column_width=True)
+        st.image(encoded, width=300)  # Establecer ancho fijo de 300px en lugar de use_column_width
     except Exception as e:
         st.warning(f"No se pudo cargar el logo. Error: {e}")
         st.info("Verifica que el archivo exista y esté en formato PNG transparente.")

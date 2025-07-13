@@ -34,10 +34,20 @@ def mostrar_logo_adaptable(path_png_transparente):
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
 
-# Función para cargar datos con caché (definida al inicio)
+# Función para cargar datos con openpyxl
 @st.cache_data
 def load_excel(file, sheet_name):
-    return pd.read_excel(file, sheet_name=sheet_name, header=0)  # Usar la primera fila como encabezado
+    import pandas as pd
+    from openpyxl import load_workbook
+    wb = load_workbook(file)
+    ws = wb[sheet_name]
+    data = []
+    headers = [cell.value for cell in ws[1] if cell.value]  # Obtener encabezados de la primera fila
+    for row in ws.iter_rows(min_row=2, values_only=False):  # Leer todas las filas
+        row_data = [cell.value for cell in row if cell.value is not None]  # Solo valores no nulos
+        if row_data:  # Ignorar filas completamente vacías
+            data.append(row_data)
+    return pd.DataFrame(data, columns=headers)
 
 # ======== Autenticación ========
 CONTRASENA = "M"
@@ -54,7 +64,7 @@ if not st.session_state.autenticado:
     else:
         if contrasena != "":
             st.error("❌ Contraseña incorrecta.")
-        st.stop()  # Detiene la ejecución hasta que se autentique correctamente
+        st.stop()
 
 # ======== Carga de archivo y selección de opciones ========
 st.markdown("<h5>Por favor sube el archivo de la base de datos de las matrices de riesgo</h5>", unsafe_allow_html=True)
@@ -63,8 +73,10 @@ archivo = st.file_uploader("", type=["xlsx"], key="file_uploader_unique")
 # Carga inicial de datos de la hoja ET_OP_AT
 if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
-        operaciones_atributos_df = load_excel(archivo, sheet_name="ET_OP_AT")
-        st.session_state['ET_OP_AT_df'] = operaciones_atributos_df
+        ET_OP_AT_df = load_excel(archivo, sheet_name="ET_OP_AT")
+        st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
+        # Depuración: Mostrar datos cargados
+        st.write("Datos cargados de ET_OP_AT:", ET_OP_AT_df)
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
         st.session_state['ET_OP_AT_df'] = pd.DataFrame({
@@ -437,7 +449,7 @@ if st.session_state.get('area_roja_consultada', False):
             etapa_normalizada = etapa.strip().lower()
             # Filtrar todas las filas para la etapa y tomar todas las operaciones/atributos
             filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-            # Depuración temporal: Mostrar filas filtradas
+            # Depuración: Mostrar filas filtradas
             st.write("Filas filtradas para la etapa seleccionada:", filas_filtradas)
             operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones
             atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos

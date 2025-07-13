@@ -1,8 +1,8 @@
+
 import streamlit as st
 import pandas as pd
 import io
 import base64
-from streamlit_js_eval import streamlit_js_eval
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
@@ -319,7 +319,6 @@ if archivo:
                 file_name="matriz_riesgo.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 on_click=lambda: st.session_state.update({"descarga_realizada": True})
-            )
 
           # Mostrar multiselect solo después de descargar
 if st.session_state.get("descarga_realizada", False):
@@ -346,75 +345,11 @@ if st.session_state.get('mostrar_matriz', False):
             with open(path_png_transparente, "rb") as image_file:
                 encoded = base64.b64encode(image_file.read()).decode()
 
-            st.markdown(
-                f"""
-                <div style="display: flex; justify-content: center;">
-                    <div style="position: relative;">
-                        <img src="data:image/png;base64,{encoded}" usemap="#image-map-matrix" style="max-width: 100%; height: auto;">
-                        <map name="image-map-matrix">
-                            <area target="" alt="VERDE 1" title="VERDE 1" href="#" coords="131,246,131,94,507,245,235,248" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 1'); return false;">
-                            <area target="" alt="VERDE 2" title="VERDE 2" href="#" coords="249,90,133,94,257,144,252,113" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 2'); return false;">
-                            <area target="" alt="VERDE 3" title="VERDE 3" href="#" coords="381,192,252,142,379,141" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 3'); return false;">
-                            <area target="" alt="VERDE 4" title="VERDE 4" href="#" coords="381,194,504,196,503,241" shape="poly" onclick="sendToStreamlit('verde', 'VERDE 4'); return false;">
-                            <area target="" alt="AMARILLO 1" title="AMARILLO 1" href="#" coords="254,88,129,36" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 1'); return false;">
-                            <area target="" alt="AMARILLO 2" title="AMARILLO 2" href="#" coords="256,91,380,138" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 2'); return false;">
-                            <area target="" alt="AMARILLO 3" title="AMARILLO 3" href="#" coords="383,145,505,191" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 3'); return false;">
-                            <area target="" alt="AMARILLO 4" title="AMARILLO 4" href="#" coords="508,200,633,247" shape="rect" onclick="sendToStreamlit('amarillo', 'AMARILLO 4'); return false;">
-                            <area target="" alt="ROJO 1" title="ROJO 1" href="#" coords="385,39,632,145" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 1'); return false;">
-                            <area target="" alt="ROJO 2" title="ROJO 2" href="#" coords="258,42,384,88" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 2'); return false;">
-                            <area target="" alt="ROJO 3" title="ROJO 3" href="#" coords="508,148,631,192" shape="rect" onclick="sendToStreamlit('rojo', 'ROJO 3'); return false;">
-                        </map>
-                    </div>
-                </div>
-
-                <script>
-                    function sendToStreamlit(color, area) {{
-                        let message = '';
-                        switch(color) {{
-                            case 'verde':
-                                message = 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                break;
-                            case 'amarillo':
-                                message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                break;
-                            case 'rojo':
-                                message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                break;
-                        }}
-                        window.parent.postMessage({{"type": "streamlit:setFrameHeight"}}, "*");
-                        window.parent.postMessage({{"type": "streamlit:sendMessage", "payload": {{"type": "scriptFinished", "value": message, "area": area, "color": color}}}}, "*");
-                    }}
-                </script>
-                """,
-                unsafe_allow_html=True
-            )
-        except FileNotFoundError:
-            st.warning(f"No se encontró el archivo '{path_png_transparente}'.")
-        except Exception as e:
-            st.warning(f"No se pudo cargar la imagen. Error: {e}")
-            st.info("Verifica que el archivo exista y esté en formato PNG.")
+          
 
     mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
-    js_result = streamlit_js_eval(js_expressions="""
-        window.addEventListener('message', event => {
-            if (event.data.type === 'streamlit:sendMessage' && event.data.payload.type === 'scriptFinished') {
-                parent.streamlit.setComponentValue({
-                    value: event.data.payload.value,
-                    area: event.data.payload.area,
-                    color: event.data.payload.color
-                });
-            }
-        });
-        null;
-    """, key="matrix_click_receiver")
-
-    if js_result:
-        message = js_result.get('value')
-        area = js_result.get('area')
-        color = js_result.get('color')
-        if message:
-            st.info(f"Has seleccionado la zona {area} ({color}). Mensaje: {message}")
+ 
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

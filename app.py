@@ -36,9 +36,6 @@ mostrar_logo_adaptable("altea.png")
 
 # ... (importaciones y configuración inicial permanecen iguales)
 
-# Función para cargar datos con openpyxl
-# ... (importaciones y configuración inicial permanecen iguales)
-
 # Función para cargar datos con openpyxl manejando celdas combinadas
 @st.cache_data
 def load_excel(file, sheet_name):
@@ -48,11 +45,10 @@ def load_excel(file, sheet_name):
     ws = wb[sheet_name]
     data = []
     headers = [cell.value for cell in ws[1] if cell.value]  # Obtener encabezados de la primera fila
-    st.write("Encabezados detectados:", headers)  # Depuración de encabezados
 
     # Rastrear el último valor de "Etapa" para celdas combinadas
     last_etapa = None
-    for row_idx, row in enumerate(ws.iter_rows(min_row=2), start=2):
+    for row in ws.iter_rows(min_row=2):
         row_data = []
         for cell_idx, cell in enumerate(row):
             if cell.value is not None:
@@ -67,10 +63,11 @@ def load_excel(file, sheet_name):
                     row_data.append(None)
         if any(x is not None for x in row_data):  # Ignorar filas completamente vacías
             data.append(row_data[:len(headers)])  # Limitar al número de encabezados
-        st.write(f"Fila {row_idx} cruda:", row_data)  # Depuración de cada fila
 
     df = pd.DataFrame(data, columns=headers)
-    st.write("Datos crudos cargados:", df)  # Depuración de datos crudos
+    # Asegurar que solo usemos las columnas relevantes
+    if "Etapa" in df.columns and "Operación" in df.columns and "Atributo" in df.columns:
+        df = df[["Etapa", "Operación", "Atributo"]].copy()
     return df
 
 # ======== Autenticación ========
@@ -98,16 +95,6 @@ archivo = st.file_uploader("", type=["xlsx"], key="file_uploader_unique")
 if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
         ET_OP_AT_df = load_excel(archivo, sheet_name="ET_OP_AT")
-        # Asegurar que solo usemos las columnas relevantes
-        if "Etapa" in ET_OP_AT_df.columns and "Operación" in ET_OP_AT_df.columns and "Atributo" in ET_OP_AT_df.columns:
-            ET_OP_AT_df = ET_OP_AT_df[["Etapa", "Operación", "Atributo"]].copy()
-        else:
-            st.warning("Las columnas 'Etapa', 'Operación', 'Atributo' no se encontraron. Usando valores predeterminados.")
-            ET_OP_AT_df = pd.DataFrame({
-                "Etapa": ["Verificación", "Pesaje", "Limpieza", "Mezcla"],
-                "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
-                "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
-            })
         st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
@@ -117,6 +104,13 @@ if "ET_OP_AT_df" not in st.session_state and archivo is not None:
             "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
         })
 
+if archivo:
+    tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
+        "Validación de procesos", "Validación de campaña", "Validación de limpieza"
+    ], index=None)
+
+    etapas_seleccionadas = []
+    sheet_to_use = None
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [
             "Línea de medicamentos sólidos",
@@ -473,8 +467,6 @@ if st.session_state.get('area_roja_consultada', False):
             etapa_normalizada = etapa.strip().lower()
             # Filtrar todas las filas para la etapa y tomar todas las operaciones/atributos
             filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-            # Depuración: Mostrar filas filtradas
-            st.write("Filas filtradas para la etapa seleccionada:", filas_filtradas)
             operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones
             atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos
         else:

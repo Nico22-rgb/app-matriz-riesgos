@@ -425,8 +425,6 @@ if st.session_state.get('area_roja_consultada', False):
             etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
         else:
             etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
-            if st.checkbox("Mostrar datos de ET_OP_AT (para depuración)", key="debug_et_op_at"):
-                st.write("Datos cargados de la hoja ET_OP_AT:", ET_OP_AT_df)
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -434,11 +432,11 @@ if st.session_state.get('area_roja_consultada', False):
         
         # Filtrar operaciones y atributos según la etapa seleccionada
         if not ET_OP_AT_df.empty:
-            # Normalizar etiquetas para evitar problemas de coincidencia
-            ET_OP_AT_df["Etapa"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
+            # Normalizar solo para comparación, mantener original para mostrar
+            ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
             etapa_normalizada = etapa.strip().lower()
-            operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa_normalizada]["Operación"].dropna().unique().tolist()
-            atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa"] == etapa_normalizada]["Atributo"].dropna().unique().tolist()
+            operaciones_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]["Operación"].dropna().unique().tolist()
+            atributos_filtrados = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]["Atributo"].dropna().unique().tolist()
         else:
             operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
             atributos_filtrados = ["Dimensión", "Peso", "Pureza"]

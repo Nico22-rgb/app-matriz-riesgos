@@ -330,103 +330,97 @@ if archivo:
         key="alta_seleccion"
     )
     
-    if selected_alta:
-        operaciones_texto = ', '.join(selected_alta)
-        st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
-        
-        if st.button("Generar matriz de priorización del riesgo"):
-            st.session_state['mostrar_matriz'] = True
+   if selected_alta:
+    operaciones_texto = ', '.join(selected_alta)
+    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
+
+    if st.button("Generar matriz de priorización del riesgo"):
+        st.session_state['mostrar_matriz'] = True
+        st.rerun()
+
+    # Mostrar imagen con zonas clicables solo si se activó el botón
+    if st.session_state.get('mostrar_matriz', False):
+        st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
+
+        def mostrar_imagen_con_zonas(path_png_transparente):
+            try:
+                with open(path_png_transparente, "rb") as image_file:
+                    encoded = base64.b64encode(image_file.read()).decode()
+
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: center;">
+                        <div style="position: relative;">
+                            <img src="data:image/png;base64,{encoded}" usemap="#image-map" style="max-width: 100%; height: auto;">
+                            <map name="image-map">
+                                <area target="" alt="VERDE 1" title="VERDE 1" href="#" coords="131,246,131,94,507,245,235,248" shape="poly" onclick="showMessage('verde', 'VERDE 1')">
+                                <area target="" alt="VERDE 2" title="VERDE 2" href="#" coords="249,90,133,94,257,144,252,113" shape="poly" onclick="showMessage('verde', 'VERDE 2')">
+                                <area target="" alt="VERDE 3" title="VERDE 3" href="#" coords="381,192,252,142,379,141" shape="poly" onclick="showMessage('verde', 'VERDE 3')">
+                                <area target="" alt="VERDE 4" title="VERDE 4" href="#" coords="381,194,504,196,503,241" shape="poly" onclick="showMessage('verde', 'VERDE 4')">
+
+                                <area target="" alt="AMARILLO 1" title="AMARILLO 1" href="#" coords="254,88,129,36" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 1')">
+                                <area target="" alt="AMARILLO 2" title="AMARILLO 2" href="#" coords="256,91,380,138" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 2')">
+                                <area target="" alt="AMARILLO 3" title="AMARILLO 3" href="#" coords="383,145,505,191" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 3')">
+                                <area target="" alt="AMARILLO 4" title="AMARILLO 4" href="#" coords="508,200,633,247" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 4')">
+
+                                <area target="" alt="ROJO 1" title="ROJO 1" href="#" coords="385,39,632,145" shape="rect" onclick="showMessage('rojo', 'ROJO 1')">
+                                <area target="" alt="ROJO 2" title="ROJO 2" href="#" coords="258,42,384,88" shape="rect" onclick="showMessage('rojo', 'ROJO 2')">
+                                <area target="" alt="ROJO 3" title="ROJO 3" href="#" coords="508,148,631,192" shape="rect" onclick="showMessage('rojo', 'ROJO 3')">
+                            </map>
+                        </div>
+                    </div>
+
+                    <script>
+                        function showMessage(color, area) {{
+                            let message = '';
+
+                            switch(color) {{
+                                case 'verde':
+                                    message = 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                    break;
+                                case 'amarillo':
+                                    message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                    break;
+                                case 'rojo':
+                                    message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
+                                    break;
+                            }}
+
+                            // Enviar mensaje a Streamlit
+                            window.parent.postMessage({{
+                                type: 'matrix_click',
+                                value: message,
+                                area: area,
+                                color: color
+                            }}, '*');
+
+                            return false;
+                        }}
+                    </script>
+                    """,
+                    unsafe_allow_html=True
+                )
+            except FileNotFoundError:
+                st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo esté en el mismo directorio que este script.")
+            except Exception as e:
+                st.warning(f"No se pudo cargar la imagen. Error: {e}")
+                st.info("Verifica que el archivo exista y esté en formato PNG.")
+
+        mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+
+        # Manejar los mensajes de JavaScript
+        if 'matrix_message' not in st.session_state:
+            st.session_state['matrix_message'] = None
+
+        # Verificar si hay un mensaje del JavaScript
+        query_params = st.query_params
+        if 'matrix_click' in query_params:
+            st.session_state['matrix_message'] = query_params['matrix_click']
             st.rerun()
 
-        # Mostrar imagen con zonas clicables solo si se activó el botón
-        if st.session_state.get('mostrar_matriz', False):
-            st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
-            
-            def mostrar_imagen_con_zonas(path_png_transparente):
-                try:
-                    with open(path_png_transparente, "rb") as image_file:
-                        encoded = base64.b64encode(image_file.read()).decode()
-                    
-                    st.markdown(
-                        f"""
-                        <div style="display: flex; justify-content: center;">
-                            <div style="position: relative;">
-                                <img src="data:image/png;base64,{encoded}" usemap="#image-map" style="max-width: 100%; height: auto;">
-                                <map name="image-map">
-                                    <!-- Áreas VERDES -->
-                                    <area target="" alt="VERDE 1" title="VERDE 1" href="#" coords="131,246,131,94,507,245,235,248" shape="poly" onclick="showMessage('verde', 'VERDE 1')">
-                                    <area target="" alt="VERDE 2" title="VERDE 2" href="#" coords="249,90,133,94,257,144,252,113" shape="poly" onclick="showMessage('verde', 'VERDE 2')">
-                                    <area target="" alt="VERDE 3" title="VERDE 3" href="#" coords="381,192,252,142,379,141" shape="poly" onclick="showMessage('verde', 'VERDE 3')">
-                                    <area target="" alt="VERDE 4" title="VERDE 4" href="#" coords="381,194,504,196,503,241" shape="poly" onclick="showMessage('verde', 'VERDE 4')">
-                                    
-                                    <!-- Áreas AMARILLAS -->
-                                    <area target="" alt="AMARILLO 1" title="AMARILLO 1" href="#" coords="254,88,129,36" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 1')">
-                                    <area target="" alt="AMARILLO 2" title="AMARILLO 2" href="#" coords="256,91,380,138" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 2')">
-                                    <area target="" alt="AMARILLO 3" title="AMARILLO 3" href="#" coords="383,145,505,191" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 3')">
-                                    <area target="" alt="AMARILLO 4" title="AMARILLO 4" href="#" coords="508,200,633,247" shape="rect" onclick="showMessage('amarillo', 'AMARILLO 4')">
-                                    
-                                    <!-- Áreas ROJAS -->
-                                    <area target="" alt="ROJO 1" title="ROJO 1" href="#" coords="385,39,632,145" shape="rect" onclick="showMessage('rojo', 'ROJO 1')">
-                                    <area target="" alt="ROJO 2" title="ROJO 2" href="#" coords="258,42,384,88" shape="rect" onclick="showMessage('rojo', 'ROJO 2')">
-                                    <area target="" alt="ROJO 3" title="ROJO 3" href="#" coords="508,148,631,192" shape="rect" onclick="showMessage('rojo', 'ROJO 3')">
-                                </map>
-                            </div>
-                        </div>
-
-                        <script>
-                            function showMessage(color, area) {{
-                                let message = '';
-                                
-                                switch(color) {{
-                                    case 'verde':
-                                        message = 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                    case 'amarillo':
-                                        message = 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                    case 'rojo':
-                                        message = 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.';
-                                        break;
-                                }}
-                                
-                                // Enviar mensaje a Streamlit
-                                window.parent.postMessage({{
-                                    type: 'matrix_click', 
-                                    value: message,
-                                    area: area,
-                                    color: color
-                                }}, '*');
-                                
-                                return false;
-                            }}
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                except FileNotFoundError:
-                    st.warning(f"No se encontró el archivo del logo en la ruta: {path_png_transparente}. Asegúrate de que el archivo esté en el mismo directorio que este script.")
-                except Exception as e:
-                    st.warning(f"No se pudo cargar la imagen. Error: {e}")
-                    st.info("Verifica que el archivo exista y esté en formato PNG.")
-            
-            mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
-
-            # Manejar los mensajes de JavaScript
-            if 'matrix_message' not in st.session_state:
-                st.session_state['matrix_message'] = None
-            
-            # Verificar si hay un mensaje del JavaScript
-            query_params = st.query_params
-            if 'matrix_click' in query_params:
-                st.session_state['matrix_message'] = query_params['matrix_click']
-                st.rerun()
-            
-            # Mostrar el mensaje si existe
-            if st.session_state.get('matrix_message'):
-                st.info(st.session_state['matrix_message'])
-
-else:
-    st.info("Por favor, sube un archivo Excel para comenzar.")
+        # Mostrar el mensaje si existe
+        if st.session_state.get('matrix_message'):
+            st.info(st.session_state['matrix_message'])
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

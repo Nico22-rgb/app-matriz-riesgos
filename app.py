@@ -312,31 +312,33 @@ if archivo:
                 except Exception as e:
                     st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
-        # Mostrar botón de descarga solo si la matriz fue generada
-        if "excel_buffer" in st.session_state:
-            st.download_button(
-                label="Descargar matriz de riesgo 📥",
-                data=st.session_state['excel_buffer'].getvalue(),
-                file_name="matriz_riesgo.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                on_click=lambda: st.session_state.update({"descarga_realizada": True})
-            )
+      # Mostrar botón de descarga solo si la matriz fue generada
+if "excel_buffer" in st.session_state:
+    st.download_button(
+        label="Descargar matriz de riesgo 📥",
+        data=st.session_state['excel_buffer'].getvalue(),
+        file_name="matriz_riesgo.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        on_click=lambda: st.session_state.update({"descarga_realizada": True})
+    )
 
-           if st.session_state.get("descarga_realizada", False):
+# This 'if' block was likely the cause of the IndentationError
+if st.session_state.get("descarga_realizada", False):
     st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
     selected_alta = st.multiselect(
         "Seleccione las operaciones con criticidad alta:",
         options=st.session_state['etapas_seleccionadas'],
         key="alta_seleccion"
     )
-    
-   if selected_alta:
-    operaciones_texto = ', '.join(selected_alta)
-    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
 
-    if st.button("Generar matriz de priorización del riesgo"):
-        st.session_state['mostrar_matriz'] = True
-        st.rerun()
+    # This 'if' block also needed correction
+    if selected_alta:
+        operaciones_texto = ', '.join(selected_alta)
+        st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
+
+        if st.button("Generar matriz de priorización del riesgo"):
+            st.session_state['mostrar_matriz'] = True
+            st.rerun()
 
     # Mostrar imagen con zonas clicables solo si se activó el botón
     if st.session_state.get('mostrar_matriz', False):

@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import io
 import base64
+from PIL import Image
+import numpy as np
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule

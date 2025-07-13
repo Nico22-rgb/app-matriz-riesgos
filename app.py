@@ -37,6 +37,9 @@ mostrar_logo_adaptable("altea.png")
 # ... (importaciones y configuración inicial permanecen iguales)
 
 # Función para cargar datos con openpyxl
+# ... (importaciones y configuración inicial permanecen iguales)
+
+# Función para cargar datos con openpyxl manejando celdas combinadas
 @st.cache_data
 def load_excel(file, sheet_name):
     from openpyxl import load_workbook
@@ -46,10 +49,26 @@ def load_excel(file, sheet_name):
     data = []
     headers = [cell.value for cell in ws[1] if cell.value]  # Obtener encabezados de la primera fila
     st.write("Encabezados detectados:", headers)  # Depuración de encabezados
-    for row in ws.iter_rows(min_row=2, values_only=False):  # Leer todas las filas
-        row_data = [cell.value for cell in row if cell.value is not None]  # Solo valores no nulos
-        if row_data:  # Ignorar filas completamente vacías
-            data.append(row_data)
+
+    # Rastrear el último valor de "Etapa" para celdas combinadas
+    last_etapa = None
+    for row_idx, row in enumerate(ws.iter_rows(min_row=2), start=2):
+        row_data = []
+        for cell_idx, cell in enumerate(row):
+            if cell.value is not None:
+                if headers[cell_idx] == "Etapa":
+                    last_etapa = cell.value
+                row_data.append(cell.value)
+            else:
+                # Si la celda está vacía y es "Etapa", usar el último valor combinado
+                if headers[cell_idx] == "Etapa" and last_etapa is not None:
+                    row_data.append(last_etapa)
+                else:
+                    row_data.append(None)
+        if any(x is not None for x in row_data):  # Ignorar filas completamente vacías
+            data.append(row_data[:len(headers)])  # Limitar al número de encabezados
+        st.write(f"Fila {row_idx} cruda:", row_data)  # Depuración de cada fila
+
     df = pd.DataFrame(data, columns=headers)
     st.write("Datos crudos cargados:", df)  # Depuración de datos crudos
     return df
@@ -79,6 +98,16 @@ archivo = st.file_uploader("", type=["xlsx"], key="file_uploader_unique")
 if "ET_OP_AT_df" not in st.session_state and archivo is not None:
     try:
         ET_OP_AT_df = load_excel(archivo, sheet_name="ET_OP_AT")
+        # Asegurar que solo usemos las columnas relevantes
+        if "Etapa" in ET_OP_AT_df.columns and "Operación" in ET_OP_AT_df.columns and "Atributo" in ET_OP_AT_df.columns:
+            ET_OP_AT_df = ET_OP_AT_df[["Etapa", "Operación", "Atributo"]].copy()
+        else:
+            st.warning("Las columnas 'Etapa', 'Operación', 'Atributo' no se encontraron. Usando valores predeterminados.")
+            ET_OP_AT_df = pd.DataFrame({
+                "Etapa": ["Verificación", "Pesaje", "Limpieza", "Mezcla"],
+                "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
+                "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
+            })
         st.session_state['ET_OP_AT_df'] = ET_OP_AT_df
     except Exception as e:
         st.warning(f"No se pudo cargar la hoja 'ET_OP_AT'. Error: {e}. Usando valores predeterminados.")
@@ -87,14 +116,6 @@ if "ET_OP_AT_df" not in st.session_state and archivo is not None:
             "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
             "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
         })
-
-if archivo:
-    tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [
-        "Validación de procesos", "Validación de campaña", "Validación de limpieza"
-    ], index=None)
-
-    etapas_seleccionadas = []
-    sheet_to_use = None
 
     if tipo_validacion in ["Validación de procesos", "Validación de campaña"]:
         tipo_linea = st.selectbox("¿A qué línea de fabricación pertenece su producto?", [

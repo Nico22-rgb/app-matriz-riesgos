@@ -378,10 +378,23 @@ else:
 
 # ======== Módulo de Plan de Muestreo ========
 st.markdown("---")  # Separador visual
-st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Generación de Plan de Muestreo</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
+
+st.image("muestreo.jpg")
+multi = '''La elaboración de esta propuesta de plan de muestreo está basada  
+en la fórmula para el cálculo del tamaño de muestra para poblacione de tamaño 
+finito del capítulo <1010> de la Farmacopea de los Estados Unidos de América, 
+y en las recomendaciones del procedimiento estándar de operación PSO-VAL-007
+sobre el Muestreo y análisis de datos en la valdiación de procesos de manufactura
+en Altea Farmaceútica S.A
+
+If you end a line with two spaces,
+a soft return is used for the next line.
+
+st.markdown(multi)
 
 # Formulario en una fila
-with st.expander("Seleccionar Criterios de Muestreo", expanded=True):
+with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
     col1, col2, col3 = st.columns(3)
     with col1:
         etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])

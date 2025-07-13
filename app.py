@@ -33,6 +33,12 @@ def mostrar_logo_adaptable(path_png_transparente):
 
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
+
+# Función para cargar datos con caché (definida al inicio)
+@st.cache_data
+def load_excel(file, sheet_name):
+    return pd.read_excel(file, sheet_name=sheet_name, header=0)  # Usar la primera fila como encabezado
+
 # ======== Autenticación ========
 CONTRASENA = "M"
 
@@ -66,11 +72,6 @@ if "ET_OP_AT_df" not in st.session_state and archivo is not None:
             "Operación": ["Prueba 1", "Prueba 2", "Inspección", "Mezcla"],
             "Atributo": ["Dimensión", "Peso", "Pureza", "Humedad"]
         })
-
-# Función para cargar datos con caché
-@st.cache_data
-def load_excel(file, sheet_name):
-    return pd.read_excel(file, sheet_name=sheet_name, header=0)  # Usar la primera fila como encabezado
 
 if archivo:
     tipo_validacion = st.selectbox("Seleccione el tipo de validación a realizar", [

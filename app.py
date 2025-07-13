@@ -324,23 +324,23 @@ if archivo:
             
             # Mostrar multiselect solo después de descargar
             if st.session_state.get("descarga_realizada", False):
-                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
+                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las etapas que involucran operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
                 selected_alta = st.multiselect(
-                    "Seleccione las operaciones con criticidad alta:",
+                    "Seleccione las etapas que involucran operaciones con criticidad alta:",
                     options=st.session_state['etapas_seleccionadas'],
                     key="alta_seleccion"
                 )
 
                 if selected_alta:
                     operaciones_texto = ', '.join(selected_alta)
-                    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
+                    st.info(f"Las etapas que involcuran operaciones críticas son: {operaciones_texto}")
 
                     if st.button("Generar matriz de priorización del riesgo"):
                         st.session_state['mostrar_matriz'] = True
 
     # Mostrar imagen con zonas clicables solo si se activó el botón
     if st.session_state.get('mostrar_matriz', False):
-        st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
+        st.markdown("**Por favor ubica el nivel de riesgo obtenido**")
 
         def mostrar_imagen_con_zonas(path_png_transparente):
             try:

@@ -475,9 +475,7 @@ class StreamlitImageDetector:
 def main():
     st.set_page_config(page_title="Matriz de Riesgos Interactiva", layout="wide")
     
-    st.title("🎯 Matriz de Priorización de Riesgos")
-    st.markdown("---")
-    
+     
     # Inicializar detector
     detector = StreamlitImageDetector()
     

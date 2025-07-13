@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import io
-import base64
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill, Font
 from openpyxl.formatting.rule import FormulaRule
@@ -311,8 +310,7 @@ if archivo:
                     label="Descargar matriz de riesgo 📥",
                     data=st.session_state['excel_buffer'].getvalue(),
                     file_name="matriz_riesgo.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    on_click=lambda: st.session_state.update({"descarga_realizada": True})
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
 
                 # Mostrar multiselect solo después de descargar
@@ -328,6 +326,12 @@ if archivo:
 
             except Exception as e:
                 st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+        # Actualizar el estado de descarga después de la interacción
+        if "excel_buffer" in st.session_state and st.session_state.get("descarga_realizada", False) is False:
+            if st.button("Confirmar descarga y continuar"):
+                st.session_state.descarga_realizada = True
+                st.experimental_rerun()
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

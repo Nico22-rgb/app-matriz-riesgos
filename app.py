@@ -340,8 +340,7 @@ if archivo:
 
     # Mostrar imagen con zonas clicables solo si se activó el botón
     if st.session_state.get('mostrar_matriz', False):
-        st.markdown("**Por favor ubica el nivel de riesgo obtenido**")
-
+        
         def mostrar_imagen_con_zonas(path_png_transparente):
             try:
                 with open(path_png_transparente, "rb") as image_file:
@@ -359,16 +358,18 @@ if archivo:
                 st.error(f"Error al cargar la imagen: {e}")
 
         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+       
+        st.markdown("**Ubica la zona de la matriz donde se encuentra el riesgo asociado a tu operación - etapa**")
 
         # Información adicional
-        with st.expander("🟢 Áreas Verdes - Riesgo Bajo"):
-            st.write("Estas áreas representan riesgos de baja probabilidad e impacto. Se recomienda monitoreo rutinario.")
+        with st.expander("🟢 Área Verde"):
+            st.write("No es necesario implementar controles adicionales en esta operación-etapa para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final Se recomienda monitoreo rutinario.")
         
-        with st.expander("🟡 Áreas Amarillas - Riesgo Medio"):
-            st.write("Estas áreas requieren atención y medidas preventivas. Se debe desarrollar un plan de mitigación.")
+        with st.expander("🟡 Área Amarilla"):
+            st.write("Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
         
-        with st.expander("🔴 Áreas Rojas - Riesgo Alto"):
-            st.write("Estas áreas requieren acción inmediata. Se deben implementar controles urgentes.")
+        with st.expander("🔴 Área Roja"):
+            st.write("Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.")
 
 else:
     # Solo mostrar este mensaje cuando NO hay archivo subido

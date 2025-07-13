@@ -140,198 +140,195 @@ if archivo:
                 etapas_seleccionadas.append(etapa)
 
     if etapas_seleccionadas and sheet_to_use:
-        if st.button("Generar matriz de riesgo con Excel"):
-            try:
-                df = load_excel(archivo, sheet_to_use)
+        if "excel_buffer" not in st.session_state:
+            if st.button("Generar matriz de riesgo con Excel"):
+                try:
+                    df = load_excel(archivo, sheet_to_use)
 
-                rangos_por_hoja = {
-                    "MR 1 sólidos": {
-                        "Verificación de prerrequisitos de validación": (0, 1),
-                        "Pesaje/Dispensación de materias primas": (1, 2),
-                        "Pulverización": (2, 3),
-                        "Pelletización": (3, 4),
-                        "Granulacion": (4, 5),
-                        "Secado": (5, 6),
-                        "Compactación": (6, 7),
-                        "Mezcla (Lubricación)": (7, 8),
-                        "Encapsulado": (8, 9),
-                        "Compresión": (9, 10),
-                        "Recubrimiento": (10, 11),
-                        "Grageado": (11, 12),
-                        "Revisión": (12, 13),
-                        "Envase blíster": (13, 14),
-                        "Envase foil": (14, 15),
-                        "Envase frasco": (15, 16),
-                        "Envase sobre": (16, 17),
-                        "Envase tubo": (17, 18),
-                        "Empaque blíster": (18, 19),
-                        "Empaque manual foil": (19, 20),
-                        "Empaque frasco": (20, 21),
-                        "Empaque tubo": (21, 22),
-                        "Recogida de blísters": (22, 23),
-                        "Codificado manual": (23, 24)
-                    },
-                    "MR 1 líquidos y semisólidos": {
-                        "Verificación de prerrequisitos de validación": (0, 1),
-                        "Pesaje/Dispensación de materias primas": (1, 2),
-                        "Disolución/Dispersión": (2, 3),
-                        "Homogenización": (3, 4),
-                        "Filtración": (4, 5),
-                        "Envase frascos": (5, 6),
-                        "Envase sobres": (6, 7),
-                        "Envase tubos": (7, 8),
-                        "Empaque manual frascos": (8, 9),
-                        "Empaque manual sobre": (9, 10),
-                        "Empaque tubos": (10, 11)
-                    },
-                    "MR 1 limpieza": {
-                        "Verificación de prerrequisitos de validación": (0, 1),
-                        "Limpieza preliminar y desmonte del equipo (piezas móviles)": (1, 2),
-                        "Limpieza de piezas móviles y parte interna de los equipos": (2, 3),
-                        "Seguimiento al proceso de limpieza": (3, 4),
-                        "Uso, desmonte y prelavado de las mangas": (4, 5),
-                        "Verificación y limpieza de las mangas": (5, 6)
+                    rangos_por_hoja = {
+                        "MR 1 sólidos": {
+                            "Verificación de prerrequisitos de validación": (0, 1),
+                            "Pesaje/Dispensación de materias primas": (1, 2),
+                            "Pulverización": (2, 3),
+                            "Pelletización": (3, 4),
+                            "Granulacion": (4, 5),
+                            "Secado": (5, 6),
+                            "Compactación": (6, 7),
+                            "Mezcla (Lubricación)": (7, 8),
+                            "Encapsulado": (8, 9),
+                            "Compresión": (9, 10),
+                            "Recubrimiento": (10, 11),
+                            "Grageado": (11, 12),
+                            "Revisión": (12, 13),
+                            "Envase blíster": (13, 14),
+                            "Envase foil": (14, 15),
+                            "Envase frasco": (15, 16),
+                            "Envase sobre": (16, 17),
+                            "Envase tubo": (17, 18),
+                            "Empaque blíster": (18, 19),
+                            "Empaque manual foil": (19, 20),
+                            "Empaque frasco": (20, 21),
+                            "Empaque tubo": (21, 22),
+                            "Recogida de blísters": (22, 23),
+                            "Codificado manual": (23, 24)
+                        },
+                        "MR 1 líquidos y semisólidos": {
+                            "Verificación de prerrequisitos de validación": (0, 1),
+                            "Pesaje/Dispensación de materias primas": (1, 2),
+                            "Disolución/Dispersión": (2, 3),
+                            "Homogenización": (3, 4),
+                            "Filtración": (4, 5),
+                            "Envase frascos": (5, 6),
+                            "Envase sobres": (6, 7),
+                            "Envase tubos": (7, 8),
+                            "Empaque manual frascos": (8, 9),
+                            "Empaque manual sobre": (9, 10),
+                            "Empaque tubos": (10, 11)
+                        },
+                        "MR 1 limpieza": {
+                            "Verificación de prerrequisitos de validación": (0, 1),
+                            "Limpieza preliminar y desmonte del equipo (piezas móviles)": (1, 2),
+                            "Limpieza de piezas móviles y parte interna de los equipos": (2, 3),
+                            "Seguimiento al proceso de limpieza": (3, 4),
+                            "Uso, desmonte y prelavado de las mangas": (4, 5),
+                            "Verificación y limpieza de las mangas": (5, 6)
+                        }
                     }
-                }
 
-                rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
-                if not rangos_para_hoja_actual:
-                    st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
-                    st.stop()
+                    rangos_para_hoja_actual = rangos_por_hoja.get(sheet_to_use, {})
+                    if not rangos_para_hoja_actual:
+                        st.error(f"No se encontraron rangos definidos para la hoja '{sheet_to_use}'.")
+                        st.stop()
 
-                encabezado = df.iloc[[0]]
-                bloques = []
+                    encabezado = df.iloc[[0]]
+                    bloques = []
 
-                for etapa in etapas_seleccionadas:
-                    if etapa in rangos_para_hoja_actual:
-                        inicio, fin = rangos_para_hoja_actual[etapa]
-                        bloques.append(df.iloc[inicio:fin + 1])  # +1 para incluir el rango completo
-                    else:
-                        st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
+                    for etapa in etapas_seleccionadas:
+                        if etapa in rangos_para_hoja_actual:
+                            inicio, fin = rangos_para_hoja_actual[etapa]
+                            bloques.append(df.iloc[inicio:fin + 1])  # +1 para incluir el rango completo
+                        else:
+                            st.warning(f"La etapa '{etapa}' no tiene rangos definidos.")
 
-                tabla = pd.concat([encabezado] + bloques, ignore_index=True)
-                buffer = io.BytesIO()
-                tabla.to_excel(buffer, index=False)
-                buffer.seek(0)
+                    tabla = pd.concat([encabezado] + bloques, ignore_index=True)
+                    buffer = io.BytesIO()
+                    tabla.to_excel(buffer, index=False)
+                    buffer.seek(0)
 
-                wb = load_workbook(buffer)
-                ws = wb.active
+                    wb = load_workbook(buffer)
+                    ws = wb.active
 
-                # Aplicar formato a la fila 1 (encabezado)
-                palegreen_fill = PatternFill(start_color="C0E080", end_color="C0E080", fill_type="solid")
-                bold_font = Font(bold=True)
-                center_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-                for cell in ws[1]:
-                    cell.fill = palegreen_fill
-                    cell.font = bold_font
-                    cell.alignment = center_alignment
+                    # Aplicar formato a la fila 1 (encabezado)
+                    palegreen_fill = PatternFill(start_color="C0E080", end_color="C0E080", fill_type="solid")
+                    bold_font = Font(bold=True)
+                    center_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+                    for cell in ws[1]:
+                        cell.fill = palegreen_fill
+                        cell.font = bold_font
+                        cell.alignment = center_alignment
 
-                # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
-                columnas_a_combinar = [1, 3, 4]
-                for col_to_merge in columnas_a_combinar:
-                    current_value = None
-                    start_row = 2
-                    for row in range(2, ws.max_row + 1):
-                        value = ws.cell(row=row, column=col_to_merge).value
-                        value = str(value).strip() if value is not None else ""
-                        if row == 2:
-                            current_value = value
-                            continue
-                        if value != current_value or row == ws.max_row:
-                            if row - start_row > 1 or (row == ws.max_row and value == current_value):
-                                end_row = row if value != current_value else row + 1
-                                ws.merge_cells(
-                                    start_row=start_row,
-                                    start_column=col_to_merge,
-                                    end_row=end_row - 1,
-                                    end_column=col_to_merge
-                                )
-                                ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(
-                                    horizontal="center", vertical="center", wrap_text=True
-                                )
-                            current_value = value
-                            start_row = row
+                    # Combinar celdas automáticamente en columnas A (1), C (3), D (4)
+                    columnas_a_combinar = [1, 3, 4]
+                    for col_to_merge in columnas_a_combinar:
+                        current_value = None
+                        start_row = 2
+                        for row in range(2, ws.max_row + 1):
+                            value = ws.cell(row=row, column=col_to_merge).value
+                            value = str(value).strip() if value is not None else ""
+                            if row == 2:
+                                current_value = value
+                                continue
+                            if value != current_value or row == ws.max_row:
+                                if row - start_row > 1 or (row == ws.max_row and value == current_value):
+                                    end_row = row if value != current_value else row + 1
+                                    ws.merge_cells(
+                                        start_row=start_row,
+                                        start_column=col_to_merge,
+                                        end_row=end_row - 1,
+                                        end_column=col_to_merge
+                                    )
+                                    ws.cell(row=start_row, column=col_to_merge).alignment = Alignment(
+                                        horizontal="center", vertical="center", wrap_text=True
+                                    )
+                                current_value = value
+                                start_row = row
 
-                # Aplicar fórmulas en columnas O (15), P (16), Q (17) basadas en J (10), L (12), N (14)
-                for r_idx in range(2, ws.max_row + 1):
-                    ws[f"O{r_idx}"].value = f"=ROUND(POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3),1)"  # Redondear a 1 decimal
-                    ws[f"P{r_idx}"].value = f'=IF(O{r_idx}<1.33,"Bajo",IF(O{r_idx}<3,"Moderado","Alto"))'
-                    ws[f"Q{r_idx}"].value = f'=IF(P{r_idx}="Alto","Alta",IF(P{r_idx}="Moderado","Media","Baja"))'
+                    # Aplicar fórmulas en columnas O (15), P (16), Q (17) basadas en J (10), L (12), N (14)
+                    for r_idx in range(2, ws.max_row + 1):
+                        ws[f"O{r_idx}"].value = f"=ROUND(POWER((J{r_idx}*L{r_idx}*N{r_idx}),1/3),1)"  # Redondear a 1 decimal
+                        ws[f"P{r_idx}"].value = f'=IF(O{r_idx}<1.33,"Bajo",IF(O{r_idx}<3,"Moderado","Alto"))'
+                        ws[f"Q{r_idx}"].value = f'=IF(P{r_idx}="Alto","Alta",IF(P{r_idx}="Moderado","Media","Baja"))'
 
-                # Aplicar formato condicional
-                rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
-                naranja = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
-                verde = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+                    # Aplicar formato condicional
+                    rojo = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+                    naranja = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+                    verde = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
 
-                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Alto"'], fill=rojo))
-                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Moderado"'], fill=naranja))
-                ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Bajo"'], fill=verde))
-                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Alta"'], fill=rojo))
-                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Media"'], fill=naranja))
-                ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Baja"'], fill=verde))
+                    ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Alto"'], fill=rojo))
+                    ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Moderado"'], fill=naranja))
+                    ws.conditional_formatting.add("P2:P" + str(ws.max_row), FormulaRule(formula=['P2="Bajo"'], fill=verde))
+                    ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Alta"'], fill=rojo))
+                    ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Media"'], fill=naranja))
+                    ws.conditional_formatting.add("Q2:Q" + str(ws.max_row), FormulaRule(formula=['Q2="Baja"'], fill=verde))
 
-                # Ajustar ancho de columnas
-                for column in ws.columns:
-                    column_letter = get_column_letter(column[0].column)
-                    if column_letter == 'P':
-                        ws.column_dimensions[column_letter].width = 30  # Aproximadamente 214 píxeles
-                    elif column_letter == 'Q':
-                        ws.column_dimensions[column_letter].width = 14  # Aproximadamente 99 píxeles
-                    else:
-                        max_length = 0
-                        for cell in column:
-                            try:
-                                if cell.value is not None:
-                                    cell_value_str = str(cell.value)
-                                    max_length = max(max_length, len(cell_value_str))
-                            except Exception:
-                                pass
-                        ws.column_dimensions[column_letter].width = max_length + 3
+                    # Ajustar ancho de columnas
+                    for column in ws.columns:
+                        column_letter = get_column_letter(column[0].column)
+                        if column_letter == 'P':
+                            ws.column_dimensions[column_letter].width = 30  # Aproximadamente 214 píxeles
+                        elif column_letter == 'Q':
+                            ws.column_dimensions[column_letter].width = 14  # Aproximadamente 99 píxeles
+                        else:
+                            max_length = 0
+                            for cell in column:
+                                try:
+                                    if cell.value is not None:
+                                        cell_value_str = str(cell.value)
+                                        max_length = max(max_length, len(cell_value_str))
+                                except Exception:
+                                    pass
+                            ws.column_dimensions[column_letter].width = max_length + 3
 
-                # Alinear todo el contenido al centro
-                for row in ws.iter_rows():
-                    for cell in row:
-                        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+                    # Alinear todo el contenido al centro
+                    for row in ws.iter_rows():
+                        for cell in row:
+                            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-                # Guardar el archivo Excel en la sesión
-                output = io.BytesIO()
-                wb.save(output)
-                output.seek(0)
-                st.session_state['excel_buffer'] = output
-                st.session_state['etapas_seleccionadas'] = etapas_seleccionadas  # Guardar etapas seleccionadas
+                    # Guardar el archivo Excel en la sesión
+                    output = io.BytesIO()
+                    wb.save(output)
+                    output.seek(0)
+                    st.session_state['excel_buffer'] = output
+                    st.session_state['etapas_seleccionadas'] = etapas_seleccionadas  # Guardar etapas seleccionadas
 
-                # Animación de globos
-                st.balloons()
+                    # Animación de globos
+                    st.balloons()
 
-                st.success("¡Matriz de riesgo generada con éxito!")
+                    st.success("¡Matriz de riesgo generada con éxito!")
 
-                # Botón de descarga con Streamlit
-                st.download_button(
-                    label="Descargar matriz de riesgo 📥",
-                    data=st.session_state['excel_buffer'].getvalue(),
-                    file_name="matriz_riesgo.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                except Exception as e:
+                    st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+        # Mostrar botón de descarga solo si la matriz fue generada
+        if "excel_buffer" in st.session_state:
+            st.download_button(
+                label="Descargar matriz de riesgo 📥",
+                data=st.session_state['excel_buffer'].getvalue(),
+                file_name="matriz_riesgo.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                on_click=lambda: st.session_state.update({"descarga_realizada": True})
+            )
+
+            # Mostrar multiselect solo después de descargar
+            if st.session_state.get("descarga_realizada", False):
+                st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
+                selected_alta = st.multiselect(
+                    "Seleccione las operaciones:",
+                    options=st.session_state['etapas_seleccionadas'],
+                    key="alta_seleccion"
                 )
-
-                # Mostrar multiselect solo después de descargar
-                if st.session_state.get("descarga_realizada", False):
-                    st.markdown("**De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad Alta:**")
-                    selected_alta = st.multiselect(
-                        "Seleccione las operaciones:",
-                        options=etapas_seleccionadas,
-                        key="alta_seleccion"
-                    )
-                    if selected_alta:
-                        st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
-
-            except Exception as e:
-                st.error(f"Ocurrió un error al procesar el archivo: {e}")
-
-        # Actualizar el estado de descarga después de la interacción
-        if "excel_buffer" in st.session_state and st.session_state.get("descarga_realizada", False) is False:
-            if st.button("Confirmar descarga y continuar"):
-                st.session_state.descarga_realizada = True
-                st.experimental_rerun()
+                if selected_alta:
+                    st.write(f"Operaciones seleccionadas con criticidad Alta: {', '.join(selected_alta)}")
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

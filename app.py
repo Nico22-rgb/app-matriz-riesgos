@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import io
@@ -358,6 +357,148 @@ if archivo:
                 st.error(f"Error al cargar la imagen: {e}")
 
         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
+
+class ImageClickDetector:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Detector de Clics en Matriz de Riesgos")
+        
+        # Cargar la imagen
+        try:
+            self.image = Image.open("Matriz de priorizacion de riesgos.png")
+            self.photo = ImageTk.PhotoImage(self.image)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No se encontró la imagen 'Matriz de priorizacion de riesgos.png'")
+            return
+        
+        # Crear canvas
+        self.canvas = tk.Canvas(root, width=747, height=293)
+        self.canvas.pack()
+        
+        # Mostrar imagen
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
+        
+        # Bind click event
+        self.canvas.bind("<Button-1>", self.on_click)
+        
+        # Definir áreas clickeables
+        self.areas = {
+            "VERDE 1": {
+                "coords": [131, 246, 131, 94, 507, 245, 235, 248],
+                "shape": "poly",
+                "message": "Has clickeado en el área VERDE 1 - Riesgo Bajo"
+            },
+            "VERDE 2": {
+                "coords": [249, 90, 133, 94, 257, 144, 252, 113],
+                "shape": "poly",
+                "message": "Has clickeado en el área VERDE 2 - Riesgo Bajo"
+            },
+            "VERDE 3": {
+                "coords": [381, 192, 252, 142, 379, 141],
+                "shape": "poly",
+                "message": "Has clickeado en el área VERDE 3 - Riesgo Bajo"
+            },
+            "VERDE 4": {
+                "coords": [381, 194, 504, 196, 503, 241],
+                "shape": "poly",
+                "message": "Has clickeado en el área VERDE 4 - Riesgo Bajo"
+            },
+            "AMARILLO 1": {
+                "coords": [254, 88, 129, 36],
+                "shape": "rect",
+                "message": "Has clickeado en el área AMARILLO 1 - Riesgo Medio"
+            },
+            "AMARILLO 2": {
+                "coords": [256, 91, 380, 138],
+                "shape": "rect",
+                "message": "Has clickeado en el área AMARILLO 2 - Riesgo Medio"
+            },
+            "AMARILLO 3": {
+                "coords": [383, 145, 505, 191],
+                "shape": "rect",
+                "message": "Has clickeado en el área AMARILLO 3 - Riesgo Medio"
+            },
+            "AMARILLO 4": {
+                "coords": [508, 200, 633, 247],
+                "shape": "rect",
+                "message": "Has clickeado en el área AMARILLO 4 - Riesgo Medio"
+            },
+            "ROJO 1": {
+                "coords": [385, 39, 632, 145],
+                "shape": "rect",
+                "message": "Has clickeado en el área ROJO 1 - Riesgo Alto"
+            },
+            "ROJO 2": {
+                "coords": [258, 42, 384, 88],
+                "shape": "rect",
+                "message": "Has clickeado en el área ROJO 2 - Riesgo Alto"
+            },
+            "ROJO 3": {
+                "coords": [508, 148, 631, 192],
+                "shape": "rect",
+                "message": "Has clickeado en el área ROJO 3 - Riesgo Alto"
+            }
+        }
+    
+    def point_in_polygon(self, x, y, polygon):
+        """Algoritmo para determinar si un punto está dentro de un polígono"""
+        n = len(polygon)
+        inside = False
+        
+        p1x, p1y = polygon[0]
+        for i in range(1, n + 1):
+            p2x, p2y = polygon[i % n]
+            if y > min(p1y, p2y):
+                if y <= max(p1y, p2y):
+                    if x <= max(p1x, p2x):
+                        if p1y != p2y:
+                            xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                        if p1x == p2x or x <= xinters:
+                            inside = not inside
+            p1x, p1y = p2x, p2y
+        
+        return inside
+    
+    def point_in_rect(self, x, y, rect_coords):
+        """Determinar si un punto está dentro de un rectángulo"""
+        x1, y1, x2, y2 = rect_coords
+        return min(x1, x2) <= x <= max(x1, x2) and min(y1, y2) <= y <= max(y1, y2)
+    
+    def on_click(self, event):
+        """Manejar el evento de clic"""
+        click_x, click_y = event.x, event.y
+        
+        # Verificar en qué área se hizo clic
+        for area_name, area_data in self.areas.items():
+            coords = area_data["coords"]
+            shape = area_data["shape"]
+            
+            if shape == "rect":
+                if self.point_in_rect(click_x, click_y, coords):
+                    messagebox.showinfo("Área Detectada", area_data["message"])
+                    print(f"Clic en {area_name} - Coordenadas: ({click_x}, {click_y})")
+                    return
+            
+            elif shape == "poly":
+                # Convertir coordenadas a lista de tuplas
+                polygon = [(coords[i], coords[i+1]) for i in range(0, len(coords), 2)]
+                if self.point_in_polygon(click_x, click_y, polygon):
+                    messagebox.showinfo("Área Detectada", area_data["message"])
+                    print(f"Clic en {area_name} - Coordenadas: ({click_x}, {click_y})")
+                    return
+        
+        # Si no se encontró área
+        print(f"Clic fuera de las áreas definidas - Coordenadas: ({click_x}, {click_y})")
+
+def main():
+    root = tk.Tk()
+    app = ImageClickDetector(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
+
+
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

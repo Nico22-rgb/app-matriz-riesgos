@@ -320,21 +320,22 @@ if archivo:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 on_click=lambda: st.session_state.update({"descarga_realizada": True})
             )
-          # Mostrar multiselect solo después de descargar
-if st.session_state.get("descarga_realizada", False):
-    st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
-    selected_alta = st.multiselect(
-        "Seleccione las operaciones con criticidad alta:",
-        options=st.session_state['etapas_seleccionadas'],
-        key="alta_seleccion"
-    )
+            
+            # Mostrar multiselect solo después de descargar
+            if st.session_state.get("descarga_realizada", False):
+                st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)
+                selected_alta = st.multiselect(
+                    "Seleccione las operaciones con criticidad alta:",
+                    options=st.session_state['etapas_seleccionadas'],
+                    key="alta_seleccion"
+                )
 
-    if selected_alta:
-        operaciones_texto = ', '.join(selected_alta)
-        st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
+                if selected_alta:
+                    operaciones_texto = ', '.join(selected_alta)
+                    st.info(f"Las operaciones críticas seleccionadas son: {operaciones_texto}")
 
-        if st.button("Generar matriz de priorización del riesgo"):
-            st.session_state['mostrar_matriz'] = True
+                    if st.button("Generar matriz de priorización del riesgo"):
+                        st.session_state['mostrar_matriz'] = True
 
 # Mostrar imagen con zonas clicables solo si se activó el botón
 if st.session_state.get('mostrar_matriz', False):
@@ -344,12 +345,19 @@ if st.session_state.get('mostrar_matriz', False):
         try:
             with open(path_png_transparente, "rb") as image_file:
                 encoded = base64.b64encode(image_file.read()).decode()
-
-          
+            
+            st.markdown(
+                f"""
+                <div style="display: flex; justify-content: center;">
+                    <img src="data:image/png;base64,{encoded}" width="800">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        except Exception as e:
+            st.error(f"Error al cargar la imagen: {e}")
 
     mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
-
- 
 
 else:
     st.info("Por favor, sube un archivo Excel para comenzar.")

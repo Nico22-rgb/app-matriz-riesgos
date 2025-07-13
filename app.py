@@ -359,7 +359,7 @@ if st.session_state.get('mostrar_matriz', False):
 
     mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
    
-    st.markdown("**"Ubica en la matriz el nivel de riesgo asociado a tu operación/etapa para saber si es necesario implementar controles adicionales durante la validación."**")
+   st.markdown('**"Ubica en la matriz el nivel de riesgo asociado a tu operación/etapa para saber si es necesario implementar controles adicionales durante la validación."**')
 
     # Inicializar estado para Área Roja
     if "area_roja_consultada" not in st.session_state:

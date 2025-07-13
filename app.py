@@ -335,45 +335,45 @@ if archivo:
                         st.rerun()
                     
                 # Mostrar imagen con zonas clicables solo si se activó el botón
-                    if st.session_state.get('mostrar_matriz', False):
-                        st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
-                        def mostrar_imagen_con_zonas(path_png_transparente):
-                            try:
-                                with open(path_png_transparente, "rb") as image_file:
-                                    encoded = base64.b64encode(image_file.read()).decode()
-                                st.markdown(
-                                    f"""
-                                    <div style="display: flex; justify-content: center;">
-                                        <img id="custom-image" src="data:image/png;base64,{encoded}" width="747" style="position: relative;">
-                                    </div>
-                                    <script>
-                                        const image = document.getElementById('custom-image');
-                                        // Define las zonas clicables basadas en las coordenadas de tu imagen
-                                        const zones = [
-                                            // Zona Verde (aproximación de VERDE 1 como rectángulo)
-                                            { id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                            // Zona Amarilla (basada en AMARILLO 1 corregido)
-                                            { id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
-                                            // Zona Roja (basada en ROJO 1)
-                                            { id: 'zone-red', x: '51.54%', y: '13.31%', width: '33.20%', height: '36.52%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }
-                                        ];
-                                        zones.forEach(zone => {
-                                            const div = document.createElement('div');
-                                            div.id = zone.id;
-                                            div.style.position = 'absolute';
-                                            div.style.left = zone.x;
-                                            div.style.top = zone.y;
-                                            div.style.width = zone.width;
-                                            div.style.height = zone.height;
-                                            div.style.backgroundColor = zone.id === 'zone-red' ? '#FFC7CE' : zone.id === 'zone-yellow' ? '#FFEB9C' : '#C6EFCE';
-                                            div.style.cursor = 'pointer';
-                                            div.style.opacity = '0.5'; // Ajusta la opacidad para ver la imagen debajo
-                                            div.addEventListener('click', () => {
-                                                window.parent.postMessage({type: 'matrix_click', value: zone.message}, '*');
-                                            });
-                                            image.parentElement.appendChild(div);
+                if st.session_state.get('mostrar_matriz', False):
+                    st.markdown("**En la siguiente imagen, por favor ubica el nivel de riesgo obtenido.**")
+                    def mostrar_imagen_con_zonas(path_png_transparente):
+                        try:
+                            with open(path_png_transparente, "rb") as image_file:
+                                encoded = base64.b64encode(image_file.read()).decode()
+                            st.markdown(
+                                f"""
+                                <div style="display: flex; justify-content: center;">
+                                    <img id="custom-image" src="data:image/png;base64,{encoded}" width="747" style="position: relative;">
+                                </div>
+                                <script>
+                                    const image = document.getElementById('custom-image');
+                                    // Define las zonas clicables basadas en las coordenadas de tu imagen
+                                    const zones = [
+                                        // Zona Verde (aproximación de VERDE 1 como rectángulo)
+                                        { id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
+                                        // Zona Amarilla (basada en AMARILLO 1 corregido)
+                                        { id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' },
+                                        // Zona Roja (basada en ROJO 1)
+                                        { id: 'zone-red', x: '51.54%', y: '13.31%', width: '33.20%', height: '36.52%', message: 'Es necesario implementar acciones o controles adicionales durante los seguimientos de validación para garantizar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }
+                                    ];
+                                    zones.forEach(zone => {
+                                        const div = document.createElement('div');
+                                        div.id = zone.id;
+                                        div.style.position = 'absolute';
+                                        div.style.left = zone.x;
+                                        div.style.top = zone.y;
+                                        div.style.width = zone.width;
+                                        div.style.height = zone.height;
+                                        div.style.backgroundColor = zone.id === 'zone-red' ? '#FFC7CE' : zone.id === 'zone-yellow' ? '#FFEB9C' : '#C6EFCE';
+                                        div.style.cursor = 'pointer';
+                                        div.style.opacity = '0.5'; // Ajusta la opacidad para ver la imagen debajo
+                                        div.addEventListener('click', () => {
+                                            window.parent.postMessage({type: 'matrix_click', value: zone.message}, '*');
                                         });
-                                    </script>
+                                        image.parentElement.appendChild(div);
+                                    });
+                                </script>
                                     """,
                                     unsafe_allow_html=True
                                 )

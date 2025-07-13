@@ -380,15 +380,24 @@ else:
 st.markdown("---")  # Separador visual
 st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
 
-st.image("muestreo.png")
-multi = '''La elaboración de esta propuesta de plan de muestreo está basada  
-en la fórmula para el cálculo del tamaño de muestra para poblacione de tamaño 
-finito del capítulo <1010> de la Farmacopea de los Estados Unidos de América, 
-y en las recomendaciones del procedimiento estándar de operación PSO-VAL-007
-sobre el Muestreo y análisis de datos en la valdiación de procesos de manufactura
-en Altea Farmaceútica S.A'''
-
-st.markdown(multi)
+# Contenedor con imagen más pequeña y texto justificado a la derecha
+st.markdown(
+    """
+    <div style="display: flex; align-items: flex-start; justify-content: center; gap: 20px;">
+        <div style="flex: 0 0 auto;">
+            <img src="muestreo.png" style="width: 250px; height: auto; border-radius: 5px;">
+        </div>
+        <div style="flex: 1; text-align: justify;">
+            <p>
+                La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra para poblaciones de tamaño finito del capítulo 
+                <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b>
+                sobre el muestreo y análisis de datos en la validación de procesos de manufactura en Altea Farmacéutica S.A.
+            </p>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Formulario en una fila
 with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):

@@ -349,8 +349,8 @@ if archivo:
             unsafe_allow_html=True
         )
 
-        # Escuchar mensajes del script para actualizar el estado
-        if st.experimental_get_query_params().get("descarga", [None])[0] == "true":
+        # Escuchar mensajes del script para actualizar el estado con st.query_params
+        if st.query_params.get("descarga") == "true":
             st.session_state.descarga_realizada = True
             st.experimental_rerun()
 

@@ -405,7 +405,7 @@ if st.session_state.get('mostrar_matriz', False):
         st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
         # Formulario en una fila
-        with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+        with st.expander("Por favor diligencia los campos correspondientes de acuerdo con la matriz de riesgo obtenida para el proceso ", expanded=True):
             col1, col2, col3 = st.columns(3)
             with col1:
                 etapa = st.selectbox("Etapa", ["Verificación", "Pesaje", "Limpieza", "Mezcla"])

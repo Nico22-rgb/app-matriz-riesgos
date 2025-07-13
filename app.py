@@ -319,7 +319,7 @@ if archivo:
                 file_name="matriz_riesgo.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 on_click=lambda: st.session_state.update({"descarga_realizada": True})
-
+            )
           # Mostrar multiselect solo después de descargar
 if st.session_state.get("descarga_realizada", False):
     st.markdown("<h5>De acuerdo con la matriz de riesgo generada, seleccione las operaciones con criticidad alta:</h5>", unsafe_allow_html=True)

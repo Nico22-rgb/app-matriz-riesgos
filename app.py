@@ -344,12 +344,11 @@ if archivo:
                                 encoded = base64.b64encode(image_file.read()).decode()
                             st.markdown(
                                 f"""
-                                <div style="display: flex; justify-content: center;">
-                                    <img id="custom-image" src="data:image/png;base64,{encoded}" width="747" style="position: relative;">
+                                <div style="position: relative; display: flex; justify-content: center;">
+                                    <img id="custom-image" src="data:image/png;base64,{encoded}" width="747" style="position: relative; z-index: 1;">
                                 </div>
                                 <script>
                                     const image = document.getElementById('custom-image');
-                                    // Define las zonas clicables basadas en las coordenadas de tu imagen
                                     const zones = [
                                         {{ id: 'zone-green', x: '17.54%', y: '32.08%', width: '50.33%', height: '52.56%', message: 'No es necesario implementar controles adicionales para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }},
                                         {{ id: 'zone-yellow', x: '17.27%', y: '12.29%', width: '16.73%', height: '17.75%', message: 'Considere implementar acciones o controles adicionales durante los seguimientos de validación para demostrar que la verificación a ser efectuada es lo suficientemente robusta para dar un concepto final.' }},
@@ -365,10 +364,11 @@ if archivo:
                                         div.style.height = zone.height;
                                         div.style.backgroundColor = zone.id === 'zone-red' ? '#FFC7CE' : zone.id === 'zone-yellow' ? '#FFEB9C' : '#C6EFCE';
                                         div.style.cursor = 'pointer';
-                                        div.style.opacity = '0.5'; // Ajusta la opacidad para ver la imagen debajo
-                                        div.addEventListener('click', () => {{
+                                        div.style.opacity = '0.5';
+                                        div.style.zIndex = '10';
+                                        div.onclick = () => {{
                                             window.parent.postMessage({{type: 'matrix_click', value: zone.message}}, '*');
-                                        }});
+                                        }};
                                         image.parentElement.appendChild(div);
                                     }});
                                 </script>
@@ -384,10 +384,7 @@ if archivo:
 
                     if 'matrix_message' not in st.session_state:
                         st.session_state['matrix_message'] = None
-                    if st.query_params.get("matrix_click", [None])[0]:  # Cambiado a st.query_params
-                        st.session_state['matrix_message'] = st.query_params.get("matrix_click", [None])[0]
-                        st.rerun()
-                    if st.session_state['matrix_message']:
+                    if st.session_state.get('matrix_message'):
                         st.write(st.session_state['matrix_message'])
 
 else:

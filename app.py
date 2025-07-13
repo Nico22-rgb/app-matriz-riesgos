@@ -360,9 +360,7 @@ if archivo:
 
         mostrar_imagen_con_zonas("Matriz de priorizacion de riesgos.png")
 
-        
         # Información adicional
-        
         with st.expander("🟢 Áreas Verdes - Riesgo Bajo"):
             st.write("Estas áreas representan riesgos de baja probabilidad e impacto. Se recomienda monitoreo rutinario.")
         
@@ -371,5 +369,7 @@ if archivo:
         
         with st.expander("🔴 Áreas Rojas - Riesgo Alto"):
             st.write("Estas áreas requieren acción inmediata. Se deben implementar controles urgentes.")
-      
+
+else:
+    # Solo mostrar este mensaje cuando NO hay archivo subido
     st.info("Por favor, sube un archivo Excel para comenzar.")

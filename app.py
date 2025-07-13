@@ -390,7 +390,7 @@ st.markdown(
         <div style="flex: 1; text-align: justify;">
             <p>
                 La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra para poblaciones de tamaño finito del capítulo 
-                <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b>
+                <b>&lt;1010&gt;</b> de la Farmacopea de los Estados Unidos de América, y en las recomendaciones del Procedimiento Estándar de Operación <b>PSO-VAL-007</b>
                 sobre el muestreo y análisis de datos en la validación de procesos de manufactura en Altea Farmacéutica S.A.
             </p>
         </div>

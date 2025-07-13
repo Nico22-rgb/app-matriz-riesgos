@@ -380,7 +380,7 @@ else:
 st.markdown("---")  # Separador visual
 st.markdown("<h3 style='text-align: center; color: #2c3e50;'>Plan de Muestreo</h3>", unsafe_allow_html=True)
 
-st.image("Muestreo.jpg")
+st.image("muestreo.png")
 multi = '''La elaboración de esta propuesta de plan de muestreo está basada  
 en la fórmula para el cálculo del tamaño de muestra para poblacione de tamaño 
 finito del capítulo <1010> de la Farmacopea de los Estados Unidos de América, 

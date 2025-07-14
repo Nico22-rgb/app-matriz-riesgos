@@ -370,14 +370,7 @@ if st.session_state.get('area_roja_consultada', False):
             atributo = st.selectbox("Atributo", options=atributos_filtrados)
         col4, col5 = st.columns(2)
 
-        # Control de visibilidad para la sección Plan de Muestreo
-        if 'plan_muestreo_visible' not in st.session_state:
-            st.session_state['plan_muestreo_visible'] = False
-
-        if st.button("Cargar sección Plan de Muestreo"):
-            st.session_state['plan_muestreo_visible'] = True
-
-        if st.session_state['plan_muestreo_visible']:
+             
             with col4:
                 proporcion = st.number_input(
                     "Proporción esperada de unidades fuera de especificación (p)",

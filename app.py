@@ -386,4 +386,4 @@ if st.session_state.get('area_roja_consultada', False):
 
 
     if st.button('⚠️ Advertencia'):
-        st.warning('-La propuesta de plan de muestreo asume una distribución normal de los datos. Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, o si su atributo analizado corresponde a la hermeticidad de envase, no utilice esta herramienta para calcular su tamaño muestral y consulte la siguiente guía de definción de tamaño muestral')
+        st.warning('-La propuesta de plan de muestreo asume una distribución normal de los datos. Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, o si su atributo analizado corresponde a la hermeticidad de envase, NO utilice esta herramienta para calcular su tamaño muestral y consulte la siguiente guía de definción de tamaño muestral')

@@ -384,7 +384,26 @@ if st.session_state.get('area_roja_consultada', False):
         </div>
     """, unsafe_allow_html=True)
 
-
-# Agrega un botón con ícono de triángulo amarillo (emoji ⚠️)
-if st.button('⚠️'):
-    st.warning('Advertencia: Por favor revise cuidadosamente antes de continuar.')
+# --- Botón de advertencia grande ---
+st.markdown(
+    """
+    <style>
+    .big-warning-btn {
+        background-color: #ffe066;
+        color: #b8860b;
+        font-size: 2em;
+        padding: 20px 50px;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 2px 2px 10px #888888;
+        margin-bottom: 20px;
+    }
+    </style>
+    <button class="big-warning-btn" title="Advertencia" onclick="alert('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')">
+        ⚠️ Advertencia
+    </button>
+    """,
+    unsafe_allow_html=True
+)

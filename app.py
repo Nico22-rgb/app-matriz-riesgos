@@ -15,31 +15,6 @@ st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 # Imagen y título inicial
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
-st.markdown("""
-    <style>
-        .small-font input, .small-font select, .small-font textarea,
-        .small-font label, .small-font div[data-baseweb="select"],
-        .small-font .stSlider > div {
-            font-size: 13px !important;
-        }
-
-        .small-font .stNumberInput input {
-            height: 30px !important;
-            padding: 2px 6px !important;
-            font-size: 13px !important;
-        }
-
-        .small-font .stSelectbox div[data-baseweb="select"] {
-            font-size: 13px !important;
-        }
-
-        .small-font .stSlider {
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:
@@ -449,7 +424,7 @@ if st.session_state.get('mostrar_matriz', False):
 if st.session_state.get('area_roja_consultada', False):
     # Título centrado con margen inferior
     st.markdown("""
-        <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
+        <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px; font-size: 20px;'>Plan de Muestreo</h3>
     """, unsafe_allow_html=True)
 
     # Contenedor con imagen y texto separados con espacio
@@ -457,7 +432,7 @@ if st.session_state.get('area_roja_consultada', False):
         <div style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 35px;">
             <img src="data:image/png;base64,{base64.b64encode(open('muestreo.png', 'rb').read()).decode()}" 
                  style="width: 130px; height: auto; border-radius: 5px;" />
-            <p style="text-align: justify; max-width: 600px;">
+            <p style="text-align: justify; max-width: 600px; font-size: 13px;">
                 La elaboración de esta propuesta de plan de muestreo está basada en la fórmula para el cálculo del tamaño de muestra 
                 para poblaciones de tamaño finito del capítulo <b><1010></b> de la Farmacopea de los Estados Unidos de América, y en 
                 las recomendaciones del procedimiento estándar de operación <b>PSO-VAL-007</b> sobre el muestreo y análisis de datos en la 
@@ -469,31 +444,67 @@ if st.session_state.get('area_roja_consultada', False):
     # Agregar espacio visual antes del formulario
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
-    with st.container().classed("small-font"):
+    with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
+        # Obtener las etapas disponibles desde ET_OP_AT
+        ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
+        if ET_OP_AT_df.empty:
+            st.warning("No se cargaron datos de la hoja 'ET_OP_AT'. Usando valores predeterminados.")
+            etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
+        else:
+            etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
+
+        # Filtrar operaciones y atributos según la etapa seleccionada
+        if not ET_OP_AT_df.empty:
+            ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
+            etapa_normalizada = etapa.strip().lower() if etapa else ""
+            filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
+            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
+            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
+        else:
+            operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
+            atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
+
+        if not operaciones_filtradas:
+            st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            operaciones_filtradas = ["Sin opciones"]
+        if not atributos_filtrados:
+            st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            atributos_filtrados = ["Sin opciones"]
+
+        # Primera fila
         col1, col2, col3 = st.columns([1.2, 1, 1])
         with col1:
-            st.markdown("Etapa", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Etapa</div>", unsafe_allow_html=True)
             etapa = st.selectbox("", options=etapas_disponibles, key="etapa")
         with col2:
-            st.markdown("Operación", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Operación</div>", unsafe_allow_html=True)
             operacion = st.selectbox("", options=operaciones_filtradas, key="operacion")
         with col3:
-            st.markdown("Atributo", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Atributo</div>", unsafe_allow_html=True)
             atributo = st.selectbox("", options=atributos_filtrados, key="atributo")
 
-        col4, col5 = st.columns(2)
+        # Segunda fila
+        col4, col5 = st.columns([1, 1])
         with col4:
-            st.markdown("Tamaño del lote (N)", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Tamaño del lote (N)</div>", unsafe_allow_html=True)
             poblacion = st.number_input("", min_value=1, value=100, step=1, key="n_lote")
         with col5:
-            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>1</sup>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Proporción esperada de unidades fuera de especificación (p)<sup style='font-size: 10px; vertical-align: super;'>1</sup></div>", unsafe_allow_html=True)
             proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="p_defecto")
 
-        col6, col7 = st.columns(2)
+        # Tercera fila
+        col6, col7 = st.columns([1, 1])
         with col6:
-            st.markdown("Nivel de Criticidad", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Nivel de Criticidad</div>", unsafe_allow_html=True)
             criticidad = st.select_slider("", options=["Bajo", "Moderado", "Alto"], key="criticidad")
         with col7:
-            st.markdown("Margen de error (%)<sup>2</sup>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 13px; margin-bottom: 5px;'>Margen de error (%)<sup style='font-size: 10px; vertical-align: super;'>2</sup></div>", unsafe_allow_html=True)
             margen_error = st.select_slider("", options=[1.0, 5.0], key="margen_error")
+
+# Notas aclaratorias
+st.markdown("""
+    <div style='margin-top: 10px; font-size: 13px; color: #666; text-align: justify;'>
+        <p><sup style='font-size: 10px; vertical-align: super;'>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
+        <p><sup style='font-size: 10px; vertical-align: super;'>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. De lo contrario, selecciona 5%.</p>
+    </div>
+""", unsafe_allow_html=True)

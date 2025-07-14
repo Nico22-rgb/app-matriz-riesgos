@@ -501,7 +501,7 @@ if st.session_state.get('area_roja_consultada', False):
     st.markdown("""
         <div style='margin-top: 10px; font-size: 0.9em; color: #666; text-align: justify;'>
             <p><sup>1</sup> Si no tienes acceso a datos históricos del valor de p, consulta el MIA y establece p=AQL (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que p=AQL/2 ó p=AQL/3.</p>
-            </div>
+          
             <p><sup>2</sup> El margen de error (E) representa cuánta precisión deseas tener al estimar la proporción de defectos (p), en otras palabras define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, ó el atributo es un CQA, selecciona 1%, de lo contrario selecciona 5%.</p>
-            
+            </div>
     """, unsafe_allow_html=True)

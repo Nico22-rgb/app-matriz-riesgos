@@ -388,3 +388,32 @@ if st.button('⚠️ Advertencia'):
     st.warning(
         """La propuesta de plan de muestreo asume una distribución normal de los datos.  
 Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, o si su atributo analizado corresponde a la hermeticidad de envase, **NO utilice esta herramienta para calcular su tamaño muestral** y consulte la siguiente [guía](https://github.com/Nico22-rgb/app-matriz-riesgos/raw/main/.devcontainer/PDF%20advertencia.pdf) de definición de tamaño muestral.""")
+
+st.markdown("---")
+
+
+def calcular_tamano_muestra(N, E, p, criticidad):
+    if criticidad == 'alta':
+        Z = 2.576
+    elif criticidad == 'media':
+        Z = 1.96
+    elif criticidad == 'baja':
+        Z = 1.645
+    else:
+        st.error("La criticidad debe ser alta, media o baja.")
+        return None
+    numerador = N * (Z ** 2) * p * (1 - p)
+    denominador = ((E ** 2) * (N - 1)) + ((Z ** 2) * p * (1 - p))
+    n = numerador / denominador
+    return round(n)
+
+N = st.number_input('Tamaño del lote (N):', min_value=1, step=1)
+margen_error = st.number_input('Margen de error (%):', min_value=0.1, max_value=100.0, step=0.1)
+p = st.number_input('Proporción esperada fuera de especificación (p):', min_value=0.0, max_value=1.0, step=0.01)
+criticidad = st.selectbox('Criticidad:', options=['alta', 'media', 'baja'])
+
+if st.button('Calcular mi tamaño de muestra'):
+    E = margen_error / 100
+    n = calcular_tamano_muestra(N, E, p, criticidad)
+    if n:
+        st.success(f'Tamaño de muestra recomendado: {n}')

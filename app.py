@@ -391,7 +391,7 @@ if st.button('⚠️ Advertencia'):
         Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, 
         o si su atributo analizado corresponde a la hermeticidad de envase, NO utilice esta herramienta 
         para calcular su tamaño muestral y consulte la siguiente 
-        <a href="URL_DEL_PDF" target="_blank"><b>guía</b></a> de definición de tamaño muestral.
+        <a href="https://github.com/Nico22-rgb/app-matriz-riesgos/raw/main/.devcontainer/PDF%20advertencia.pdf" target="_blank"><b>guía</b></a> de definición de tamaño muestral.
     </div>
     """
     st.warning('')

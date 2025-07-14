@@ -384,26 +384,10 @@ if st.session_state.get('area_roja_consultada', False):
         </div>
     """, unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-        <button class="small-warning-btn" title="Advertencia" onclick="alert('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')">
-            ⚠️ Advertencia
-        </button>
-    </div>
-    <style>
-    .small-warning-btn {
-        background-color: #ffe066;
-        color: #b8860b;
-        font-size: 1.2em;
-        padding: 10px 25px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 1px 1px 6px #cccccc;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+import streamlit as st
+
+centro = st.columns([1,2,1])  # Centra el contenido
+
+with centro[1]:
+    if st.button('⚠️ Advertencia'):
+        st.warning('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')

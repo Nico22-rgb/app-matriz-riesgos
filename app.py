@@ -387,7 +387,7 @@ if st.session_state.get('area_roja_consultada', False):
 if st.button('⚠️ Advertencia'):
     texto = """
     <div style='text-align: justify'>
-        -La propuesta de plan de muestreo asume una distribución normal de los datos. 
+        La propuesta de plan de muestreo asume una distribución normal de los datos. 
         Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, 
         o si su atributo analizado corresponde a la hermeticidad de envase, NO utilice esta herramienta 
         para calcular su tamaño muestral y consulte la siguiente 

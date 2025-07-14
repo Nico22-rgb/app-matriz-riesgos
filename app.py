@@ -444,7 +444,7 @@ if st.session_state.get('area_roja_consultada', False):
     # Agregar espacio visual antes del formulario
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
- with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
+with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
     with st.container().classed("small-font"):
         col1, col2, col3 = st.columns([1.2, 1, 1])
         with col1:

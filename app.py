@@ -503,4 +503,11 @@ if st.session_state.get('area_roja_consultada', False):
         with col7:
             Margen de error = st.select_slider("Margen de error %", options=["1,0%", "5,0%"])
             
-            
+            # Notas aclaratorias
+st.markdown("""
+    <div style='margin-top: 10px; font-size: 13px; color: #666; text-align: justify;'>
+        <p><sup style='font-size: 10px; vertical-align: super;'>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
+        <p><sup style='font-size: 10px; vertical-align: super;'>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. De lo contrario, selecciona 5%.</p>
+    </div>
+""", unsafe_allow_html=True)
+

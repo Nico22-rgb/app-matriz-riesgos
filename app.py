@@ -361,8 +361,8 @@ if st.session_state.get('area_roja_consultada', False):
             st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
             operaciones_filtradas = ["Sin opciones"]
         if not atributos_filtrados:
-    st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
-    atributos_filtrados = ["Sin opciones"]
+            st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            atributos_filtrados = ["Sin opciones"]
 
         with col2:
             operacion = st.selectbox("Operación", options=operaciones_filtradas)

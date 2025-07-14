@@ -369,7 +369,7 @@ if st.session_state.get('area_roja_consultada', False):
             atributo = st.selectbox("Atributo", options=atributos_filtrados)
         col4, col5 = st.columns(2)
         with col4:
-            aql = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
+            proporcion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
         with col5:
             lote = st.number_input("Tamaño del lote", min_value=0.0, max_value=1000000.0, value=1.0, step=1.0)
         col6, col7 = st.columns(2)

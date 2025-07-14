@@ -488,21 +488,20 @@ if st.session_state.get('area_roja_consultada', False):
         with col6:
             poblacion = st.number_input("Tamaño del lote (N)", min_value=1, value=100, step=1)
         with col10:
-            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>2</sup>", unsafe_allow_html=True)
-            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+            proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p) <1>", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
         # Última fila: Nivel de Criticidad y Margen de error
         col4, col5 = st.columns(2)
         with col4:
             criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
         with col5:
-            st.markdown("Margen de error (%)<sup>1</sup>", unsafe_allow_html=True)
-            margen_error = st.select_slider("", options=[1.0, 5.0])
+            margen_error = st.select_slider("Margen de error (%)<2>", options=[1.0, 5.0])
 
     # Notas explicativas justificadas debajo del expander
     st.markdown("""
         <div style='margin-top: 10px; font-size: 0.9em; color: #666; text-align: justify;'>
-            <p><sup>1</sup> El margen de error (E) representa cuánta precisión deseas tener al estimar la proporción de defectos (p), en otras palabras define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, ó el atributo es un CQA, selecciona 1%, de lo contrario selecciona 5%.</p>
-            <p><sup>2</sup> Si no tienes acceso a datos históricos del valor de p, consulta el MIA y establece p=AQL (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que p=AQL/2 ó p=AQL/3.</p>
-        </div>
+            <p><sup>1</sup> Si no tienes acceso a datos históricos del valor de p, consulta el MIA y establece p=AQL (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que p=AQL/2 ó p=AQL/3.</p>
+            </div>
+            <p><sup>2</sup> El margen de error (E) representa cuánta precisión deseas tener al estimar la proporción de defectos (p), en otras palabras define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, ó el atributo es un CQA, selecciona 1%, de lo contrario selecciona 5%.</p>
+            
     """, unsafe_allow_html=True)

@@ -422,8 +422,9 @@ if st.session_state.get('mostrar_matriz', False):
             st.session_state['area_roja_consultada'] = True
             st.rerun()  # Forzar recarga para reflejar el cambio
 
-# Mostrar Plan de Muestreo solo después de interactuar con Área Roja
-if st.session_state.get('area_roja_consultada', False):
+# Forzar visibilidad temporal para depuración
+if True:  # Cambia a True para forzar la visualización y probar
+    st.write("Prueba: Este mensaje debería aparecer siempre.")
     # Título centrado con margen inferior
     st.markdown("""
         <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
@@ -491,23 +492,3 @@ if st.session_state.get('area_roja_consultada', False):
         with col6:
             poblacion = st.number_input("Tamaño de la población", min_value=1, value=100, step=1)
             confianza = st.selectbox("Nivel de confianza (%)", options=[90, 95, 99], index=1)  # 95% por defecto
-
-        # Nuevos campos para los escenarios problemáticos
-        col7, col8 = st.columns(2)
-        with col7:
-            no_normal = st.checkbox("Atributo no sigue distribución normal")
-        with col8:
-            muestreo_especial = st.checkbox("Muestreo destructivo/costoso/alto valor")
-        
-        # Nivel de inspección solo si se marca muestreo especial
-        if muestreo_especial:
-            col9, _ = st.columns(2)
-            with col9:
-                nivel_inspeccion = st.selectbox("Nivel de inspección", options=["Normal", "Reducido", "Ajustado"], index=0)
-        else:
-            nivel_inspeccion = "Normal"  # Valor por defecto si no se marca
-
-        # Nuevo campo para proporción esperada
-        col10, _ = st.columns(2)
-        with col10:
-            proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)

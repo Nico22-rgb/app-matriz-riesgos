@@ -384,7 +384,6 @@ if st.session_state.get('area_roja_consultada', False):
         </div>
     """, unsafe_allow_html=True)
 
-# --- Botón de advertencia grande ---
 st.markdown(
     """
     <div style="display: flex; justify-content: center; margin-bottom: 20px;">

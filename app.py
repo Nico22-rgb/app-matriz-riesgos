@@ -462,18 +462,15 @@ if st.session_state.get('area_roja_consultada', False):
         
         # Filtrar operaciones y atributos según la etapa seleccionada
         if not ET_OP_AT_df.empty:
-            # Normalizar solo para comparación, mantener original para mostrar
             ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
             etapa_normalizada = etapa.strip().lower()
-            # Filtrar todas las filas para la etapa y tomar todas las operaciones/atributos
             filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()  # Todas las operaciones
-            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()    # Todos los atributos
+            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
+            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
         else:
             operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
             atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
 
-        # Validación y mensaje si no hay opciones
         if not operaciones_filtradas:
             st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
             operaciones_filtradas = ["Sin opciones"]
@@ -486,8 +483,31 @@ if st.session_state.get('area_roja_consultada', False):
         with col3:
             atributo = st.selectbox("Atributo", options=atributos_filtrados)
 
-        col4, col5 = st.columns(2)
+        col4, col5, col6 = st.columns(3)
         with col4:
             criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
         with col5:
-            aql = st.number_input("Nivel de AQL (%)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+            margen_error = st.select_slider("Margen de error (E) deseado (%)", options=[1.0, 5.0])
+        with col6:
+            poblacion = st.number_input("Tamaño de la población", min_value=1, value=100, step=1)
+            confianza = st.selectbox("Nivel de confianza (%)", options=[90, 95, 99], index=1)  # 95% por defecto
+
+        # Nuevos campos para los escenarios problemáticos
+        col7, col8 = st.columns(2)
+        with col7:
+            no_normal = st.checkbox("Atributo no sigue distribución normal")
+        with col8:
+            muestreo_especial = st.checkbox("Muestreo destructivo/costoso/alto valor")
+        
+        # Nivel de inspección solo si se marca muestreo especial
+        if muestreo_especial:
+            col9, _ = st.columns(2)
+            with col9:
+                nivel_inspeccion = st.selectbox("Nivel de inspección", options=["Normal", "Reducido", "Ajustado"], index=0)
+        else:
+            nivel_inspeccion = "Normal"  # Valor por defecto si no se marca
+
+        # Nuevo campo para proporción esperada
+        col10, _ = st.columns(2)
+        with col10:
+            proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)

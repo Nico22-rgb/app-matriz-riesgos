@@ -361,52 +361,54 @@ if st.session_state.get('area_roja_consultada', False):
             st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
             operaciones_filtradas = ["Sin opciones"]
         if not atributos_filtrados:
-            st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
-            atributos_filtrados = ["Sin opciones"]
+    st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+    atributos_filtrados = ["Sin opciones"]
+
         with col2:
             operacion = st.selectbox("Operación", options=operaciones_filtradas)
         with col3:
             atributo = st.selectbox("Atributo", options=atributos_filtrados)
         col4, col5 = st.columns(2)
-        with col4:
-            proporcion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
-        with col5:
-            lote = st.number_input("Tamaño del lote", min_value=10.0, max_value=1000000.0, value=10.0, step=1.0)
-        col6, col7 = st.columns(2)
-        with col6:
-            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
-        with col7:
-            margen_error = st.select_slider("Margen de error %", options=["1.0%", "5.0%"])
-    st.markdown("""
-        <div style='margin-top: 10px; font-size: 13px; color: #666; text-align: justify;'>
-            <p><sup style='font-size: 10px; vertical-align: super;'>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
-            <p><sup style='font-size: 10px; vertical-align: super;'>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. De lo contrario, selecciona 5%.</p>
-        </div>
-    """, unsafe_allow_html=True)
 
-if st.button('⚠️ Advertencia'):
-    st.warning(
-        """La propuesta de plan de muestreo asume una distribución normal de los datos.  
-Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, o si su atributo analizado corresponde a la hermeticidad de envase, **NO utilice esta herramienta para calcular su tamaño muestral** y consulte la siguiente [guía](https://github.com/Nico22-rgb/app-matriz-riesgos/raw/main/.devcontainer/PDF%20advertencia.pdf) de definición de tamaño muestral.""")
+        # Control de visibilidad para la sección Plan de Muestreo
+        if 'plan_muestreo_visible' not in st.session_state:
+            st.session_state['plan_muestreo_visible'] = False
 
-st.markdown("---")
-# Mapeo de criticidad a Z
-criticidad_map = {
-    "Alto": 2.576,
-    "Moderado": 1.96,
-    "Bajo": 1.645
-}
+        if st.button("Cargar sección Plan de Muestreo"):
+            st.session_state['plan_muestreo_visible'] = True
 
-# Botón para calcular el tamaño de muestra
-if st.button("Calcular mi tamaño de muestra"):
-    try:
-        Z = criticidad_map[criticidad]
-        E = float(margen_error.replace("%", "")) / 100  # Convierte "1.0%" -> 0.01
-        N = lote
-        p = proporcion
-        numerador = N * (Z ** 2) * p * (1 - p)
-        denominador = ((E ** 2) * (N - 1)) + ((Z ** 2) * p * (1 - p))
-        n = numerador / denominador
-        st.success(f"Tamaño de muestra recomendado: {round(n)}")
-    except Exception as e:
-        st.error(f"Error en el cálculo: {e}")
+        if st.session_state['plan_muestreo_visible']:
+            with col4:
+                proporcion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
+            with col5:
+                lote = st.number_input("Tamaño del lote", min_value=10.0, max_value=1000000.0, value=100.0, step=1.0)
+            col6, col7 = st.columns(2)
+            with col6:
+                criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+            with col7:
+                margen_error = st.select_slider("Margen de error %", options=["1.0%", "5.0%"])
+
+            st.markdown("---")
+
+            if st.button('⚠️ Advertencia'):
+                st.warning(
+                    """La propuesta de plan de muestreo asume una distribución normal de los datos.  
+        Si tiene certeza de que los datos para el atributo analizado no siguen una distribución normal, o si su atributo analizado corresponde a la hermeticidad de envase, **NO utilice esta herramienta para calcular su tamaño muestral** y consulte la siguiente [guía](https://github.com/Nico22-rgb/app-matriz-riesgos/raw/main/.devcontainer/PDF%20advertencia.pdf) de definición de tamaño muestral."""
+                )
+            criticidad_map = {
+                "Alto": 2.576,
+                "Moderado": 1.96,
+                "Bajo": 1.645
+            }
+            if st.button("Calcular mi tamaño de muestra"):
+                try:
+                    Z = criticidad_map[criticidad]
+                    E = float(margen_error.replace("%", "")) / 100
+                    N = lote
+                    p = proporcion
+                    numerador = N * (Z ** 2) * p * (1 - p)
+                    denominador = ((E ** 2) * (N - 1)) + ((Z ** 2) * p * (1 - p))
+                    n = numerador / denominador
+                    st.success(f"Tamaño de muestra recomendado: {round(n)}")
+                except Exception as e:
+                    st.error(f"Error en el cálculo: {e}")

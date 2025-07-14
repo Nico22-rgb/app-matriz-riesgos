@@ -371,12 +371,12 @@ if st.session_state.get('area_roja_consultada', False):
         with col4:
             aql = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
         with col5:
-            lote = st.number_input("Tamaño del lote", min_value=0.0, max_value=1000000, value=1.0, step=1.0)
+            lote = st.number_input("Tamaño del lote", min_value=0.0, max_value=1000000.0, value=1.0, step=1.0)
         col6, col7 = st.columns(2)
         with col6:
             criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
         with col7:
-            margen_error = st.select_slider("Margen de error %", options=["1,0%", "5,0%"])
+            margen_error = st.select_slider("Margen de error %", options=["1.0%", "5.0%"])
     st.markdown("""
         <div style='margin-top: 10px; font-size: 13px; color: #666; text-align: justify;'>
             <p><sup style='font-size: 10px; vertical-align: super;'>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>

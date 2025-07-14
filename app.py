@@ -384,3 +384,7 @@ if st.session_state.get('area_roja_consultada', False):
         </div>
     """, unsafe_allow_html=True)
 
+
+# Agrega un botón con ícono de triángulo amarillo (emoji ⚠️)
+if st.button('⚠️'):
+    st.warning('Advertencia: Por favor revise cuidadosamente antes de continuar.')

@@ -386,4 +386,4 @@ if st.session_state.get('area_roja_consultada', False):
 
 
     if st.button('⚠️ Advertencia'):
-        st.warning('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')
+        st.warning('La propuesta de plan de muestreo asume una distribución normal de los datos. Si sabe que los datos para el atributo analizado no siguen una distribución normal, por favor consulte aquí para más información')

@@ -385,6 +385,5 @@ if st.session_state.get('area_roja_consultada', False):
     """, unsafe_allow_html=True)
 
 
-with centro[1]:
     if st.button('⚠️ Advertencia'):
         st.warning('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')

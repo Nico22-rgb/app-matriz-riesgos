@@ -456,10 +456,10 @@ if st.session_state.get('area_roja_consultada', False):
         else:
             etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
 
-        # Usar un layout con más control de espaciado
-        col1, col2, col3 = st.columns([1, 1, 1], gap="large")
+        # Primera fila de columnas
+        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
         with col1:
-            st.markdown("<strong style='font-size: 16px;'>Etapa</strong>", unsafe_allow_html=True)
+            st.markdown("**Etapa**")
             etapa = st.selectbox("", options=etapas_disponibles, key="etapa_select")
         
         # Filtrar operaciones y atributos según la etapa seleccionada
@@ -481,28 +481,28 @@ if st.session_state.get('area_roja_consultada', False):
             atributos_filtrados = ["Sin opciones"]
 
         with col2:
-            st.markdown("<strong style='font-size: 16px;'>Operación</strong>", unsafe_allow_html=True)
+            st.markdown("**Operación**")
             operacion = st.selectbox("", options=operaciones_filtradas, key="operacion_select")
         with col3:
-            st.markdown("<strong style='font-size: 16px;'>Atributo</strong>", unsafe_allow_html=True)
+            st.markdown("**Atributo**")
             atributo = st.selectbox("", options=atributos_filtrados, key="atributo_select")
 
         # Segunda fila de columnas
-        col4, col5, col6 = st.columns([1, 1, 1], gap="large")
+        col4, col5, col6 = st.columns([1, 1, 1], gap="medium")
         with col4:
-            st.markdown("<strong style='font-size: 16px;'>Nivel de Criticidad</strong>", unsafe_allow_html=True)
+            st.markdown("**Nivel de Criticidad**")
             criticidad = st.select_slider("", options=["Bajo", "Moderado", "Alto"], key="criticidad_slider")
         with col5:
             st.markdown("Margen de error (%)<sup>1</sup>", unsafe_allow_html=True)
             margen_error = st.select_slider("", options=[1.0, 5.0], key="margen_error_slider")
         with col6:
-            st.markdown("<strong style='font-size: 16px;'>Tamaño del lote (N)</strong>", unsafe_allow_html=True)
+            st.markdown("**Tamaño del lote (N)**")
             poblacion = st.number_input("", min_value=1, value=100, step=1, key="poblacion_input")
 
         # Tercera fila para proporción
-        col10, _ = st.columns([1, 1], gap="large")
+        col10, _ = st.columns([1, 1], gap="medium")
         with col10:
-            st.markdown("<div style='font-size: 16px; margin-bottom: 5px;'>Proporción esperada de unidades fuera de especificación (p)<sup>2</sup></div>", unsafe_allow_html=True)
+            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>2</sup>", unsafe_allow_html=True)
             proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="proporcion_input")
 
     # Notas explicativas justificadas debajo del expander

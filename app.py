@@ -15,6 +15,31 @@ st.set_page_config(page_title="Análisis de Riesgos", layout="centered")
 # Imagen y título inicial
 st.markdown("<h1 style='text-align: center;'>Análisis de Riesgos - Área de Validaciones</h1>", unsafe_allow_html=True)
 
+st.markdown("""
+    <style>
+        .small-font input, .small-font select, .small-font textarea,
+        .small-font label, .small-font div[data-baseweb="select"],
+        .small-font .stSlider > div {
+            font-size: 13px !important;
+        }
+
+        .small-font .stNumberInput input {
+            height: 30px !important;
+            padding: 2px 6px !important;
+            font-size: 13px !important;
+        }
+
+        .small-font .stSelectbox div[data-baseweb="select"] {
+            font-size: 13px !important;
+        }
+
+        .small-font .stSlider {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 def mostrar_logo_adaptable(path_png_transparente):
     try:
         with open(path_png_transparente, "rb") as image_file:

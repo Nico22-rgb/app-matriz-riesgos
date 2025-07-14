@@ -387,23 +387,24 @@ if st.session_state.get('area_roja_consultada', False):
 # --- Botón de advertencia grande ---
 st.markdown(
     """
+    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <button class="small-warning-btn" title="Advertencia" onclick="alert('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')">
+            ⚠️ Advertencia
+        </button>
+    </div>
     <style>
-    .big-warning-btn {
+    .small-warning-btn {
         background-color: #ffe066;
         color: #b8860b;
-        font-size: 2em;
-        padding: 20px 50px;
+        font-size: 1.2em;
+        padding: 10px 25px;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: bold;
         cursor: pointer;
-        box-shadow: 2px 2px 10px #888888;
-        margin-bottom: 20px;
+        box-shadow: 1px 1px 6px #cccccc;
     }
     </style>
-    <button class="big-warning-btn" title="Advertencia" onclick="alert('Por favor, revise cuidadosamente el tamaño del lote antes de continuar.')">
-        ⚠️ Advertencia
-    </button>
     """,
     unsafe_allow_html=True
 )

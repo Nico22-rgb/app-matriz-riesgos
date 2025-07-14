@@ -422,9 +422,8 @@ if st.session_state.get('mostrar_matriz', False):
             st.session_state['area_roja_consultada'] = True
             st.rerun()  # Forzar recarga para reflejar el cambio
 
-# Forzar visibilidad temporal para depuración
-if True:  # Cambia a True para forzar la visualización y probar
-    st.write("Prueba: Este mensaje debería aparecer siempre.")
+# Mostrar Plan de Muestreo solo después de interactuar con Área Roja
+if st.session_state.get('area_roja_consultada', False):
     # Título centrado con margen inferior
     st.markdown("""
         <h3 style='text-align: center; color: #2c3e50; margin-bottom: 30px;'>Plan de Muestreo</h3>
@@ -488,7 +487,12 @@ if True:  # Cambia a True para forzar la visualización y probar
         with col4:
             criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
         with col5:
-            margen_error = st.select_slider("Margen de error (E) deseado (%)", options=[1.0, 5.0])
+            margen_error = st.select_slider("Margen de error (%)", options=[1.0, 5.0])
         with col6:
-            poblacion = st.number_input("Tamaño de la población", min_value=1, value=100, step=1)
-            confianza = st.selectbox("Nivel de confianza (%)", options=[90, 95, 99], index=1)  # 95% por defecto
+            poblacion = st.number_input("Tamaño deL lote (N)", min_value=1, value=100, step=1)
+            # Eliminado el selectbox de Nivel de confianza
+
+        # Nuevo campo para proporción esperada
+        col10, _ = st.columns(2)
+        with col10:
+            proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)

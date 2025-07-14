@@ -447,7 +447,7 @@ if st.session_state.get('area_roja_consultada', False):
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
     # Formulario en una fila con etapas críticas dinámicas
-    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
+    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
         # Obtener las etapas disponibles desde ET_OP_AT
         ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
         if ET_OP_AT_df.empty:
@@ -456,14 +456,16 @@ if st.session_state.get('area_roja_consultada', False):
         else:
             etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
 
-        col1, col2, col3 = st.columns(3)
+        # Usar un layout con más control de espaciado
+        col1, col2, col3 = st.columns([1, 1, 1], gap="large")
         with col1:
-            etapa = st.selectbox("Etapa", options=etapas_disponibles)
+            st.markdown("**Etapa**")
+            etapa = st.selectbox("", options=etapas_disponibles, key="etapa_select")
         
         # Filtrar operaciones y atributos según la etapa seleccionada
         if not ET_OP_AT_df.empty:
             ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
-            etapa_normalizada = etapa.strip().lower()
+            etapa_normalizada = etapa.strip().lower() if etapa else ""
             filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
             operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
             atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
@@ -479,24 +481,29 @@ if st.session_state.get('area_roja_consultada', False):
             atributos_filtrados = ["Sin opciones"]
 
         with col2:
-            operacion = st.selectbox("Operación", options=operaciones_filtradas)
+            st.markdown("**Operación**")
+            operacion = st.selectbox("", options=operaciones_filtradas, key="operacion_select")
         with col3:
-            atributo = st.selectbox("Atributo", options=atributos_filtrados)
+            st.markdown("**Atributo**")
+            atributo = st.selectbox("", options=atributos_filtrados, key="atributo_select")
 
-        col4, col5, col6 = st.columns(3)
+        # Segunda fila de columnas
+        col4, col5, col6 = st.columns([1, 1, 1], gap="large")
         with col4:
-            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+            st.markdown("**Nivel de Criticidad**")
+            criticidad = st.select_slider("", options=["Bajo", "Moderado", "Alto"], key="criticidad_slider")
         with col5:
             st.markdown("Margen de error (%)<sup>1</sup>", unsafe_allow_html=True)
-            margen_error = st.select_slider("", options=[1.0, 5.0])
+            margen_error = st.select_slider("", options=[1.0, 5.0], key="margen_error_slider")
         with col6:
-            poblacion = st.number_input("Tamaño del lote (N)", min_value=1, value=100, step=1)
+            st.markdown("**Tamaño del lote (N)**")
+            poblacion = st.number_input("", min_value=1, value=100, step=1, key="poblacion_input")
 
-        # Nuevo campo para proporción esperada
-        col10, _ = st.columns(2)
+        # Tercera fila para proporción
+        col10, _ = st.columns([1, 1], gap="large")
         with col10:
             st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>2</sup>", unsafe_allow_html=True)
-            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="proporcion_input")
 
     # Notas explicativas justificadas debajo del expander
     st.markdown("""

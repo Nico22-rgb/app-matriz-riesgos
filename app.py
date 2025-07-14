@@ -488,14 +488,16 @@ if st.session_state.get('area_roja_consultada', False):
         with col6:
             poblacion = st.number_input("Tamaño del lote (N)", min_value=1, value=100, step=1)
         with col10:
-            proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p)<sup>2</sup>", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>2</sup>", unsafe_allow_html=True)
+            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
         # Última fila: Nivel de Criticidad y Margen de error
         col4, col5 = st.columns(2)
         with col4:
             criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
         with col5:
-            margen_error = st.select_slider("Margen de error (%)<sup>1</sup>", options=[1.0, 5.0])
+            st.markdown("Margen de error (%)<sup>1</sup>", unsafe_allow_html=True)
+            margen_error = st.select_slider("", options=[1.0, 5.0])
 
     # Notas explicativas justificadas debajo del expander
     st.markdown("""

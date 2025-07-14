@@ -34,8 +34,6 @@ def mostrar_logo_adaptable(path_png_transparente):
 # Muestra el logo adaptativo
 mostrar_logo_adaptable("altea.png")
 
-# ... (importaciones y configuración inicial permanecen iguales)
-
 # Función para cargar datos con openpyxl manejando celdas combinadas
 @st.cache_data
 def load_excel(file, sheet_name):
@@ -442,65 +440,67 @@ if st.session_state.get('area_roja_consultada', False):
             </p>
         </div>
     """, unsafe_allow_html=True)
-# Agregar espacio visual antes del formulario
-st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-# Formulario en una fila con etapas críticas dinámicas
-with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso ", expanded=True):
-    
-    # Obtener las etapas disponibles desde ET_OP_AT
-    ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
-    if ET_OP_AT_df.empty:
-        st.warning("No se cargaron datos de la hoja 'ET_OP_AT'. Usando valores predeterminados.")
-        etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
-    else:
-        etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
+    # Agregar espacio visual antes del formulario
+    st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        etapa = st.selectbox("Etapa", options=etapas_disponibles)
+    # Formulario en una fila con etapas críticas dinámicas
+    with st.expander("Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
+        # Obtener las etapas disponibles desde ET_OP_AT
+        ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
+        if ET_OP_AT_df.empty:
+            st.warning("No se cargaron datos de la hoja 'ET_OP_AT'. Usando valores predeterminados.")
+            etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
+        else:
+            etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
 
-    if not ET_OP_AT_df.empty:
-        ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
-        etapa_normalizada = etapa.strip().lower()
-        filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-        operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
-        atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
-    else:
-        operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
-        atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            etapa = st.selectbox("Etapa", options=etapas_disponibles)
+        
+        # Filtrar operaciones y atributos según la etapa seleccionada
+        if not ET_OP_AT_df.empty:
+            ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
+            etapa_normalizada = etapa.strip().lower()
+            filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
+            operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
+            atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
+        else:
+            operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
+            atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
 
-    if not operaciones_filtradas:
-        st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
-        operaciones_filtradas = ["Sin opciones"]
-    if not atributos_filtrados:
-        st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
-        atributos_filtrados = ["Sin opciones"]
+        if not operaciones_filtradas:
+            st.warning(f"No se encontraron operaciones para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            operaciones_filtradas = ["Sin opciones"]
+        if not atributos_filtrados:
+            st.warning(f"No se encontraron atributos para la etapa '{etapa}'. Verifica la hoja 'ET_OP_AT'.")
+            atributos_filtrados = ["Sin opciones"]
 
-    with col2:
-        operacion = st.selectbox("Operación", options=operaciones_filtradas)
-    with col3:
-        atributo = st.selectbox("Atributo", options=atributos_filtrados)
+        with col2:
+            operacion = st.selectbox("Operación", options=operaciones_filtradas)
+        with col3:
+            atributo = st.selectbox("Atributo", options=atributos_filtrados)
 
-    # Segunda fila
-    col6, col10 = st.columns(2)
-    with col6:
-        poblacion = st.number_input("Tamaño del lote (N)", min_value=1, value=100, step=1)
-    with col10:
-        proporcion_fuera_especificacion = st.number_input("Proporción esperada de unidades fuera de especificación (p) <1>", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+        # Segunda fila
+        col6, col10 = st.columns(2)
+        with col6:
+            poblacion = st.number_input("Tamaño del lote (N)", min_value=1, value=100, step=1)
+        with col10:
+            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>1</sup>", unsafe_allow_html=True)
+            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
-    # Tercera fila
-    col4, col5 = st.columns(2)
-    with col4:
-        criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
-    with col5:
-        margen_error = st.select_slider("Margen de error (%)<2>", options=[1.0, 5.0])
+        # Tercera fila
+        col4, col5 = st.columns(2)
+        with col4:
+            criticidad = st.select_slider("Nivel de Criticidad", options=["Bajo", "Moderado", "Alto"])
+        with col5:
+            st.markdown("Margen de error (%)<sup>2</sup>", unsafe_allow_html=True)
+            margen_error = st.select_slider("", options=[1.0, 5.0])
 
-# Notas aclaratorias
-st.markdown("""
-    <div style='margin-top: 10px; font-size: 0.9em; color: #666; text-align: justify;'>
-        <p><sup>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
-
-        <p><sup>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. De lo contrario, selecciona 5%.</p>
-    </div>
-""", unsafe_allow_html=True)
+    # Notas aclaratorias
+    st.markdown("""
+        <div style='margin-top: 10px; font-size: 0.9em; color: #666; text-align: justify;'>
+            <p><sup>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
+            <p><sup>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. De lo contrario, selecciona 5%.</p>
+        </div>
+    """, unsafe_allow_html=True)

@@ -444,74 +444,31 @@ if st.session_state.get('area_roja_consultada', False):
     # Agregar espacio visual antes del formulario
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
 
-  # Formulario ordenado y alineado
-with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
-    
-    ET_OP_AT_df = st.session_state.get('ET_OP_AT_df', pd.DataFrame())
-    if ET_OP_AT_df.empty:
-        st.warning("No se cargaron datos de la hoja 'ET_OP_AT'. Usando valores predeterminados.")
-        etapas_disponibles = ["Verificación", "Pesaje", "Limpieza", "Mezcla"]
-    else:
-        etapas_disponibles = ET_OP_AT_df["Etapa"].dropna().unique().tolist()
+ with st.expander("📝 Por favor diligencia los campos correspondientes basado en la matriz de riesgo obtenida para el proceso", expanded=True):
+    with st.container().classed("small-font"):
+        col1, col2, col3 = st.columns([1.2, 1, 1])
+        with col1:
+            st.markdown("Etapa", unsafe_allow_html=True)
+            etapa = st.selectbox("", options=etapas_disponibles, key="etapa")
+        with col2:
+            st.markdown("Operación", unsafe_allow_html=True)
+            operacion = st.selectbox("", options=operaciones_filtradas, key="operacion")
+        with col3:
+            st.markdown("Atributo", unsafe_allow_html=True)
+            atributo = st.selectbox("", options=atributos_filtrados, key="atributo")
 
-    # Primera fila: Etapa, Operación, Atributo
-    col1, col2, col3 = st.columns([1.2, 1, 1])
-    with col1:
-        st.markdown("**Etapa**", unsafe_allow_html=True)
-        etapa = st.selectbox("", options=etapas_disponibles)
+        col4, col5 = st.columns(2)
+        with col4:
+            st.markdown("Tamaño del lote (N)", unsafe_allow_html=True)
+            poblacion = st.number_input("", min_value=1, value=100, step=1, key="n_lote")
+        with col5:
+            st.markdown("Proporción esperada de unidades fuera de especificación (p)<sup>1</sup>", unsafe_allow_html=True)
+            proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="p_defecto")
 
-    if not ET_OP_AT_df.empty:
-        ET_OP_AT_df["Etapa_normalized"] = ET_OP_AT_df["Etapa"].str.strip().str.lower()
-        etapa_normalizada = etapa.strip().lower()
-        filas_filtradas = ET_OP_AT_df[ET_OP_AT_df["Etapa_normalized"] == etapa_normalizada]
-        operaciones_filtradas = filas_filtradas["Operación"].dropna().tolist()
-        atributos_filtrados = filas_filtradas["Atributo"].dropna().tolist()
-    else:
-        operaciones_filtradas = ["Prueba 1", "Prueba 2", "Inspección"]
-        atributos_filtrados = ["Dimensión", "Peso", "Pureza"]
-
-    if not operaciones_filtradas:
-        st.warning(f"No se encontraron operaciones para la etapa '{etapa}'.")
-        operaciones_filtradas = ["Sin opciones"]
-    if not atributos_filtrados:
-        st.warning(f"No se encontraron atributos para la etapa '{etapa}'.")
-        atributos_filtrados = ["Sin opciones"]
-
-    with col2:
-        st.markdown("**Operación**", unsafe_allow_html=True)
-        operacion = st.selectbox("", options=operaciones_filtradas)
-
-    with col3:
-        st.markdown("**Atributo**", unsafe_allow_html=True)
-        atributo = st.selectbox("", options=atributos_filtrados)
-
-    # Segunda fila: Tamaño del lote (N), Proporción p
-    col4, col5 = st.columns(2)
-    with col4:
-        st.markdown("**Tamaño del lote (N)**", unsafe_allow_html=True)
-        poblacion = st.number_input("", min_value=1, value=100, step=1)
-
-    with col5:
-        st.markdown("**Proporción esperada de unidades fuera de especificación (p)<sup>1</sup>**", unsafe_allow_html=True)
-        proporcion_fuera_especificacion = st.number_input("", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
-
-    # Tercera fila: Criticidad y Margen de error
-    col6, col7 = st.columns(2)
-    with col6:
-        st.markdown("**Nivel de Criticidad**", unsafe_allow_html=True)
-        criticidad = st.select_slider("", options=["Bajo", "Moderado", "Alto"])
-    
-    with col7:
-        st.markdown("**Margen de error (%)<sup>2</sup>**", unsafe_allow_html=True)
-        margen_error = st.select_slider("", options=[1.0, 5.0])
-
-# Notas aclaratorias con superíndices
-st.markdown("""
-    <div style='margin-top: 15px; font-size: 0.9em; color: #666; text-align: justify;'>
-        <p><sup>1</sup> Si no tienes acceso a datos históricos del valor de <i>p</i>, consulta el MIA y establece <i>p = AQL</i> (como número) para el atributo analizado. 
-        Si sabes que el proceso se encuentra bajo control para este atributo, puedes sugerir que <i>p = AQL / 2</i> o <i>p = AQL / 3</i>.</p>
-        <p><sup>2</sup> El margen de error (<i>E</i>) representa cuánta precisión deseas tener al estimar la proporción de incumplimientos (<i>p</i>). 
-        En otras palabras, define la precisión estadística del muestreo. Si tu proceso es muy variable para este atributo, o el atributo es un CQA, selecciona 1%. 
-        De lo contrario, selecciona 5%.</p>
-    </div>
-""", unsafe_allow_html=True)
+        col6, col7 = st.columns(2)
+        with col6:
+            st.markdown("Nivel de Criticidad", unsafe_allow_html=True)
+            criticidad = st.select_slider("", options=["Bajo", "Moderado", "Alto"], key="criticidad")
+        with col7:
+            st.markdown("Margen de error (%)<sup>2</sup>", unsafe_allow_html=True)
+            margen_error = st.select_slider("", options=[1.0, 5.0], key="margen_error")

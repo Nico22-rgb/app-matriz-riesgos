@@ -384,9 +384,6 @@ if st.session_state.get('area_roja_consultada', False):
         </div>
     """, unsafe_allow_html=True)
 
-import streamlit as st
-
-centro = st.columns([1,2,1])  # Centra el contenido
 
 with centro[1]:
     if st.button('⚠️ Advertencia'):
